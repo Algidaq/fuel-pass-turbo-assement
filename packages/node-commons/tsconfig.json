@@ -1,13 +1,15 @@
 {
   "extends": "@fuel-pass/typescript-config/backend.json",
-  "files": [],
-  "include": [],
-  "references": [
-    {
-      "path": "./tsconfig.lib.json"
-    },
-    {
-      "path": "./tsconfig.spec.json"
-    }
+  "compilerOptions": {
+    "types": [
+      "jest",
+      "node"
+    ]
+  },
+  "include": [
+    "jest.config.js",
+    "jest.config.cts",
+    "tests/**/*.ts",
+    "src/**/*.ts"
   ]
 }
