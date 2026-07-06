@@ -1,15 +1,17 @@
 import type { DataSource, EntityManager } from 'typeorm';
-import { AuthFailure } from '../src/auth/auth.errors';
+import { BaseApiHeaders } from '@fuel-pass/node-commons';
 import { CredentialProvider, UserStatus } from '../src/auth/entities/auth.enums';
 import { RoleEntity } from '../src/auth/entities/role.entity';
 import { UserCredentialEntity } from '../src/auth/entities/user-credential.entity';
 import { UserRoleEntity } from '../src/auth/entities/user-role.entity';
 import { UserEntity } from '../src/auth/entities/user.entity';
-import { AuthService } from '../src/auth/services/auth.service';
+import { InternalUserCreationService } from '../src/auth/services/internal-user-creation.service';
 
-describe('AuthService.createInternalUser', () => {
+const headers = new BaseApiHeaders();
+
+describe('InternalUserCreationService.createUser', () => {
     function createService(overrides?: { existingUser?: UserEntity | null; roles?: RoleEntity[] }): {
-        service: AuthService;
+        service: InternalUserCreationService;
         manager: jest.Mocked<Pick<EntityManager, 'create' | 'find' | 'save'>>;
         passwordService: { hashPassword: jest.Mock };
         currentUserService: { buildCurrentUser: jest.Mock };
@@ -43,17 +45,12 @@ describe('AuthService.createInternalUser', () => {
                 permissions: [],
             }),
         };
-        const service = new AuthService(
+        const service = new InternalUserCreationService(
             {
                 findByEmail: jest.fn().mockResolvedValue(overrides?.existingUser ?? null),
             } as never,
-            {} as never,
             passwordService as never,
-            {} as never,
-            {} as never,
-            {} as never,
             currentUserService as never,
-            {} as never,
             dataSource as unknown as DataSource
         );
 
@@ -63,11 +60,14 @@ describe('AuthService.createInternalUser', () => {
     it('creates normalized users, local credentials, and role assignments in a transaction', async () => {
         const { service, manager, passwordService, currentUserService } = createService();
 
-        const response = await service.createInternalUser({
-            email: ' Admin@FuelPass.Local ',
-            fullName: ' Admin User ',
-            password: 'Password123!',
-            roleKeys: ['admin'],
+        const response = await service.createUser({
+            headers,
+            body: {
+                email: 'admin@fuelpass.local',
+                fullName: 'Admin User',
+                password: 'Password123!',
+                roleKeys: ['admin'],
+            },
         });
 
         expect(passwordService.hashPassword).toHaveBeenCalledWith('Password123!');
@@ -95,7 +95,7 @@ describe('AuthService.createInternalUser', () => {
             })
         );
         expect(currentUserService.buildCurrentUser).toHaveBeenCalledWith('user-1');
-        expect(response.user.email).toBe('admin@fuelpass.local');
+        expect(response.data?.user.email).toBe('admin@fuelpass.local');
     });
 
     it('rejects duplicate emails', async () => {
@@ -103,26 +103,36 @@ describe('AuthService.createInternalUser', () => {
             existingUser: Object.assign(new UserEntity(), { id: 'existing-user' }),
         });
 
-        await expect(
-            service.createInternalUser({
+        const response = await service.createUser({
+            headers,
+            body: {
                 email: 'admin@fuelpass.local',
                 fullName: 'Admin User',
                 password: 'Password123!',
                 roleKeys: ['admin'],
-            })
-        ).rejects.toEqual(new AuthFailure('UserAlreadyExists'));
+            },
+        });
+
+        expect(response.success).toBe(false);
+        expect(response.status).toBe(409);
+        expect(response.errors[0]?.code).toEqual('AUTH.USER-ALREADY-EXISTS');
     });
 
     it('rejects unknown role keys', async () => {
         const { service } = createService({ roles: [] });
 
-        await expect(
-            service.createInternalUser({
+        const response = await service.createUser({
+            headers,
+            body: {
                 email: 'admin@fuelpass.local',
                 fullName: 'Admin User',
                 password: 'Password123!',
                 roleKeys: ['admin'],
-            })
-        ).rejects.toEqual(new AuthFailure('InvalidRequest'));
+            },
+        });
+
+        expect(response.success).toBe(false);
+        expect(response.status).toBe(400);
+        expect(response.errors[0]?.code).toEqual('AUTH.INVALID-REQUEST');
     });
 });

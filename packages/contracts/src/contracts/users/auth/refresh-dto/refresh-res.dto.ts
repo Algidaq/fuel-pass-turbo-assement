@@ -1,19 +1,17 @@
 import { BaseResModel, type ClassParams } from '@fuel-pass/node-commons';
-import type { AuthUserContextDto } from '../auth.contracts';
 
-export class LoginResDto extends BaseResModel<LoginResDto> {
+export class RefreshResDto extends BaseResModel<RefreshResDto> {
     public readonly accessToken!: string;
-
     public readonly refreshToken!: string;
     public readonly expiresIn!: number;
     public readonly tokenType!: 'Bearer';
-    public readonly user!: AuthUserContextDto;
-    public constructor(params?: Partial<ClassParams<LoginResDto>>) {
+
+    public constructor(params?: Partial<ClassParams<RefreshResDto>>) {
         super(params);
     }
 
-    public override copyWith(params: Partial<ClassParams<LoginResDto>>): LoginResDto {
-        return Object.assign(new LoginResDto(), this, params);
+    public override copyWith(params: Partial<ClassParams<RefreshResDto>>): RefreshResDto {
+        return Object.assign(new RefreshResDto(), this, params);
     }
 
     public override toJSON(): Record<string, any> {
@@ -22,9 +20,8 @@ export class LoginResDto extends BaseResModel<LoginResDto> {
             refresh_token: this.refreshToken,
             expires_in: this.expiresIn,
             token_type: this.tokenType,
-            user: this.user,
         };
     }
 }
 
-export type LoginResponseDto = LoginResDto;
+export type RefreshResponseDto = RefreshResDto;

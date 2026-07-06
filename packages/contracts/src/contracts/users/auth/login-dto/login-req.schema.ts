@@ -7,3 +7,4 @@ export const loginReqDtoSchema = z.object({
 });
 
 export type TLoginRequestDto = z.infer<typeof loginReqDtoSchema>;
+export type LoginRequestDto = TLoginRequestDto;

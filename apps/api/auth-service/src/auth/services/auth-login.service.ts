@@ -7,7 +7,6 @@ import { UserStatus, type UserEntity } from '../entities';
 import { CredentialRepository, UserRepository } from '../repositories';
 import { CurrentUserService } from './current-user.service';
 import { PasswordService } from './password.service';
-import { RefreshTokenService } from './refresh-token.service';
 import { AbstractSessionCreationService } from './session-creation-service/abstract-session-creation.service';
 import { TokenService } from './token.service';
 
@@ -20,7 +19,6 @@ export class AuthLoginService {
         private credentialRepo: CredentialRepository,
         private passwordService: PasswordService,
         private currentUserService: CurrentUserService,
-        private refreshTokenService: RefreshTokenService,
         private tokenService: TokenService
     ) {}
 
@@ -36,7 +34,8 @@ export class AuthLoginService {
 
             const currentUser = await this.currentUserService.buildCurrentUser(user.id);
 
-            const hashedRefreshToken = this.refreshTokenService.generateHashedRefreshToken();
+            const refreshToken = this.tokenService.generateRefreshToken();
+            const hashedRefreshToken = this.tokenService.hashRefreshToken(refreshToken);
 
             const session = await this.sessionCreationService.createSession({ headers, tokenHash: hashedRefreshToken, user });
 
@@ -47,16 +46,16 @@ export class AuthLoginService {
                     status: HttpStatus.OK,
                     data: new LoginResDto({
                         accessToken,
-                        refreshToken: hashedRefreshToken,
+                        refreshToken,
                         tokenType: 'Bearer',
                         user: currentUser,
                         expiresIn: this.tokenExpiresIn,
                     }),
                 })
                 .build();
-        } catch (e: any) {
+        } catch (e: unknown) {
             if (e instanceof AppHttpError) {
-                return ApiResponse.fromAppError(e) as ApiResponse<any>;
+                return ApiResponse.fromAppError(e) as ApiResponse<LoginResDto>;
             }
             throw e;
         }
@@ -64,7 +63,7 @@ export class AuthLoginService {
 
     public async findActiveUserOrThrow(params: WithAppCtx<{ email: string }>): Promise<UserEntity> {
         const { headers, email } = params;
-        const msg = constructLogMsg(AuthLoginService.name, 'findActiveUserOrThrow', headers);
+        const _msg = constructLogMsg(AuthLoginService.name, 'findActiveUserOrThrow', headers);
 
         const user = await this.userRepo.findByEmail(email);
 

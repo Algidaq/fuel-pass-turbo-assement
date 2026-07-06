@@ -1,27 +1,30 @@
 import {
+    CurrentUserResDto,
+    LogoutResDto,
+    RefreshResDto,
     loginReqDtoSchema,
-    type CurrentUserResponseDto,
+    logoutReqDtoSchema,
+    refreshReqDtoSchema,
     type LoginResDto,
-    type LogoutRequestDto,
-    type LogoutResponseDto,
-    type RefreshRequestDto,
-    type RefreshResponseDto,
+    type TLogoutRequestDto,
     type TLoginRequestDto,
+    type TRefreshRequestDto,
 } from '@fuel-pass/contracts';
 import { ApiResponse, constructErrorMsg, CsHeaders, ZodValidationPipe, type BaseApiHeaders } from '@fuel-pass/node-commons';
-import { Body, Controller, Get, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
-import type { Request } from 'express';
-import { AUTH_ERRORS, AuthFailure } from '../auth.errors';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { AuthCurrentUserService } from '../services/auth-current-user.service';
 import { AuthLoginService } from '../services/auth-login.service';
-import { AuthService } from '../services/auth.service';
+import { AuthLogoutService } from '../services/auth-logout.service';
+import { AuthRefreshService } from '../services/auth-refresh.service';
 import type { AuthenticatedRequest } from '../types/auth-request.types';
-import { requestMetadataFromRequest } from '../types/auth-request.types';
 @Controller('/v1/auth')
 export class AuthController {
     public constructor(
-        private readonly authService: AuthService,
-        private readonly loginService: AuthLoginService
+        private readonly loginService: AuthLoginService,
+        private readonly refreshService: AuthRefreshService,
+        private readonly logoutService: AuthLogoutService,
+        private readonly currentUserEndpointService: AuthCurrentUserService
     ) {}
 
     @Post('login')
@@ -39,54 +42,41 @@ export class AuthController {
     }
 
     @Post('refresh')
-    public async refresh(@Body() body: Partial<RefreshRequestDto>, @Req() request: Request): Promise<ApiResponse<RefreshResponseDto>> {
-        if (typeof body.refreshToken !== 'string' || body.refreshToken.trim().length === 0) {
-            return this.failure<RefreshResponseDto>('InvalidRequest', HttpStatus.BAD_REQUEST);
-        }
-
+    public async refresh(
+        @Body(new ZodValidationPipe(refreshReqDtoSchema)) body: TRefreshRequestDto,
+        @CsHeaders() headers: BaseApiHeaders
+    ): Promise<ApiResponse<RefreshResDto>> {
         try {
-            const data = await this.authService.refresh(body.refreshToken, requestMetadataFromRequest(request));
-
-            return ApiResponse.builder<RefreshResponseDto>().withSuccess({ status: HttpStatus.OK, data }).build();
+            return await this.refreshService.refresh({ headers, body });
         } catch (error: unknown) {
-            return this.authFailure<RefreshResponseDto>(error);
+            const __errorMessage = constructErrorMsg(AuthController.name, 'refresh', headers);
+            throw error;
         }
     }
 
     @UseGuards(JwtAuthGuard)
     @Post('logout')
     public async logout(
-        @Body() body: Partial<LogoutRequestDto>,
-        @Req() request: AuthenticatedRequest
-    ): Promise<ApiResponse<LogoutResponseDto>> {
-        const data = await this.authService.logout(request.auth, body.refreshToken, requestMetadataFromRequest(request));
-
-        return ApiResponse.builder<LogoutResponseDto>().withSuccess({ status: HttpStatus.OK, data }).build();
+        @Body(new ZodValidationPipe(logoutReqDtoSchema)) body: TLogoutRequestDto,
+        @Req() request: AuthenticatedRequest,
+        @CsHeaders() headers: BaseApiHeaders
+    ): Promise<ApiResponse<LogoutResDto>> {
+        try {
+            return await this.logoutService.logout({ headers, body, principal: request.auth });
+        } catch (error: unknown) {
+            const __errorMessage = constructErrorMsg(AuthController.name, 'logout', headers);
+            throw error;
+        }
     }
 
     @UseGuards(JwtAuthGuard)
     @Get('me')
-    public async me(@Req() request: AuthenticatedRequest): Promise<ApiResponse<CurrentUserResponseDto>> {
+    public async me(@Req() request: AuthenticatedRequest, @CsHeaders() headers: BaseApiHeaders): Promise<ApiResponse<CurrentUserResDto>> {
         try {
-            const data = await this.authService.getCurrentUser(request.auth);
-
-            return ApiResponse.builder<CurrentUserResponseDto>().withSuccess({ status: HttpStatus.OK, data }).build();
+            return await this.currentUserEndpointService.getCurrentUser({ headers, principal: request.auth });
         } catch (error: unknown) {
-            return this.authFailure<CurrentUserResponseDto>(error);
+            const __errorMessage = constructErrorMsg(AuthController.name, 'me', headers);
+            throw error;
         }
-    }
-
-    private authFailure<T>(error: unknown): ApiResponse<T> {
-        if (error instanceof AuthFailure) {
-            const status = error.key === 'InactiveUser' ? HttpStatus.FORBIDDEN : HttpStatus.UNAUTHORIZED;
-
-            return this.failure<T>(error.key, status);
-        }
-
-        throw error;
-    }
-
-    private failure<T>(key: keyof typeof AUTH_ERRORS, status: HttpStatus): ApiResponse<T> {
-        return ApiResponse.builder<T>().withFailure({ status, errors: AUTH_ERRORS[key] }).build();
     }
 }

@@ -1,9 +1,11 @@
 import type { JwksResponseDto } from '@fuel-pass/contracts';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { createHash, randomBytes, randomUUID, type KeyObject } from 'node:crypto';
+import { createHash, randomBytes, randomUUID, webcrypto, type KeyObject } from 'node:crypto';
 import { getAuthRuntimeConfig } from '../../configs/auth.config';
 import type { AccessTokenClaims } from '../types/auth-token.types';
+
+type JwtKey = webcrypto.CryptoKey | KeyObject;
 
 type JwtPayload = Record<string, unknown> & {
     sub?: string;
@@ -12,8 +14,8 @@ type JwtPayload = Record<string, unknown> & {
 
 @Injectable()
 export class TokenService {
-    private privateKey?: Promise<CryptoKey | KeyObject>;
-    private publicKey?: Promise<CryptoKey | KeyObject>;
+    private privateKey?: Promise<JwtKey>;
+    private publicKey?: Promise<JwtKey>;
 
     public constructor(private readonly configService: ConfigService) {}
 
@@ -126,13 +128,13 @@ export class TokenService {
         };
     }
 
-    private async getPrivateKey(): Promise<CryptoKey | KeyObject> {
+    private async getPrivateKey(): Promise<JwtKey> {
         const { importPKCS8 } = await import('jose');
         this.privateKey ??= importPKCS8(this.jwtPrivateKey, 'RS256');
         return this.privateKey;
     }
 
-    private async getPublicKey(): Promise<CryptoKey | KeyObject> {
+    private async getPublicKey(): Promise<JwtKey> {
         const { importSPKI } = await import('jose');
         this.publicKey ??= importSPKI(this.jwtPublicKey, 'RS256');
         return this.publicKey;
