@@ -1,0 +1,31 @@
+.chip {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    padding: 0.25rem 0.55rem;
+}
+
+.pending {
+    background: var(--fp-warning-subtle);
+    color: var(--fp-warning);
+}
+
+.confirmed {
+    background: var(--fp-info-subtle);
+    color: var(--fp-info);
+}
+
+.completed {
+    background: var(--fp-success-subtle);
+    color: var(--fp-success);
+}
+
+.cancelled,
+.error {
+    background: var(--fp-danger-subtle);
+    color: var(--fp-danger);
+}
