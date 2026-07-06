@@ -42,7 +42,7 @@ describe('getTypeOrmModuleOptions', () => {
             synchronize: true,
         });
         expect(options.entities).toHaveLength(2);
-        expect('migrations' in options).toBe(false);
+        expect(options.migrations).toEqual(expect.arrayContaining([expect.stringContaining('/database/migrations/*{.ts,.js}')]));
     });
 
     it('fails clearly for unsupported database types', () => {

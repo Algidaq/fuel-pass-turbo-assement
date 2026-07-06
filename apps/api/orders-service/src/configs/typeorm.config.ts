@@ -6,6 +6,8 @@ import { FuelOrderEntity, FuelOrderStatusHistoryEntity } from '../orders/entitie
 
 export const ordersDatabaseEntities = [FuelOrderEntity, FuelOrderStatusHistoryEntity];
 
+const ordersDatabaseMigrations = [join(__dirname, '../database/migrations/*{.ts,.js}')];
+
 export type OrdersTypeOrmModuleOptions = PostgresConnectionOptions | SqliteConnectionOptions;
 
 function getDatabaseType(): 'postgres' | 'sqlite' {
@@ -26,6 +28,7 @@ export function getTypeOrmModuleOptions(): OrdersTypeOrmModuleOptions {
             type: 'sqlite',
             database: getOsEnv('SQLITE_DATABASE', ':memory:') ?? ':memory:',
             entities: ordersDatabaseEntities,
+            migrations: ordersDatabaseMigrations,
             synchronize: getOsEnvBoolean('SQLITE_SYNCHRONIZE', false),
         };
     }
@@ -41,7 +44,7 @@ export function getTypeOrmModuleOptions(): OrdersTypeOrmModuleOptions {
         database: getOsEnv('DB_DATABASE', 'fuel_pass_orders'),
         ssl: sslEnabled ? { rejectUnauthorized: false } : false,
         entities: ordersDatabaseEntities,
-        migrations: [join(__dirname, '../database/migrations/*{.ts,.js}')],
+        migrations: ordersDatabaseMigrations,
         synchronize: false,
     };
 }
