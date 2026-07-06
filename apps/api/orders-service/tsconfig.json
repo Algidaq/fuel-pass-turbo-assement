@@ -2,8 +2,8 @@
     "extends": "@fuel-pass/typescript-config/backend",
     "compilerOptions": {
         "outDir": "dist",
-        "rootDir": ".",
-        "emitDeclarationOnly": true,
+        "rootDir": "src",
+        "emitDeclarationOnly": false,
         "types": [
             "node",
             "jest"
@@ -12,10 +12,7 @@
         "emitDecoratorMetadata": true
     },
     "include": [
-        "src/**/*.ts",
-        "tests/**/*.spec.ts",
-        "tests/**/*.test.ts",
-        "eslint.config.mjs"
+        "src/**/*.ts"
     ],
     "exclude": [
         "out-tsc",

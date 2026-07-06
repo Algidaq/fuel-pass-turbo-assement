@@ -8,10 +8,7 @@ import { UserEntity } from '../src/auth/entities/user.entity';
 import { AuthService } from '../src/auth/services/auth.service';
 
 describe('AuthService.createInternalUser', () => {
-    function createService(overrides?: {
-        existingUser?: UserEntity | null;
-        roles?: RoleEntity[];
-    }): {
+    function createService(overrides?: { existingUser?: UserEntity | null; roles?: RoleEntity[] }): {
         service: AuthService;
         manager: jest.Mocked<Pick<EntityManager, 'create' | 'find' | 'save'>>;
         passwordService: { hashPassword: jest.Mock };

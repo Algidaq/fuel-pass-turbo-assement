@@ -26,6 +26,8 @@ export const authDatabaseEntities = [
     AuthAuditEventEntity,
 ];
 
+const authDatabaseMigrations = [join(__dirname, '../database/migrations/*{.ts,.js}')];
+
 export type AuthTypeOrmModuleOptions = PostgresConnectionOptions | SqliteConnectionOptions;
 
 function getDatabaseType(): 'postgres' | 'sqlite' {
@@ -46,6 +48,7 @@ export function getTypeOrmModuleOptions(): AuthTypeOrmModuleOptions {
             type: 'sqlite',
             database: getOsEnv('SQLITE_DATABASE', ':memory:') ?? ':memory:',
             entities: authDatabaseEntities,
+            migrations: authDatabaseMigrations,
             synchronize: getOsEnvBoolean('SQLITE_SYNCHRONIZE', false),
         };
     }
@@ -61,7 +64,7 @@ export function getTypeOrmModuleOptions(): AuthTypeOrmModuleOptions {
         database: getOsEnv('DB_DATABASE', 'fuel_pass_auth'),
         ssl: sslEnabled ? { rejectUnauthorized: false } : false,
         entities: authDatabaseEntities,
-        migrations: [join(__dirname, '../database/migrations/*{.ts,.js}')],
+        migrations: authDatabaseMigrations,
         synchronize: false,
     };
 }
