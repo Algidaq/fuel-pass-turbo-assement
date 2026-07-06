@@ -1,0 +1,44 @@
+{
+    "name": "@fuel-pass/auth",
+    "version": "0.0.1",
+    "private": true,
+    "scripts": {
+        "build": "npm run lint && nest build --path tsconfig.app.json",
+        "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
+        "migration:generate": "typeorm-ts-node-commonjs -d src/database/data-source.ts migration:generate",
+        "migration:revert": "typeorm-ts-node-commonjs -d src/database/data-source.ts migration:revert",
+        "migration:run": "typeorm-ts-node-commonjs -d src/database/data-source.ts migration:run",
+        "start": "nest start --path tsconfig.app.json",
+        "start:dev": "nest start --watch --path tsconfig.app.json",
+        "start:debug": "nest start --debug --watch --path tsconfig.app.json",
+        "start:prod": "node dist/main",
+        "lint": "eslint \"{src,apps,libs,tests}/**/*.ts\"",
+        "lint:fix": "lint -- --fix",
+        "test": "jest --config jest.config.cjs",
+        "test:watch": "jest --config jest.config.cjs --watch",
+        "test:cov": "jest --config jest.config.cjs --coverage",
+        "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/jest/bin/jest --config jest.config.cjs --runInBand",
+        "test:e2e": "jest --config ./test/jest-e2e.json",
+        "typecheck": "tsc --build tsconfig.app.json --emitDeclarationOnly"
+    },
+    "dependencies": {
+        "@fuel-pass/contracts": "^0.0.1",
+        "@nestjs/common": "^11.0.0",
+        "@nestjs/config": "^4.0.4",
+        "@nestjs/core": "^11.0.0",
+        "@nestjs/platform-express": "^11.0.0",
+        "@nestjs/typeorm": "^11.0.3",
+        "@types/bcrypt": "^6.0.0",
+        "bcrypt": "^6.0.0",
+        "jose": "^6.2.3",
+        "pg": "^8.22.0",
+        "reflect-metadata": "^0.2.0",
+        "rxjs": "^7.8.0",
+        "sqlite3": "^5.1.7",
+        "tslib": "^2.3.0",
+        "typeorm": "^0.3.30"
+    },
+    "devDependencies": {
+        "@nestjs/testing": "^11.0.0"
+    }
+}

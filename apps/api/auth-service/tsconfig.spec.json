@@ -1,0 +1,24 @@
+{
+    "extends": "../../../tsconfig.backend.json",
+    "compilerOptions": {
+        "outDir": "./out-tsc/jest",
+        "types": [
+            "jest",
+            "node"
+        ],
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
+    },
+    "include": [
+        "jest.config.cjs",
+        "jest.config.cts",
+        "tests/**/*.test.ts",
+        "tests/**/*.spec.ts",
+        "src/**/*.ts"
+    ],
+    "references": [
+        {
+            "path": "./tsconfig.app.json"
+        }
+    ]
+}
