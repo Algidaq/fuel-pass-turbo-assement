@@ -5,7 +5,7 @@ const swcJestConfig = JSON.parse(readFileSync(`${__dirname}/.spec.swcrc`, 'utf-8
 swcJestConfig.swcrc = false;
 
 module.exports = {
-    displayName: { name: '@fuel-pass/auth', color: 'yellow' },
+    displayName: { name: '@fuel-pass/auth-service', color: 'yellow' },
     testEnvironment: 'node',
     transform: {
         '^.+\\.[tj]s$': ['@swc/jest', swcJestConfig],

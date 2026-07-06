@@ -1,14 +1,18 @@
 {
-    "extends": "../../../tsconfig.backend.json",
+    "extends": "@fuel-pass/typescript-config/backend",
     "compilerOptions": {
         "outDir": "dist",
         "emitDeclarationOnly": false,
-        "types": ["node"],
+        "types": [
+            "node"
+        ],
         "rootDir": "src",
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true
     },
-    "include": ["src/**/*.ts"],
+    "include": [
+        "src/**/*.ts"
+    ],
     "exclude": [
         "out-tsc",
         "dist",
@@ -20,13 +24,5 @@
         "eslint.config.cjs",
         "eslint.config.mjs",
         "webpack.config.js"
-    ],
-    "references": [
-        {
-            "path": "../../../libs/contracts/tsconfig.lib.json"
-        },
-        {
-            "path": "../../../libs/node-commons/tsconfig.lib.json"
-        }
     ]
 }

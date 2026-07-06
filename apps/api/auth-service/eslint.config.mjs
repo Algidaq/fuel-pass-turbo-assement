@@ -1,8 +1,8 @@
-import baseConfig from '../../../eslint.config.backend.mjs';
+import baseConfig from '@fuel-pass/eslint-config/backend';
 
 export default [
     ...baseConfig,
     {
-        ignores: ['**/out-tsc', '**/tests/**/*.spec.ts', '**/tests/**/*.test.ts', 'webpack.config.js'],
+        ignores: ['**/out-tsc', '**/tests/**/*.spec.ts', '**/tests/**/*.test.ts'],
     },
 ];
