@@ -1,6 +1,7 @@
 import type { RouteInfo, Type } from '@nestjs/common/interfaces';
 import type { CompressionOptions } from 'compression';
 import type { HelmetOptions } from 'helmet';
+import type { TPinoHttpMiddlewareOptions } from './pino-http.middleware';
 import type { TReqLoggerMiddlewareOptions } from './request-logger.middleware';
 import type { TReqTimeoutMiddlewareOptions } from './request-timeout.middleware';
 
@@ -12,6 +13,7 @@ export type TMiddlewareOptions<Options = unknown> = false | { options: Options; 
 export type CoreMiddlewareModuleOptions = {
     compression?: TMiddlewareOptions<CompressionOptions>;
     noCache?: TMiddlewareOptions;
+    pinoHttp?: TMiddlewareOptions<TPinoHttpMiddlewareOptions>;
     timeout?: TMiddlewareOptions<TReqTimeoutMiddlewareOptions>;
     reqLogger?: TMiddlewareOptions<TReqLoggerMiddlewareOptions>;
     security?: TMiddlewareOptions<HelmetOptions>;

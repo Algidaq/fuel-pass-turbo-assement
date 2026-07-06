@@ -17,7 +17,7 @@
     },
     "scripts": {
         "build": "tsc -p tsconfig.build.json && mkdir -p dist && cp src/styles/theme.css dist/styles.css && rsync -a --include='*/' --include='*.module.css' --exclude='*' src/ dist/",
-        "dev": "tsc -p tsconfig.json --watch",
+        "dev": "tsc -p tsconfig.build.json --watch",
         "clean": "rm -rf dist",
         "lint": "eslint .",
         "lint:fix": "eslint --fix",

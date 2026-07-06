@@ -9,17 +9,14 @@ import type { RequestMetadata } from '../types/auth-request.types';
 export class SessionService {
     public constructor(private readonly sessionRepository: SessionRepository) {}
 
-    public createSession(userId: string, metadata: RequestMetadata, expiresAt: Date, manager?: EntityManager): Promise<UserSessionEntity> {
-        return this.sessionRepository.createSession(
-            {
-                userId,
-                ipAddress: metadata.ipAddress,
-                userAgent: metadata.userAgent,
-                deviceName: metadata.deviceName,
-                expiresAt,
-            },
-            manager
-        );
+    public createSession(userId: string, metadata: RequestMetadata, expiresAt: Date): Promise<UserSessionEntity> {
+        return this.sessionRepository.createSession({
+            userId,
+            ipAddress: metadata.ipAddress,
+            userAgent: metadata.userAgent,
+            deviceName: metadata.deviceName,
+            expiresAt,
+        });
     }
 
     public async validateActiveSession(sessionId: string, manager?: EntityManager): Promise<UserSessionEntity | null> {

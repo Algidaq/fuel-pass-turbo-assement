@@ -1,6 +1,6 @@
 import { getOsEnv, getOsEnvNumber } from '@fuel-pass/node-commons';
 
-export interface AuthRuntimeConfig {
+export type AuthRuntimeConfig = {
     issuer: string;
     audience: string;
     accessTokenTtlSeconds: number;
@@ -10,7 +10,11 @@ export interface AuthRuntimeConfig {
     jwtKeyId: string;
     bcryptRounds: number;
     internalServiceApiKey: string;
-}
+    refreshToken: {
+        familyId: string;
+        ttlInDays: number;
+    };
+};
 
 function normalizePem(value: string): string {
     return value.replace(/\\n/g, '\n');
@@ -31,5 +35,9 @@ export function getAuthRuntimeConfig(): AuthRuntimeConfig {
         jwtKeyId: getStringEnv('JWT_KEY_ID', 'fuelpass-auth-dev-1'),
         bcryptRounds: getOsEnvNumber('BCRYPT_ROUNDS', 12),
         internalServiceApiKey: getStringEnv('INTERNAL_SERVICE_API_KEY', ''),
+        refreshToken: {
+            familyId: getStringEnv('REFRESH_TOKEN_FAMILY_ID', 'auth-refresh-v1'),
+            ttlInDays: getOsEnvNumber('REFRESH_TOKEN_TTL_DAYS', 7),
+        },
     };
 }

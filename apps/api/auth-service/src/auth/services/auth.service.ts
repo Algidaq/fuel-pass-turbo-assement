@@ -10,12 +10,12 @@ import type {
 import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { DataSource, In } from 'typeorm';
+import { AuthFailure } from '../auth.errors';
 import { CredentialProvider, UserStatus } from '../entities/auth.enums';
 import { RoleEntity } from '../entities/role.entity';
 import { UserCredentialEntity } from '../entities/user-credential.entity';
 import { UserRoleEntity } from '../entities/user-role.entity';
 import { UserEntity } from '../entities/user.entity';
-import { AuthFailure } from '../auth.errors';
 import { CredentialRepository } from '../repositories/credential.repository';
 import { UserRepository } from '../repositories/user.repository';
 import type { AuthenticatedPrincipal, RequestMetadata } from '../types/auth-request.types';

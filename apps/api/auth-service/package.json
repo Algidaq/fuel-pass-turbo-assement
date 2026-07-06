@@ -11,6 +11,7 @@
         "migration:run": "env-cmd -f .env -- npm run typeorm -- -d src/database/data-source.ts migration:run",
         "db:setup": "npm run migration:run && npm run seed",
         "seed": "env-cmd -f .env -- node --import tsx src/database/seed.ts",
+        "dev": "nest start --watch --path tsconfig.json",
         "start": "nest start --path tsconfig.json",
         "start:dev": "nest start --watch --path tsconfig.json",
         "start:debug": "nest start --debug --watch --path tsconfig.json",

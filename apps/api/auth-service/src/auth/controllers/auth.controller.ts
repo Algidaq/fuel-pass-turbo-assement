@@ -1,42 +1,40 @@
-import type {
-    CurrentUserResponseDto,
-    LoginRequestDto,
-    LoginResponseDto,
-    LogoutRequestDto,
-    LogoutResponseDto,
-    RefreshRequestDto,
-    RefreshResponseDto,
+import {
+    loginReqDtoSchema,
+    type CurrentUserResponseDto,
+    type LoginResDto,
+    type LogoutRequestDto,
+    type LogoutResponseDto,
+    type RefreshRequestDto,
+    type RefreshResponseDto,
+    type TLoginRequestDto,
 } from '@fuel-pass/contracts';
-import { ApiResponse } from '@fuel-pass/node-commons';
+import { ApiResponse, constructErrorMsg, CsHeaders, ZodValidationPipe, type BaseApiHeaders } from '@fuel-pass/node-commons';
 import { Body, Controller, Get, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
 import type { Request } from 'express';
 import { AUTH_ERRORS, AuthFailure } from '../auth.errors';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { AuthLoginService } from '../services/auth-login.service';
 import { AuthService } from '../services/auth.service';
 import type { AuthenticatedRequest } from '../types/auth-request.types';
 import { requestMetadataFromRequest } from '../types/auth-request.types';
-
-@Controller('auth')
+@Controller('/v1/auth')
 export class AuthController {
-    public constructor(private readonly authService: AuthService) {}
+    public constructor(
+        private readonly authService: AuthService,
+        private readonly loginService: AuthLoginService
+    ) {}
 
     @Post('login')
-    public async login(@Body() body: Partial<LoginRequestDto>, @Req() request: Request): Promise<ApiResponse<LoginResponseDto>> {
-        if (
-            typeof body.email !== 'string' ||
-            typeof body.password !== 'string' ||
-            body.email.trim().length === 0 ||
-            body.password.length === 0
-        ) {
-            return this.failure<LoginResponseDto>('InvalidRequest', HttpStatus.BAD_REQUEST);
-        }
-
+    public async login(
+        @Body(new ZodValidationPipe(loginReqDtoSchema)) body: TLoginRequestDto,
+        @CsHeaders() headers: BaseApiHeaders
+    ): Promise<ApiResponse<LoginResDto>> {
         try {
-            const data = await this.authService.login(body.email, body.password, requestMetadataFromRequest(request));
-
-            return ApiResponse.builder<LoginResponseDto>().withSuccess({ status: HttpStatus.OK, data }).build();
+            const data = await this.loginService.login({ headers, body });
+            return data;
         } catch (error: unknown) {
-            return this.authFailure<LoginResponseDto>(error);
+            const __errorMessage = constructErrorMsg(AuthController.name, 'login', headers);
+            throw error;
         }
     }
 

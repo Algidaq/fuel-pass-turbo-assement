@@ -1,4 +1,5 @@
-import { defineErrorCatalog } from '@fuel-pass/node-commons';
+import { AppHttpError, defineErrorCatalog } from '@fuel-pass/node-commons';
+import type { HttpStatus } from '@nestjs/common';
 
 export const AUTH_ERRORS = defineErrorCatalog({
     InvalidCredentials: {
@@ -41,5 +42,11 @@ export class AuthFailure extends Error {
         message?: string
     ) {
         super(message ?? AUTH_ERRORS[key].message);
+    }
+}
+
+export class AuthException extends AppHttpError<typeof AUTH_ERRORS> {
+    public constructor(httpCode: HttpStatus, key: AuthErrorKey) {
+        super(httpCode, AUTH_ERRORS[key]);
     }
 }

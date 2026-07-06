@@ -1,10 +1,10 @@
 import type { AuthUserContextDto, CurrentUserResponseDto, IntrospectActiveResponseDto } from '@fuel-pass/contracts';
 import { Injectable } from '@nestjs/common';
+import { AuthFailure } from '../auth.errors';
 import { UserStatus } from '../entities/auth.enums';
 import { PermissionRepository } from '../repositories/permission.repository';
 import { RoleRepository } from '../repositories/role.repository';
 import { UserRepository } from '../repositories/user.repository';
-import { AuthFailure } from '../auth.errors';
 import { SessionService } from './session.service';
 
 @Injectable()

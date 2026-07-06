@@ -1,12 +1,13 @@
 import type { HttpStatus } from '@nestjs/common';
 import type { CsStdError, ErrorCatalog } from './standard-error.types';
-export class AppHttpError<T extends ErrorCatalog> {
+export class AppHttpError<T extends ErrorCatalog> extends Error {
     public readonly errors: CsStdError[];
     public readonly httpCode: HttpStatus;
     public constructor(httpCode: HttpStatus, errorCode: keyof T);
     public constructor(httpCode: HttpStatus, errors: CsStdError | CsStdError[]);
 
     public constructor(httpCode: HttpStatus, error: keyof T | CsStdError | CsStdError[]) {
+        super();
         this.httpCode = httpCode;
         this.errors = this.mapToStdError(error);
     }

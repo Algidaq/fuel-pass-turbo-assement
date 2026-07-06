@@ -1,11 +1,17 @@
+/* eslint-disable @typescript-eslint/member-ordering */
+import { BaseModel, type ClassParams } from '@fuel-pass/node-commons';
 import { Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import type { UserEntity } from './user.entity';
 import type { UserSessionEntity } from './user-session.entity';
+import type { UserEntity } from './user.entity';
 
 @Entity({ name: 'auth_audit_events' })
 @Index('idx_auth_audit_events_user_id_created_at', ['userId', 'createdAt'])
 @Index('idx_auth_audit_events_event_type_created_at', ['eventType', 'createdAt'])
-export class AuthAuditEventEntity {
+export class AuthAuditEventEntity extends BaseModel<AuthAuditEventEntity> {
+    public static create(params: Omit<ClassParams<AuthAuditEventEntity>, 'user' | 'session'>): AuthAuditEventEntity {
+        return Object.assign(new AuthAuditEventEntity(), params);
+    }
+
     @PrimaryGeneratedColumn('uuid')
     public id!: string;
 
@@ -47,4 +53,8 @@ export class AuthAuditEventEntity {
     })
     @JoinColumn({ name: 'session_id' })
     public session!: UserSessionEntity | null;
+
+    public override copyWith(params: Partial<ClassParams<AuthAuditEventEntity>>): AuthAuditEventEntity {
+        return Object.assign(new AuthAuditEventEntity(), this, params);
+    }
 }
