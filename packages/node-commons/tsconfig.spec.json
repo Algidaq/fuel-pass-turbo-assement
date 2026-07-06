@@ -1,0 +1,22 @@
+{
+  "extends": "@fuel-pass/typescript-config/backend.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/jest",
+    "composite": true,
+    "types": [
+      "jest",
+      "node"
+    ]
+  },
+  "include": [
+    "jest.config.ts",
+    "jest.config.cts",
+    "tests/**/*.ts",
+    "src/**/*.ts"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.lib.json"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+    "js/ts.tsdk.path": "node_modules/typescript/lib",
+    "js/ts.preferences.preferTypeOnlyAutoImports": true,
+    "[typescript]": {
+        "js/ts.preferences.importModuleSpecifier": "project-relative"
+    },
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "always",
+        "source.fixAll.eslint": "always",
+        "source.fixAll.prettier": "always"
+    },
+    "eslint.enable": true,
+    "eslint.run": "onSave",
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact"
+    ],
+    "eslint.workingDirectories": [
+        {
+            "mode": "auto"
+        }
+    ]
+}
