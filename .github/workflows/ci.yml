@@ -1,0 +1,31 @@
+name: CI
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+
+permissions:
+    actions: read
+    contents: read
+
+jobs:
+    main:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  filter: tree:0
+                  fetch-depth: 0
+
+            # Cache node_modules
+            - uses: actions/setup-node@v4
+              with:
+                  node-version-file: '.nvmrc'
+                  cache: 'npm'
+
+            - run: npm ci
+
+            # Prepend any command with "nx record --" to record its logs to Nx Cloud
+            - run: npx nx run-many -t lint test build typecheck
