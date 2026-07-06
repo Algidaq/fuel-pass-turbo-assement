@@ -1,13 +1,16 @@
 {
-    "name": "@fuel-pass/node-commons",
+    "name": "@fuel-pass/contracts",
     "version": "0.0.1",
     "private": true,
     "main": "./dist/index.js",
+    "module": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "exports": {
+        "./package.json": "./package.json",
         ".": {
             "types": "./dist/index.d.ts",
-            "require": "./dist/index.js"
+            "import": "./dist/index.js",
+            "default": "./dist/index.js"
         }
     },
     "scripts": {
@@ -22,18 +25,6 @@
     "dependencies": {
         "@fuel-pass/typescript-config": "*",
         "@fuel-pass/eslint-config": "*",
-        "@nestjs/common": "^11.1.27",
-        "class-transformer": "^0.5.1",
-        "compression": "^1.8.1",
-        "helmet": "^8.2.0",
-        "morgan": "^1.11.0",
-        "nocache": "^4.0.0",
         "tslib": "^2.3.0"
-    },
-    "devDependencies": {
-        "@stylistic/eslint-plugin": "^5.10.0",
-        "@types/compression": "^1.8.1",
-        "@types/helmet": "^0.0.48",
-        "@types/morgan": "^1.9.10"
     }
 }

@@ -11,10 +11,10 @@ const configs = [
     ...defineConfig({
         extends: [jslint.configs.recommended, tslint.configs.recommendedTypeChecked],
         files: ['**/*.{js,ts}'],
-        ignores: ['**/*.d.ts', '**/dist', '**/out-tsc'],
+        ignores: ['**/*.d.ts', '**/dist', '**/out-tsc', 'jest.config.js'],
 
         /**
-         * @type {Partial<import('./eslint-typegen').RuleOptions>}
+         * @type {Partial<import('../../eslint-typegen').RuleOptions>}
          */
         rules: {
             'unused-imports/no-unused-imports': 'error',
