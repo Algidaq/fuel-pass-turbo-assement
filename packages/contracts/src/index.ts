@@ -2,6 +2,7 @@ export * from './contracts/error-catalog.js';
 export * from './contracts/orders/fuel-order-dto/create-fuel-order-req.schema.js';
 export * from './contracts/orders/fuel-order-dto/fuel-order-params.schema.js';
 export * from './contracts/orders/fuel-order-dto/list-fuel-orders-query.schema.js';
+export * from './contracts/orders/order.errors.js';
 export * from './contracts/orders/fuel-order-dto/update-fuel-order-status-req.schema.js';
 export * from './contracts/users/auth/auth.contracts.js';
 export * from './contracts/users/auth/auth.errors.js';

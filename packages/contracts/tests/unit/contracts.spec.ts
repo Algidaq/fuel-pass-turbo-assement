@@ -1,4 +1,4 @@
-import { createFuelOrderReqDtoSchema, listFuelOrdersQueryDtoSchema, updateFuelOrderStatusReqDtoSchema } from '../../src/contracts/orders';
+import { createFuelOrderReqDtoSchema, listFuelOrdersQueryDtoSchema, ORDER_ERRORS, updateFuelOrderStatusReqDtoSchema } from '../../src/contracts/orders';
 import { AUTH_ERRORS } from '../../src/contracts/users/auth';
 import type { LoginRequestDto } from '../../src/contracts/users/auth';
 
@@ -14,6 +14,10 @@ describe('contracts', () => {
 
     it('exports auth error catalog codes', () => {
         expect(AUTH_ERRORS.InvalidCredentials.code).toEqual('AUTH.INVALID-CREDENTIALS');
+    });
+
+    it('exports order error catalog codes', () => {
+        expect(ORDER_ERRORS.FuelOrderNotFound.code).toEqual('ORDER.FUEL-ORDER-NOT-FOUND');
     });
 
     it('normalizes valid fuel order create requests', () => {
