@@ -1,4 +1,4 @@
-import { Card } from '@fuel-pass/ui';
+import { Alert, Card } from '@fuel-pass/ui';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { LoginForm, useLogin } from '../../features/auth';
@@ -6,10 +6,16 @@ import { getRedirectPathAfterLogin } from '../../features/auth/utils/authRedirec
 import type { LoginRequest } from '../../features/auth/types/auth.types';
 import styles from './LoginPage.module.css';
 
+type LoginLocationState = {
+  sessionExpired?: boolean;
+};
+
 export const LoginPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const login = useLogin();
+  const locationState = location.state as LoginLocationState | null;
+  const hasSessionExpired = locationState?.sessionExpired === true;
 
   const handleSubmit = async (request: LoginRequest) => {
     const session = await login.mutateAsync(request);
@@ -24,6 +30,11 @@ export const LoginPage = () => {
         <h1>Sign in to FuelPass</h1>
         <p>Access fuel order operations and aircraft refueling workflows.</p>
       </div>
+      {hasSessionExpired ? (
+        <Alert role="alert" variant="warning">
+          Your session expired. Please sign in again.
+        </Alert>
+      ) : null}
       <LoginForm error={login.error} isSubmitting={login.isPending} onSubmit={handleSubmit} />
       <p className={styles.helper}>Use your assigned FuelPass account credentials.</p>
     </Card>

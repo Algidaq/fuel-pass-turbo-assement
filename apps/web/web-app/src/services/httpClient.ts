@@ -1,4 +1,5 @@
 import { env } from '../config/env';
+import { authSession } from '../features/auth/services/authSession';
 import { useAuthStore } from '../features/auth/store/auth.store';
 
 export type ApiError = {
@@ -9,6 +10,7 @@ export type ApiError = {
 
 type RequestOptions = Omit<RequestInit, 'body'> & {
   body?: unknown;
+  skipAuthRefresh?: boolean;
 };
 
 type BackendError = {
@@ -74,10 +76,28 @@ const getErrorMessage = (payload: unknown, fallback: string): string => {
 export const isApiError = (error: unknown): error is ApiError =>
   typeof error === 'object' && error !== null && 'status' in error && 'message' in error;
 
-export const httpClient = async <TResponse>(path: string, options: RequestOptions = {}): Promise<TResponse> => {
+const createApiError = (response: Response, payload: unknown): ApiError => ({
+  status: response.status,
+  message: getErrorMessage(payload, 'Request failed. Please try again.'),
+  details: payload,
+});
+
+const shouldAttemptRefresh = (path: string, options: RequestOptions, response: Response): boolean => {
+  if (options.skipAuthRefresh || response.status !== 401) {
+    return false;
+  }
+
+  const normalizedPath = path.replace(/^https?:\/\/[^/]+/i, '');
+
+  return !['/v1/auth/login', '/v1/auth/logout', '/v1/auth/refresh'].some((authPath) => normalizedPath.endsWith(authPath));
+};
+
+const sendRequest = async (path: string, options: RequestOptions): Promise<Response> => {
+  const { body, ...requestOptions } = options;
   const accessToken = useAuthStore.getState().accessToken;
   const headers = new Headers(options.headers);
-  const hasJsonBody = options.body !== undefined;
+  const hasJsonBody = body !== undefined;
+  delete requestOptions.skipAuthRefresh;
 
   if (hasJsonBody) {
     headers.set('Content-Type', 'application/json');
@@ -87,14 +107,18 @@ export const httpClient = async <TResponse>(path: string, options: RequestOption
     headers.set('Authorization', `Bearer ${accessToken}`);
   }
 
+  return fetch(buildUrl(path), {
+    ...requestOptions,
+    headers,
+    body: hasJsonBody ? JSON.stringify(body) : undefined,
+  });
+};
+
+export const httpClient = async <TResponse>(path: string, options: RequestOptions = {}): Promise<TResponse> => {
   let response: Response;
 
   try {
-    response = await fetch(buildUrl(path), {
-      ...options,
-      headers,
-      body: hasJsonBody ? JSON.stringify(options.body) : undefined,
-    });
+    response = await sendRequest(path, options);
   } catch (error) {
     throw {
       status: 0,
@@ -106,11 +130,36 @@ export const httpClient = async <TResponse>(path: string, options: RequestOption
   const payload = await parseJsonSafely(response);
 
   if (!response.ok) {
-    throw {
-      status: response.status,
-      message: getErrorMessage(payload, 'Request failed. Please try again.'),
-      details: payload,
-    } satisfies ApiError;
+    const originalError = createApiError(response, payload);
+
+    if (shouldAttemptRefresh(path, options, response)) {
+      const refreshResult = await authSession.refreshAccessToken();
+
+      if (refreshResult) {
+        try {
+          const retryResponse = await sendRequest(path, { ...options, skipAuthRefresh: true });
+          const retryPayload = await parseJsonSafely(retryResponse);
+
+          if (!retryResponse.ok) {
+            throw createApiError(retryResponse, retryPayload);
+          }
+
+          return retryPayload as TResponse;
+        } catch (error) {
+          if (isApiError(error)) {
+            throw error;
+          }
+
+          throw {
+            status: 0,
+            message: 'Unable to reach the server. Check your connection and try again.',
+            details: error instanceof Error ? error.message : error,
+          } satisfies ApiError;
+        }
+      }
+    }
+
+    throw originalError;
   }
 
   return payload as TResponse;
