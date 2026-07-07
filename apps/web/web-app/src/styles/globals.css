@@ -38,30 +38,66 @@ a {
   display: grid;
   min-height: 100vh;
   place-items: center;
-  padding: 32px;
-  background:
-    linear-gradient(180deg, rgb(242 243 255 / 0.76), rgb(250 248 255 / 0.92)),
-    #faf8ff;
+  padding: 48px;
+  background: #faf8ff;
 }
 
 .auth-shell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: min(100%, 440px);
 }
 
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.auth-brand-icon {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background: #0f766e;
+  color: #ffffff;
+}
+
+.auth-brand-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
 .brand {
-  margin: 0 0 18px;
   color: #131b2e;
-  font-size: 1.15rem;
-  font-weight: 700;
-  letter-spacing: 0;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 32px;
+  letter-spacing: -0.02em;
 }
 
 .auth-card {
-  padding: 0;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding: 32px;
+  border-color: #e2e2e3;
+  border-radius: 14px;
+  background: #ffffff;
 }
 
 .auth-card-header {
   margin-bottom: 24px;
+  text-align: center;
 }
 
 .auth-card-header h1,
@@ -81,17 +117,71 @@ a {
 .not-found-page p,
 .page-header p {
   margin: 8px 0 0;
-  color: #3e4947;
+  color: #5d5e60;
 }
 
 .auth-form {
   display: grid;
-  gap: 18px;
+  gap: 16px;
 }
 
 .auth-form button[type='submit'] {
+  margin-top: 8px;
   width: 100%;
   justify-content: center;
+}
+
+.auth-password-label {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.auth-password-toggle {
+  border: 0;
+  background: transparent;
+  color: #5d5e60;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  padding: 0;
+  transition: color 120ms ease;
+}
+
+.auth-password-toggle:hover,
+.auth-password-toggle:focus-visible {
+  color: #0f766e;
+}
+
+.auth-password-toggle:focus-visible {
+  outline: 2px solid #0f766e;
+  outline-offset: 2px;
+}
+
+.auth-password-toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.auth-helper {
+  margin: 24px 0 0;
+  color: #6e7977;
+  font-size: 13px;
+  line-height: 18px;
+  text-align: center;
+}
+
+.auth-footer {
+  width: 100%;
+  margin-top: 48px;
+  color: #bdc9c6;
+  font-size: 13px;
+  line-height: 18px;
+  text-align: center;
 }
 
 .app-layout {
@@ -318,6 +408,10 @@ a {
 }
 
 @media (max-width: 720px) {
+  .auth-layout {
+    padding: 16px;
+  }
+
   .app-header {
     align-items: flex-start;
     flex-direction: column;
@@ -365,6 +459,10 @@ a {
 }
 
 @media (min-width: 721px) and (max-width: 1024px) {
+  .auth-layout {
+    padding: 32px;
+  }
+
   .app-header {
     padding: 0 32px;
   }

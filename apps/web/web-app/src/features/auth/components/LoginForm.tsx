@@ -42,6 +42,7 @@ const getErrorMessage = (error: unknown): string => {
 export const LoginForm = ({ error, isSubmitting, onSubmit }: LoginFormProps) => {
     const [values, setValues] = useState<TLoginRequestDto>({ email: '', password: '' });
     const [errors, setErrors] = useState<LoginFormErrors>({});
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -71,7 +72,7 @@ export const LoginForm = ({ error, isSubmitting, onSubmit }: LoginFormProps) => 
                 </Alert>
             ) : null}
 
-            <FormField error={errors.email} label="Email" required>
+            <FormField error={errors.email} label="Email">
                 <Input
                     autoComplete="email"
                     disabled={isSubmitting}
@@ -84,7 +85,22 @@ export const LoginForm = ({ error, isSubmitting, onSubmit }: LoginFormProps) => 
                 />
             </FormField>
 
-            <FormField error={errors.password} label="Password" required>
+            <FormField
+                error={errors.password}
+                label={
+                    <span className="auth-password-label">
+                        <span>Password</span>
+                        <button
+                            className="auth-password-toggle"
+                            disabled={isSubmitting}
+                            onClick={() => setIsPasswordVisible((currentValue) => !currentValue)}
+                            type="button"
+                        >
+                            {isPasswordVisible ? 'Hide' : 'Show'}
+                        </button>
+                    </span>
+                }
+            >
                 <Input
                     autoComplete="current-password"
                     disabled={isSubmitting}
@@ -92,12 +108,12 @@ export const LoginForm = ({ error, isSubmitting, onSubmit }: LoginFormProps) => 
                     name="password"
                     onChange={(event) => setValues((currentValues) => ({ ...currentValues, password: event.target.value }))}
                     placeholder="Enter your password"
-                    type="password"
+                    type={isPasswordVisible ? 'text' : 'password'}
                     value={values.password}
                 />
             </FormField>
 
-            <Button disabled={isSubmitting} type="submit">
+            <Button disabled={isSubmitting} size="lg" type="submit">
                 {isSubmitting ? 'Signing in...' : 'Sign in'}
             </Button>
         </form>

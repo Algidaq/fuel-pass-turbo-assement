@@ -24,6 +24,7 @@ export const LoginPage = () => {
         <p>Access fuel order operations and aircraft refueling workflows.</p>
       </div>
       <LoginForm error={login.error} isSubmitting={login.isPending} onSubmit={handleSubmit} />
+      <p className="auth-helper">Use your assigned FuelPass account credentials.</p>
     </Card>
   );
 };
