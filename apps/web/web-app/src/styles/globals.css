@@ -254,6 +254,141 @@ a {
   text-decoration: none;
 }
 
+.restricted-page {
+  position: relative;
+  display: grid;
+  min-height: calc(100vh - 160px);
+  place-items: center;
+  overflow: hidden;
+}
+
+.restricted-page::before,
+.restricted-page::after {
+  position: fixed;
+  z-index: 0;
+  width: 400px;
+  height: 400px;
+  border-radius: 999px;
+  content: '';
+  filter: blur(100px);
+  pointer-events: none;
+}
+
+.restricted-page::before {
+  top: 2%;
+  right: -8%;
+  background: rgb(15 118 110 / 0.05);
+}
+
+.restricted-page::after {
+  bottom: -10%;
+  left: -8%;
+  background: rgb(30 95 231 / 0.05);
+}
+
+.restricted-card {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 520px);
+  border-radius: 14px;
+}
+
+.restricted-card-body {
+  display: grid;
+  gap: 24px;
+  padding: 32px;
+}
+
+.restricted-icon {
+  position: relative;
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  justify-self: center;
+  border-radius: 12px;
+  background: #fef3c7;
+}
+
+.restricted-icon::before {
+  width: 14px;
+  height: 13px;
+  margin-top: 8px;
+  border-radius: 3px;
+  background: #d97706;
+  content: '';
+}
+
+.restricted-icon::after {
+  position: absolute;
+  top: 12px;
+  width: 18px;
+  height: 16px;
+  border: 3px solid #d97706;
+  border-bottom: 0;
+  border-radius: 10px 10px 0 0;
+  content: '';
+}
+
+.restricted-copy {
+  display: grid;
+  gap: 8px;
+  text-align: center;
+}
+
+.restricted-copy h1 {
+  margin: 0;
+  color: #131b2e;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 28px;
+}
+
+.restricted-copy p {
+  margin: 0;
+  color: #5d5e60;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.restricted-divider {
+  height: 1px;
+  background: #f1f5f9;
+}
+
+.restricted-access-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.restricted-access-row > span {
+  color: #5d5e60;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+.restricted-actions {
+  display: grid;
+  gap: 12px;
+}
+
+.restricted-actions button {
+  width: 100%;
+  justify-content: center;
+}
+
+.restricted-note {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 13px;
+  line-height: 18px;
+  text-align: center;
+}
+
 .route-status,
 .page-loader {
   display: grid;
@@ -754,6 +889,14 @@ a {
 
   .app-main {
     padding: 20px 16px;
+  }
+
+  .restricted-page {
+    min-height: calc(100vh - 180px);
+  }
+
+  .restricted-card-body {
+    padding: 24px;
   }
 
   .orders-page {

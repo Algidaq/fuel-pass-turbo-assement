@@ -5,6 +5,7 @@ import { hasAllPermissions, hasAnyPermission, hasPermission } from '../features/
 export const routes = {
     login: '/login',
     orders: '/orders',
+    restricted: '/restricted',
     submitOrder: '/orders/new',
 } as const;
 
@@ -15,7 +16,7 @@ export const routeRequiredPermissions = {
 
 export const hasUserPermission = (user: AuthUser | null, permission: PermissionKey): boolean => hasPermission(user, permission);
 
-export const getDefaultRouteForUser = (user: AuthUser): string => {
+export const getWorkspaceRouteForUser = (user: AuthUser): string | null => {
     if (hasPermission(user, ORDER_PERMISSIONS.fuelOrderReadAll.key)) {
         return routes.orders;
     }
@@ -24,13 +25,21 @@ export const getDefaultRouteForUser = (user: AuthUser): string => {
         return routes.submitOrder;
     }
 
-    return routes.orders;
+    return null;
+};
+
+export const getDefaultRouteForUser = (user: AuthUser): string => {
+    return getWorkspaceRouteForUser(user) ?? routes.restricted;
 };
 
 export const isRouteAllowedForUser = (path: string, user: AuthUser): boolean => {
     const requiredPermissions = routeRequiredPermissions[path as keyof typeof routeRequiredPermissions];
 
-    return requiredPermissions ? hasAllPermissions(user, requiredPermissions) : path === routes.orders;
+    if (requiredPermissions) {
+        return hasAllPermissions(user, requiredPermissions);
+    }
+
+    return path === routes.restricted;
 };
 
 export const canViewOrders = (user: AuthUser | null | undefined): boolean =>
