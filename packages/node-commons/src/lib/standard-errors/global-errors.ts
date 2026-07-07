@@ -26,6 +26,18 @@ export const CS_ERRORS = defineErrorCatalog({
         code: 'GLOBAL.INVALID-UNIQUE-REFERENCE-CODE',
         message: 'Unique-Reference-Code header is invalid',
     },
+    MissingAuthorizationToken: {
+        code: 'GLOBAL.MISSING-AUTHORIZATION-TOKEN',
+        message: 'Authorization token is missing',
+    },
+    InvalidAuthorizationToken: {
+        code: 'GLOBAL.INVALID-AUTHORIZATION-TOKEN',
+        message: 'Authorization token is invalid',
+    },
+    MissingRequiredPermissions: {
+        code: 'GLOBAL.MISSING-REQUIRED-PERMISSIONS',
+        message: 'Required permissions are missing',
+    },
 });
 
 export type CsErrorCode = keyof typeof CS_ERRORS;

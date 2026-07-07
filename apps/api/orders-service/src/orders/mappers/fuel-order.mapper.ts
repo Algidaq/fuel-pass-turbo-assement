@@ -16,9 +16,8 @@ export function mapFuelOrderToResponse(fuelOrder: FuelOrderEntity): FuelOrderRes
     });
 }
 
-function formatNumericScale(value: string, scale: number): string {
-    const [integer = '0', decimal = ''] = value.split('.');
+function formatNumericScale(value: string | number, scale: number): string {
+    const [integer = '0', decimal = ''] = `${value}`.split('.');
     const normalizedDecimal = decimal.padEnd(scale, '0').slice(0, scale);
-
-    return `${integer}.${normalizedDecimal}`;
+    return `${integer}.${normalizedDecimal}$`;
 }

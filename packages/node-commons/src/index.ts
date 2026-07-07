@@ -1,5 +1,6 @@
 export * from './lib/crypto';
 export * from './lib/custom-decorators';
+export * from './lib/custom-exception-filter';
 export * from './lib/custom-interceptors';
 export * from './lib/custom-middlewares';
 export * from './lib/custom-pipes';
