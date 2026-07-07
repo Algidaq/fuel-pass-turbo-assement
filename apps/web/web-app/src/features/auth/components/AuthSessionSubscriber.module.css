@@ -1,0 +1,36 @@
+.dialog {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(100%, 420px);
+  padding: 24px;
+  transform: translate(-50%, -50%);
+}
+
+.content {
+  display: grid;
+  gap: 16px;
+}
+
+.copy {
+  display: grid;
+  gap: 8px;
+}
+
+.title {
+  margin: 0;
+  color: var(--fp-foreground);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.message {
+  margin: 0;
+  color: var(--fp-muted-foreground);
+  line-height: 1.5;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}

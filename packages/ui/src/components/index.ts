@@ -4,6 +4,7 @@ export * from './button/index.js';
 export * from './card/index.js';
 export * from './form-field/index.js';
 export * from './input/index.js';
+export * from './mui-primitives/index.js';
 export * from './number-input/index.js';
 export * from './select/index.js';
 export * from './status-chip/index.js';

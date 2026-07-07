@@ -38,6 +38,7 @@ type RefreshResponse = z.infer<typeof refreshResponseSchema>;
 
 const sessionExpiredListeners = new Set<SessionExpiredListener>();
 let refreshPromise: Promise<RefreshResponse | null> | null = null;
+let hasPublishedSessionExpired = false;
 
 const buildUrl = (path: string): string => {
   const baseUrl = env.apiBaseUrl.replace(/\/+$/, '');
@@ -66,8 +67,12 @@ const parseJsonSafely = async (response: Response): Promise<unknown> => {
 
 const isRefreshTokenRejected = (response: Response): boolean => [400, 401, 403].includes(response.status);
 
-const expireSession = (reason: SessionExpiredReason): void => {
-  useAuthStore.getState().clearSession();
+const publishSessionExpired = (reason: SessionExpiredReason): void => {
+  if (hasPublishedSessionExpired) {
+    return;
+  }
+
+  hasPublishedSessionExpired = true;
   sessionExpiredListeners.forEach((listener) => listener({ reason }));
 };
 
@@ -75,7 +80,7 @@ const executeRefresh = async (): Promise<RefreshResponse | null> => {
   const refreshToken = useAuthStore.getState().refreshToken;
 
   if (!refreshToken) {
-    expireSession('missing_refresh_token');
+    publishSessionExpired('missing_refresh_token');
     return null;
   }
 
@@ -97,7 +102,7 @@ const executeRefresh = async (): Promise<RefreshResponse | null> => {
 
   if (!response.ok) {
     if (isRefreshTokenRejected(response)) {
-      expireSession('refresh_token_rejected');
+      publishSessionExpired('refresh_token_rejected');
     }
 
     return null;
@@ -113,6 +118,7 @@ const executeRefresh = async (): Promise<RefreshResponse | null> => {
     accessToken: result.data.accessToken,
     refreshToken: result.data.refreshToken,
   });
+  hasPublishedSessionExpired = false;
 
   return result.data;
 };
@@ -132,5 +138,9 @@ export const authSession = {
     return () => {
       sessionExpiredListeners.delete(listener);
     };
+  },
+
+  resetSessionExpiredNotification(): void {
+    hasPublishedSessionExpired = false;
   },
 };
