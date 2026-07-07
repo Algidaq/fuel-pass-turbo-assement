@@ -1,2 +1,2 @@
-export * from './orders/index';
-export * from './users/index';
+export * from './orders/';
+export * from './users/';
