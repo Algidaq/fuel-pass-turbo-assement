@@ -1,4 +1,4 @@
-import { FuelOrderResDto, type TFuelOrderIdParamDto } from '@fuel-pass/contracts';
+import { FuelOrderResDto, type TFuelOrderIdParamDto } from '@fuel-pass/contracts/backend';
 import { ApiResponse, AppHttpError, type WithAppCtx } from '@fuel-pass/node-commons';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { mapFuelOrderToResponse } from '../mappers/fuel-order.mapper';

@@ -1,4 +1,4 @@
-import { IntrospectResDto, TIntrospectRequestDto } from '@fuel-pass/contracts';
+import { IntrospectResDto, TIntrospectRequestDto } from '@fuel-pass/contracts/backend';
 import { ApiResponse, type WithAppCtx } from '@fuel-pass/node-commons';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CurrentUserService } from './current-user.service';

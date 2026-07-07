@@ -1,4 +1,4 @@
-import { RefreshResDto, TRefreshRequestDto } from '@fuel-pass/contracts';
+import { RefreshResDto, TRefreshRequestDto } from '@fuel-pass/contracts/backend';
 import { ApiResponse, AppHttpError, type WithAppCtx } from '@fuel-pass/node-commons';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { AuthException, AuthFailure } from '../auth.errors';

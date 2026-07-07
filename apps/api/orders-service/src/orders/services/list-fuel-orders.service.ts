@@ -1,4 +1,4 @@
-import { ListFuelOrdersResDto, PaginationResDto, type TListFuelOrdersQueryDto } from '@fuel-pass/contracts';
+import { ListFuelOrdersResDto, PaginationResDto, type TListFuelOrdersQueryDto } from '@fuel-pass/contracts/backend';
 import { ApiResponse, AppHttpError, type WithAppCtx } from '@fuel-pass/node-commons';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { FuelOrderStatus } from '../entities/order.enums';

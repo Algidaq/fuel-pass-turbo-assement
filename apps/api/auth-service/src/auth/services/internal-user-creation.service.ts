@@ -1,4 +1,4 @@
-import { CreateInternalUserResDto, TCreateInternalUserRequestDto } from '@fuel-pass/contracts';
+import { CreateInternalUserResDto, TCreateInternalUserRequestDto } from '@fuel-pass/contracts/backend';
 import { ApiResponse, AppHttpError, type WithAppCtx } from '@fuel-pass/node-commons';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { DataSource, In } from 'typeorm';

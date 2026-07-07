@@ -1,4 +1,4 @@
-import { FuelOrderResDto } from '@fuel-pass/contracts';
+import { FuelOrderResDto } from '@fuel-pass/contracts/backend';
 import type { FuelOrderEntity } from '../entities/fuel-order.entity';
 
 export function mapFuelOrderToResponse(fuelOrder: FuelOrderEntity): FuelOrderResDto {

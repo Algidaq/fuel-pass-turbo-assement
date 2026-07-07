@@ -3,7 +3,7 @@ import {
     type AuthUserContextDto,
     type CurrentUserResponseDto,
     type IntrospectActiveResponseDto,
-} from '@fuel-pass/contracts';
+} from '@fuel-pass/contracts/backend';
 import { Injectable } from '@nestjs/common';
 import { AuthFailure } from '../auth.errors';
 import { UserStatus } from '../entities/auth.enums';

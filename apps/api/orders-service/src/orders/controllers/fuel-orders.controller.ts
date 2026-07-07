@@ -8,7 +8,7 @@ import {
     type TCreateFuelOrderRequestDto,
     type TListFuelOrdersQueryDto,
     type TUpdateFuelOrderStatusRequestDto,
-} from '@fuel-pass/contracts';
+} from '@fuel-pass/contracts/backend';
 import { ApiResponse, CsHeaders, ZodValidationPipe, type BaseApiHeaders } from '@fuel-pass/node-commons';
 import { Body, Controller, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { OrdersJwtAuthGuard } from '../guards/orders-jwt-auth.guard';

@@ -1,4 +1,4 @@
-import type { JwksResponseDto } from '@fuel-pass/contracts';
+import type { JwksResponseDto } from '@fuel-pass/contracts/backend';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createHash, randomBytes, randomUUID, webcrypto, type KeyObject } from 'node:crypto';

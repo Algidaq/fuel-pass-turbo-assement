@@ -1,4 +1,4 @@
-import type { IntrospectResponseDto } from '@fuel-pass/contracts';
+import type { IntrospectResponseDto } from '@fuel-pass/contracts/backend';
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { Request } from 'express';

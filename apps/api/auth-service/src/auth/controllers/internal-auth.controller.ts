@@ -3,8 +3,8 @@ import type {
     IntrospectResDto,
     TCreateInternalUserRequestDto,
     TIntrospectRequestDto,
-} from '@fuel-pass/contracts';
-import { createInternalUserReqDtoSchema, introspectReqDtoSchema } from '@fuel-pass/contracts';
+} from '@fuel-pass/contracts/backend';
+import { createInternalUserReqDtoSchema, introspectReqDtoSchema } from '@fuel-pass/contracts/backend';
 import { ApiResponse, CsHeaders, ZodValidationPipe, type BaseApiHeaders } from '@fuel-pass/node-commons';
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { InternalApiKeyGuard } from '../guards/internal-api-key.guard';

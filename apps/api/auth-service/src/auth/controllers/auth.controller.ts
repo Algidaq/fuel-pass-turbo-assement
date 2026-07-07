@@ -9,7 +9,7 @@ import {
     type TLogoutRequestDto,
     type TLoginRequestDto,
     type TRefreshRequestDto,
-} from '@fuel-pass/contracts';
+} from '@fuel-pass/contracts/backend';
 import { ApiResponse, constructErrorMsg, CsHeaders, ZodValidationPipe, type BaseApiHeaders } from '@fuel-pass/node-commons';
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';

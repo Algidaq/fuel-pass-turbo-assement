@@ -1,4 +1,4 @@
-import { LogoutResDto, TLogoutRequestDto } from '@fuel-pass/contracts';
+import { LogoutResDto, TLogoutRequestDto } from '@fuel-pass/contracts/backend';
 import { ApiResponse, AppHttpError, type WithAppCtx } from '@fuel-pass/node-commons';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import type { AuthenticatedPrincipal, RequestMetadata } from '../types/auth-request.types';
