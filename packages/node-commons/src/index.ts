@@ -2,6 +2,7 @@ export * from './lib/crypto';
 export * from './lib/custom-decorators';
 export * from './lib/custom-interceptors';
 export * from './lib/custom-middlewares';
+export * from './lib/custom-pipes';
 export * from './lib/helpers/';
 export * from './lib/logger';
 export * from './lib/models';

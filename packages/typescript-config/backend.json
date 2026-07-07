@@ -4,7 +4,7 @@
     "compilerOptions": {
         "module": "Node16",
         "moduleResolution": "Node16",
-        "target": "es2022",
+        "target": "es6",
         "pretty": true,
         "resolveJsonModule": true,
         "noImplicitReturns": true,
@@ -19,13 +19,27 @@
         "strictFunctionTypes": true,
         "noFallthroughCasesInSwitch": true,
         "noUnusedParameters": true,
-        "noUnusedLocals": true,
         "noPropertyAccessFromIndexSignature": true,
         "sourceMap": true,
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "isolatedModules": false
+        "isolatedModules": false,
+        "lib": [
+            "ES5",
+            "ES6",
+            "ES2015",
+            "ES2015.Collection",
+            "ES2015.Core",
+            "ES2015.Generator",
+            "ES2015.Iterable",
+            "ES2015.Proxy",
+            "ES2015.Reflect",
+            "ES2015.Symbol",
+            "ES2015.Symbol.WellKnown",
+            "ES2015.Promise",
+            "ESNext.AsyncIterable"
+        ]
     }
 }

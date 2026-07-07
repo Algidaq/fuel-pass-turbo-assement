@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
+import { AuthFailure } from '../auth.errors';
 import { RefreshTokenStatus } from '../entities/auth.enums';
 import { RefreshTokenEntity } from '../entities/refresh-token.entity';
-import { AuthFailure } from '../auth.errors';
 import { RefreshTokenRepository } from '../repositories/refresh-token.repository';
 import type { RequestMetadata } from '../types/auth-request.types';
 import { SessionService } from './session.service';
@@ -46,6 +46,10 @@ export class RefreshTokenService {
         );
 
         return { rawToken, record };
+    }
+
+    public generateHashedRefreshToken(): string {
+        return this.tokenService.hashRefreshToken(this.tokenService.generateRefreshToken());
     }
 
     public async validateRefreshToken(rawToken: string, manager?: EntityManager): Promise<RefreshTokenEntity> {

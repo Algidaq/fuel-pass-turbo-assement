@@ -1,10 +1,15 @@
-import type { AuthUserContextDto, CurrentUserResponseDto, IntrospectActiveResponseDto } from '@fuel-pass/contracts';
+import {
+    CurrentUserResDto,
+    type AuthUserContextDto,
+    type CurrentUserResponseDto,
+    type IntrospectActiveResponseDto,
+} from '@fuel-pass/contracts/backend';
 import { Injectable } from '@nestjs/common';
+import { AuthFailure } from '../auth.errors';
 import { UserStatus } from '../entities/auth.enums';
 import { PermissionRepository } from '../repositories/permission.repository';
 import { RoleRepository } from '../repositories/role.repository';
 import { UserRepository } from '../repositories/user.repository';
-import { AuthFailure } from '../auth.errors';
 import { SessionService } from './session.service';
 
 @Injectable()
@@ -50,7 +55,7 @@ export class CurrentUserService {
     }
 
     public async getCurrentUser(userId: string, sessionId: string): Promise<CurrentUserResponseDto> {
-        return { user: await this.buildCurrentUser(userId, sessionId) };
+        return new CurrentUserResDto({ user: await this.buildCurrentUser(userId, sessionId) });
     }
 
     public async buildIntrospection(userId: string, sessionId: string): Promise<IntrospectActiveResponseDto> {

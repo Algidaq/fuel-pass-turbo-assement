@@ -1,8 +1,9 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor, StreamableFile } from '@nestjs/common';
 import { Response } from 'express';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, throwError, type ObservableInput } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { ApiResponse } from '../helpers';
+import { AppHttpError } from '../standard-errors';
 
 type JsonSerializable = {
     toJSON: () => Record<string, unknown>;
@@ -14,26 +15,37 @@ export class ApiResponseInterceptor implements NestInterceptor {
         const response = context.switchToHttp().getResponse<Response>();
 
         return next.handle().pipe(
-            map((content: unknown): unknown => {
-                if (!(content instanceof ApiResponse)) {
-                    return content;
+            map(this.mapToApiResponse(response)),
+            catchError((error, _caught): ObservableInput<any> => {
+                if (error instanceof AppHttpError) {
+                    const apiResponse = ApiResponse.fromAppError(error);
+                    return Promise.resolve(this.mapToApiResponse(response)(apiResponse));
                 }
-
-                response.status(content.status);
-
-                Object.entries(content.headers ?? {}).forEach(([key, value]): void => {
-                    response.setHeader(key, value);
-                });
-
-                if (!content.success) {
-                    return {
-                        errors: content.errors,
-                    };
-                }
-
-                return this.serializeData(content.data);
+                return throwError((): unknown => error);
             })
         );
+    }
+
+    public mapToApiResponse(response: Response): (content: unknown) => unknown {
+        return (content): unknown => {
+            if (!(content instanceof ApiResponse)) {
+                return content;
+            }
+
+            response.status(content.status);
+
+            Object.entries(content.headers ?? {}).forEach(([key, value]): void => {
+                response.setHeader(key, value);
+            });
+
+            if (!content.success) {
+                return {
+                    errors: content.errors,
+                };
+            }
+
+            return this.serializeData(content.data);
+        };
     }
 
     private serializeData(data: unknown): unknown {

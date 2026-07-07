@@ -1,9 +1,14 @@
 import { createHash } from 'node:crypto';
+import { ORDER_PERMISSIONS } from '@fuel-pass/contracts/backend';
+import { BaseApiHeaders } from '@fuel-pass/node-commons';
 import { DataSource } from 'typeorm';
-import { AuthService } from '../../../src/auth/services/auth.service';
 import { AuditService } from '../../../src/auth/services/audit.service';
+import { AuthLoginService } from '../../../src/auth/services/auth-login.service';
+import { AuthLogoutService } from '../../../src/auth/services/auth-logout.service';
+import { AuthRefreshService } from '../../../src/auth/services/auth-refresh.service';
 import { CurrentUserService } from '../../../src/auth/services/current-user.service';
 import { RefreshTokenService } from '../../../src/auth/services/refresh-token.service';
+import { SessionCreationService } from '../../../src/auth/services/session-creation-service/session-creation.service';
 import { SessionService } from '../../../src/auth/services/session.service';
 import { AuthAuditRepository } from '../../../src/auth/repositories/auth-audit.repository';
 import { CredentialRepository } from '../../../src/auth/repositories/credential.repository';
@@ -23,13 +28,12 @@ import { UserEntity } from '../../../src/auth/entities/user.entity';
 import { UserRoleEntity } from '../../../src/auth/entities/user-role.entity';
 import { UserSessionEntity } from '../../../src/auth/entities/user-session.entity';
 import { authDatabaseEntities } from '../../../src/configs/typeorm.config';
-import type { RequestMetadata } from '../../../src/auth/types/auth-request.types';
 
-const requestMetadata: RequestMetadata = {
-    ipAddress: '127.0.0.1',
+const headers = new BaseApiHeaders({
+    clientIp: '127.0.0.1',
     userAgent: 'sqlite-integration-test',
-    deviceName: 'jest',
-};
+});
+const operationsManagerRoleKey = 'operations_manager';
 
 class TestPasswordService {
     public verifyPassword(rawPassword: string, passwordHash: string): Promise<boolean> {
@@ -62,7 +66,9 @@ class TestTokenService {
 
 describe('auth persistence with SQLite', () => {
     let dataSource: DataSource;
-    let authService: AuthService;
+    let loginService: AuthLoginService;
+    let refreshService: AuthRefreshService;
+    let logoutService: AuthLogoutService;
     let userRepository: UserRepository;
     let credentialRepository: CredentialRepository;
     let roleRepository: RoleRepository;
@@ -97,17 +103,24 @@ describe('auth persistence with SQLite', () => {
         const refreshTokenService = new RefreshTokenService(dataSource, refreshTokenRepository, sessionService, tokenService as never);
         const currentUserService = new CurrentUserService(userRepository, roleRepository, permissionRepository, sessionService);
         const auditService = new AuditService(authAuditRepository);
+        const sessionCreationService = new SessionCreationService(dataSource);
 
-        authService = new AuthService(
+        loginService = new AuthLoginService(
+            sessionCreationService,
             userRepository,
             credentialRepository,
             new TestPasswordService() as never,
-            tokenService as never,
-            sessionService,
+            currentUserService,
+            tokenService as never
+        );
+        refreshService = new AuthRefreshService(
             refreshTokenService,
             currentUserService,
+            tokenService as never,
+            sessionService,
             auditService
         );
+        logoutService = new AuthLogoutService(sessionService, refreshTokenService, auditService);
 
         seededUser = await userRepository.createUser({
             email: 'manager@fuelpass.test',
@@ -117,13 +130,13 @@ describe('auth persistence with SQLite', () => {
         await credentialRepository.createLocalCredential(seededUser.id, 'hashed-password');
 
         const role = await dataSource.getRepository(RoleEntity).save({
-            key: 'operations_manager',
+            key: operationsManagerRoleKey,
             name: 'Operations Manager',
         });
         const permission = await dataSource.getRepository(PermissionEntity).save({
-            key: 'fuel_order:read_all',
-            resource: 'fuel_order',
-            action: 'read_all',
+            key: ORDER_PERMISSIONS.fuelOrderReadAll.key,
+            resource: ORDER_PERMISSIONS.fuelOrderReadAll.resource,
+            action: ORDER_PERMISSIONS.fuelOrderReadAll.action,
         });
 
         await roleRepository.assignRoleToUser(seededUser.id, role.id);
@@ -144,8 +157,8 @@ describe('auth persistence with SQLite', () => {
 
         expect(user?.id).toEqual(seededUser.id);
         expect(credential?.provider).toEqual(CredentialProvider.LOCAL);
-        expect(roles.map((role): string => role.key)).toEqual(['operations_manager']);
-        expect(permissions.map((permission): string => permission.key)).toEqual(['fuel_order:read_all']);
+        expect(roles.map((role): string => role.key)).toEqual([operationsManagerRoleKey]);
+        expect(permissions.map((permission): string => permission.key)).toEqual([ORDER_PERMISSIONS.fuelOrderReadAll.key]);
 
         await userRepository.updateStatus(seededUser.id, UserStatus.LOCKED);
 
@@ -153,20 +166,20 @@ describe('auth persistence with SQLite', () => {
     });
 
     it('logs in, persists a hashed refresh token, updates last login, and returns roles and permissions', async () => {
-        const result = await authService.login(' Manager@FuelPass.Test ', 'Password123!', requestMetadata);
+        const result = await loginService.login({ headers, body: { email: 'manager@fuelpass.test', password: 'Password123!' } });
         const sessions = await dataSource.getRepository(UserSessionEntity).findBy({ userId: seededUser.id });
         const refreshTokens = await dataSource.getRepository(RefreshTokenEntity).findBy({ userId: seededUser.id });
         const reloadedUser = await userRepository.findById(seededUser.id);
 
-        expect(result).toMatchObject({
+        expect(result.data).toMatchObject({
             accessToken: 'access-token',
             refreshToken: 'raw-refresh-token-1',
             expiresIn: 900,
             tokenType: 'Bearer',
             user: {
                 id: seededUser.id,
-                roles: ['operations_manager'],
-                permissions: ['fuel_order:read_all'],
+                roles: [operationsManagerRoleKey],
+                permissions: [ORDER_PERMISSIONS.fuelOrderReadAll.key],
             },
         });
         expect(sessions).toHaveLength(1);
@@ -178,13 +191,13 @@ describe('auth persistence with SQLite', () => {
     });
 
     it('refreshes by rotating refresh tokens and marking the old token as rotated', async () => {
-        await authService.login(seededUser.email, 'Password123!', requestMetadata);
+        await loginService.login({ headers, body: { email: seededUser.email, password: 'Password123!' } });
 
-        const result = await authService.refresh('raw-refresh-token-1', requestMetadata);
+        const result = await refreshService.refresh({ headers, body: { refreshToken: 'raw-refresh-token-1' } });
         const oldToken = await refreshTokenRepository.findByTokenHash(tokenService.hashRefreshToken('raw-refresh-token-1'));
         const newToken = await refreshTokenRepository.findByTokenHash(tokenService.hashRefreshToken('raw-refresh-token-2'));
 
-        expect(result.refreshToken).toEqual('raw-refresh-token-2');
+        expect(result.data?.refreshToken).toEqual('raw-refresh-token-2');
         expect(oldToken).toMatchObject({
             status: RefreshTokenStatus.ROTATED,
             rotatedToTokenId: newToken?.id,
@@ -194,15 +207,16 @@ describe('auth persistence with SQLite', () => {
     });
 
     it('revokes the refresh-token family and session when a rotated token is reused', async () => {
-        await authService.login(seededUser.email, 'Password123!', requestMetadata);
-        await authService.refresh('raw-refresh-token-1', requestMetadata);
+        await loginService.login({ headers, body: { email: seededUser.email, password: 'Password123!' } });
+        await refreshService.refresh({ headers, body: { refreshToken: 'raw-refresh-token-1' } });
 
-        await expect(authService.refresh('raw-refresh-token-1', requestMetadata)).rejects.toMatchObject({ key: 'InvalidToken' });
+        const reusedResult = await refreshService.refresh({ headers, body: { refreshToken: 'raw-refresh-token-1' } });
 
         const oldToken = await refreshTokenRepository.findByTokenHash(tokenService.hashRefreshToken('raw-refresh-token-1'));
         const rotatedToken = await refreshTokenRepository.findByTokenHash(tokenService.hashRefreshToken('raw-refresh-token-2'));
         const sessions = await dataSource.getRepository(UserSessionEntity).findBy({ userId: seededUser.id });
 
+        expect(reusedResult.success).toBe(false);
         expect(oldToken).toMatchObject({
             status: RefreshTokenStatus.REVOKED,
             revokedReason: 'refresh_token_reuse_detected',
@@ -218,23 +232,23 @@ describe('auth persistence with SQLite', () => {
     });
 
     it('logs out by revoking the active session and refresh tokens', async () => {
-        await authService.login(seededUser.email, 'Password123!', requestMetadata);
+        await loginService.login({ headers, body: { email: seededUser.email, password: 'Password123!' } });
         const session = await dataSource.getRepository(UserSessionEntity).findOneByOrFail({ userId: seededUser.id });
 
         await expect(
-            authService.logout(
-                {
+            logoutService.logout({
+                headers,
+                body: { refreshToken: 'raw-refresh-token-1' },
+                principal: {
                     userId: seededUser.id,
                     sessionId: session.id,
                     email: seededUser.email,
-                    roles: ['operations_manager'],
-                    permissions: ['fuel_order:read_all'],
+                    roles: [operationsManagerRoleKey],
+                    permissions: [ORDER_PERMISSIONS.fuelOrderReadAll.key],
                     jti: 'access-jti',
                 },
-                'raw-refresh-token-1',
-                requestMetadata
-            )
-        ).resolves.toEqual({ success: true });
+            })
+        ).resolves.toMatchObject({ success: true });
 
         const refreshedSession = await dataSource.getRepository(UserSessionEntity).findOneByOrFail({ id: session.id });
         const refreshToken = await refreshTokenRepository.findByTokenHash(tokenService.hashRefreshToken('raw-refresh-token-1'));

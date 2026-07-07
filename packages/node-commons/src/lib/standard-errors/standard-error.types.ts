@@ -1,13 +1,17 @@
 export interface CsStdError {
     code: string;
     message: string;
-    description: string;
+    description?: string;
 }
 
 export interface ErrorDefinition {
     code: string;
     message: string;
     description?: string;
+}
+
+export interface CsStdValidationError extends CsStdError {
+    field: string;
 }
 
 export type ErrorDefinitionValue = ErrorDefinition | readonly ErrorDefinition[];

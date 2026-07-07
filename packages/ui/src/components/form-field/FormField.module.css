@@ -1,0 +1,30 @@
+.root {
+    display: grid;
+    gap: var(--fp-space-2);
+}
+
+.label {
+    color: var(--fp-foreground);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.required {
+    color: var(--fp-danger);
+}
+
+.hint,
+.error {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: var(--fp-danger);
+}
+
+.hint {
+    color: var(--fp-muted-foreground);
+}
+
+.error {
+    color: var(--fp-danger);
+}

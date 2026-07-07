@@ -1,13 +1,14 @@
+import { BaseModel, type ClassParams } from '@fuel-pass/node-commons';
 import { Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { SessionStatus } from './auth.enums';
 import type { AuthAuditEventEntity } from './auth-audit-event.entity';
+import { SessionStatus } from './auth.enums';
 import type { RefreshTokenEntity } from './refresh-token.entity';
 import type { UserEntity } from './user.entity';
 
 @Entity({ name: 'user_sessions' })
 @Index('idx_user_sessions_user_id', ['userId'])
 @Index('idx_user_sessions_status', ['status'])
-export class UserSessionEntity {
+export class UserSessionEntity extends BaseModel<UserSessionEntity> {
     @PrimaryGeneratedColumn('uuid')
     public id!: string;
 
@@ -55,4 +56,8 @@ export class UserSessionEntity {
 
     @OneToMany('AuthAuditEventEntity', (event: AuthAuditEventEntity): UserSessionEntity | null => event.session)
     public auditEvents!: AuthAuditEventEntity[];
+
+    public override copyWith(params: Partial<ClassParams<UserSessionEntity>>): UserSessionEntity {
+        return Object.assign(new UserSessionEntity(), this, params);
+    }
 }

@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/member-ordering */
+import { BaseModel, type ClassParams } from '@fuel-pass/node-commons';
 import { Column, Entity, Index, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { RefreshTokenStatus } from './auth.enums';
-import type { UserEntity } from './user.entity';
 import type { UserSessionEntity } from './user-session.entity';
+import type { UserEntity } from './user.entity';
 
 @Entity({ name: 'refresh_tokens' })
 @Index('idx_refresh_tokens_user_id', ['userId'])
@@ -9,7 +11,12 @@ import type { UserSessionEntity } from './user-session.entity';
 @Index('idx_refresh_tokens_family_id', ['familyId'])
 @Index('idx_refresh_tokens_status', ['status'])
 @Index('uq_refresh_tokens_token_hash', ['tokenHash'], { unique: true })
-export class RefreshTokenEntity {
+export class RefreshTokenEntity extends BaseModel<RefreshTokenEntity> {
+    public static create(params: Omit<ClassParams<RefreshTokenEntity>, 'user' | 'session' | 'rotatedToToken'>): RefreshTokenEntity {
+        const entity = Object.assign(new RefreshTokenEntity(), params);
+        return entity;
+    }
+
     @PrimaryGeneratedColumn('uuid')
     public id!: string;
 
@@ -70,4 +77,8 @@ export class RefreshTokenEntity {
     @OneToOne('RefreshTokenEntity', { onDelete: 'SET NULL' })
     @JoinColumn({ name: 'rotated_to_token_id' })
     public rotatedToToken!: RefreshTokenEntity | null;
+
+    public override copyWith(params: Partial<ClassParams<RefreshTokenEntity>>): RefreshTokenEntity {
+        return Object.assign(new RefreshTokenEntity(), this, params);
+    }
 }

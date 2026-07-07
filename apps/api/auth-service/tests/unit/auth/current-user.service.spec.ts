@@ -3,11 +3,14 @@ jest.mock('../../../src/auth/repositories/role.repository', () => ({ RoleReposit
 jest.mock('../../../src/auth/repositories/user.repository', () => ({ UserRepository: class UserRepository {} }));
 jest.mock('../../../src/auth/services/session.service', () => ({ SessionService: class SessionService {} }));
 
+import { ORDER_PERMISSIONS } from '@fuel-pass/contracts/backend';
 import { AuthFailure } from '../../../src/auth/auth.errors';
 import { UserStatus } from '../../../src/auth/entities/auth.enums';
 import { CurrentUserService } from '../../../src/auth/services/current-user.service';
 
 describe('CurrentUserService', () => {
+    const operationsManagerRoleKey = 'operations_manager';
+
     function createService(params?: { status?: UserStatus; sessionUserId?: string }): {
         service: CurrentUserService;
         roleRepository: { findUserRoles: jest.Mock };
@@ -22,10 +25,10 @@ describe('CurrentUserService', () => {
             }),
         };
         const roleRepository = {
-            findUserRoles: jest.fn().mockResolvedValue([{ key: 'operations_manager' }]),
+            findUserRoles: jest.fn().mockResolvedValue([{ key: operationsManagerRoleKey }]),
         };
         const permissionRepository = {
-            findPermissionsByUserId: jest.fn().mockResolvedValue([{ key: 'fuel_order:read_all' }]),
+            findPermissionsByUserId: jest.fn().mockResolvedValue([{ key: ORDER_PERMISSIONS.fuelOrderReadAll.key }]),
         };
         const sessionService = {
             validateActiveSession: jest.fn().mockResolvedValue({ id: 'session-1', userId: params?.sessionUserId ?? 'user-1' }),
@@ -51,8 +54,8 @@ describe('CurrentUserService', () => {
                 id: 'user-1',
                 email: 'manager@fuelpass.test',
                 fullName: 'Operations Manager',
-                roles: ['operations_manager'],
-                permissions: ['fuel_order:read_all'],
+                roles: [operationsManagerRoleKey],
+                permissions: [ORDER_PERMISSIONS.fuelOrderReadAll.key],
             },
         });
         expect(roleRepository.findUserRoles).toHaveBeenCalledWith('user-1');

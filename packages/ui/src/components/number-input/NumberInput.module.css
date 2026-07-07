@@ -1,0 +1,32 @@
+.root {
+    width: 100%;
+}
+
+.input {
+    width: 100%;
+    min-height: 2.5rem;
+    border: 1px solid var(--fp-border);
+    border-radius: var(--fp-radius-md);
+    background: var(--fp-surface);
+    color: var(--fp-foreground);
+    font: inherit;
+    padding: 0.5rem 0.75rem;
+    transition:
+        border-color 120ms ease,
+        box-shadow 120ms ease;
+}
+
+.input:focus-visible {
+    outline: none;
+    box-shadow: var(--fp-focus-ring);
+}
+
+.input:disabled,
+.input[data-disabled] {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.error {
+    border-color: var(--fp-danger);
+}

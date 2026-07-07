@@ -1,4 +1,4 @@
-import type { JwksResponseDto } from '@fuel-pass/contracts';
+import type { JwksResponseDto } from '@fuel-pass/contracts/backend';
 import { ApiResponse } from '@fuel-pass/node-commons';
 import { Controller, Get, HttpStatus } from '@nestjs/common';
 import { TokenService } from '../services/token.service';
