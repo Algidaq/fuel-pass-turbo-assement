@@ -1,5 +1,5 @@
 import { FuelOrderResDto, type TUpdateFuelOrderStatusRequestDto } from '@fuel-pass/contracts/backend';
-import { ApiResponse, AppHttpError, type WithAppCtx } from '@fuel-pass/node-commons';
+import { ApiResponse, AppHttpError, type AuthenticatedPrincipal, type WithAppCtx } from '@fuel-pass/node-commons';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import type { FuelOrderEntity } from '../entities/fuel-order.entity';
@@ -7,7 +7,6 @@ import { FuelOrderStatus } from '../entities/order.enums';
 import { mapFuelOrderToResponse } from '../mappers/fuel-order.mapper';
 import { OrderException } from '../orders.errors';
 import { FuelOrderRepository } from '../repositories/fuel-order.repository';
-import type { AuthenticatedPrincipal } from '../types/auth-request.types';
 
 const ALLOWED_TRANSITIONS: Record<FuelOrderStatus, FuelOrderStatus[]> = {
     [FuelOrderStatus.PENDING]: [FuelOrderStatus.CONFIRMED],
@@ -26,10 +25,6 @@ export class UpdateFuelOrderStatusService {
         params: WithAppCtx<{ id: string; body: TUpdateFuelOrderStatusRequestDto; principal: AuthenticatedPrincipal }>
     ): Promise<ApiResponse<FuelOrderResDto>> {
         try {
-            if (!isUuid(params.id)) {
-                throw new OrderException(HttpStatus.BAD_REQUEST, 'InvalidRequest');
-            }
-
             const status = params.body.status as FuelOrderStatus;
             const userId = params.principal.userId ?? null;
 

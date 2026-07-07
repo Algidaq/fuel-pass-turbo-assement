@@ -1,12 +1,11 @@
 import { FuelOrderResDto, type TCreateFuelOrderRequestDto } from '@fuel-pass/contracts/backend';
-import { ApiResponse, AppHttpError, type WithAppCtx } from '@fuel-pass/node-commons';
+import { ApiResponse, AppHttpError, type AuthenticatedPrincipal, type WithAppCtx } from '@fuel-pass/node-commons';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import type { FuelOrderEntity } from '../entities/fuel-order.entity';
 import { FuelOrderStatus, VolumeUnit } from '../entities/order.enums';
 import { mapFuelOrderToResponse } from '../mappers/fuel-order.mapper';
 import { FuelOrderRepository } from '../repositories/fuel-order.repository';
-import type { AuthenticatedPrincipal } from '../types/auth-request.types';
 
 @Injectable()
 export class CreateFuelOrderService {

@@ -148,6 +148,7 @@ const configs = [
                 },
             ],
             'no-console': 'error',
+            '@typescript-eslint/only-throw-error': 'warn',
         },
         languageOptions: {
             parserOptions: {

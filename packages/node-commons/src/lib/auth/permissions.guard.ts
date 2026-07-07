@@ -1,10 +1,11 @@
-import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
+import { CanActivate, ExecutionContext, HttpStatus, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { AppHttpError, CS_ERRORS } from '../standard-errors';
+import type { AuthenticatedRequest } from './auth.types';
 import { REQUIRED_PERMISSIONS_METADATA_KEY } from './permissions.decorator';
-import type { AuthenticatedRequest } from '../types/auth-request.types';
 
 @Injectable()
-export class OrdersPermissionsGuard implements CanActivate {
+export class PermissionsGuard implements CanActivate {
     public constructor(private readonly reflector: Reflector) {}
 
     public canActivate(context: ExecutionContext): boolean {
@@ -25,6 +26,6 @@ export class OrdersPermissionsGuard implements CanActivate {
             return true;
         }
 
-        throw new ForbiddenException('Missing required permission.');
+        throw new AppHttpError(HttpStatus.FORBIDDEN, CS_ERRORS.MissingRequiredPermissions);
     }
 }

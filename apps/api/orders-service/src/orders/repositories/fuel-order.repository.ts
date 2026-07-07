@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository } from 'typeorm';
-import { FuelOrderEntity } from '../entities/fuel-order.entity';
 import { FuelOrderStatusHistoryEntity } from '../entities/fuel-order-status-history.entity';
+import { FuelOrderEntity } from '../entities/fuel-order.entity';
 import { FuelOrderStatus, VolumeUnit } from '../entities/order.enums';
+import { OrderException } from '../orders.errors';
 
 export interface CreateFuelOrderData {
     tailNumber: string;
@@ -65,6 +66,14 @@ export class FuelOrderRepository {
         return this.getFuelOrderRepository(manager).findOne({ where: { id } });
     }
 
+    public async findByIdOrThrow(id: string, manager?: EntityManager): Promise<FuelOrderEntity> {
+        const order = await this.getFuelOrderRepository(manager).findOne({ where: { id } });
+        if (!order) {
+            throw new OrderException(HttpStatus.NOT_FOUND, 'FuelOrderNotFound');
+        }
+        return order;
+    }
+
     public findMany(filters: FindFuelOrdersFilters = {}, manager?: EntityManager): Promise<FuelOrderEntity[]> {
         return this.getFuelOrderRepository(manager).find({
             where: {
@@ -79,10 +88,7 @@ export class FuelOrderRepository {
         });
     }
 
-    public findManyAndCount(
-        filters: FindFuelOrdersFilters = {},
-        manager?: EntityManager
-    ): Promise<[FuelOrderEntity[], number]> {
+    public findManyAndCount(filters: FindFuelOrdersFilters = {}, manager?: EntityManager): Promise<[FuelOrderEntity[], number]> {
         return this.getFuelOrderRepository(manager).findAndCount({
             where: {
                 ...(filters.airportIcaoCode === undefined ? {} : { airportIcaoCode: filters.airportIcaoCode }),
@@ -106,10 +112,7 @@ export class FuelOrderRepository {
         );
     }
 
-    public async updateStatusIfCurrent(
-        data: ConditionalUpdateFuelOrderStatusData,
-        manager?: EntityManager
-    ): Promise<boolean> {
+    public async updateStatusIfCurrent(data: ConditionalUpdateFuelOrderStatusData, manager?: EntityManager): Promise<boolean> {
         const result = await this.getFuelOrderRepository(manager).update(
             { id: data.fuelOrderId, status: data.currentStatus },
             {
@@ -121,10 +124,7 @@ export class FuelOrderRepository {
         return (result.affected ?? 0) > 0;
     }
 
-    public createStatusHistory(
-        data: CreateFuelOrderStatusHistoryData,
-        manager?: EntityManager
-    ): Promise<FuelOrderStatusHistoryEntity> {
+    public createStatusHistory(data: CreateFuelOrderStatusHistoryData, manager?: EntityManager): Promise<FuelOrderStatusHistoryEntity> {
         const repository = this.getStatusHistoryRepository(manager);
         const statusHistory = repository.create({
             ...data,

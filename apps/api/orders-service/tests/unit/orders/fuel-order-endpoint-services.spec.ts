@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { ORDER_PERMISSIONS } from '@fuel-pass/contracts/backend';
-import { BaseApiHeaders } from '@fuel-pass/node-commons';
+import { BaseApiHeaders, type AuthenticatedPrincipal } from '@fuel-pass/node-commons';
 import type { DataSource, EntityManager } from 'typeorm';
 import { FuelOrderEntity, FuelOrderStatus, VolumeUnit } from '../../../src/orders/entities';
 import type { FuelOrderRepository } from '../../../src/orders/repositories';
@@ -8,7 +8,6 @@ import { CreateFuelOrderService } from '../../../src/orders/services/create-fuel
 import { GetFuelOrderService } from '../../../src/orders/services/get-fuel-order.service';
 import { ListFuelOrdersService } from '../../../src/orders/services/list-fuel-orders.service';
 import { UpdateFuelOrderStatusService } from '../../../src/orders/services/update-fuel-order-status.service';
-import type { AuthenticatedPrincipal } from '../../../src/orders/types/auth-request.types';
 
 const headers = new BaseApiHeaders();
 const userId = randomUUID();

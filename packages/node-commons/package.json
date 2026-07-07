@@ -24,11 +24,13 @@
         "@fuel-pass/eslint-config": "*",
         "@fuel-pass/typescript-config": "*",
         "@nestjs/common": "^11.1.27",
+        "axios": "^1.18.1",
         "class-transformer": "^0.5.1",
         "compression": "^1.8.1",
         "helmet": "^8.2.0",
         "morgan": "^1.11.0",
         "nocache": "^4.0.0",
+        "p-retry": "^4.6.2",
         "pino-http": "^11.0.0",
         "tslib": "^2.3.0"
     },

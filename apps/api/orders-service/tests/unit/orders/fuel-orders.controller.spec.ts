@@ -1,11 +1,18 @@
 import { ORDER_PERMISSIONS } from '@fuel-pass/contracts/backend';
-import { ApiResponse, BaseApiHeaders } from '@fuel-pass/node-commons';
+import {
+    ApiResponse,
+    BaseApiHeaders,
+    JwtIntrospectionAuthGuard,
+    PermissionsGuard,
+    REQUIRED_PERMISSIONS_METADATA_KEY,
+    type AuthenticatedRequest,
+} from '@fuel-pass/node-commons';
+import { GUARDS_METADATA } from '@nestjs/common/constants';
 import { FuelOrdersController } from '../../../src/orders/controllers/fuel-orders.controller';
 import type { CreateFuelOrderService } from '../../../src/orders/services/create-fuel-order.service';
 import type { GetFuelOrderService } from '../../../src/orders/services/get-fuel-order.service';
 import type { ListFuelOrdersService } from '../../../src/orders/services/list-fuel-orders.service';
 import type { UpdateFuelOrderStatusService } from '../../../src/orders/services/update-fuel-order-status.service';
-import type { AuthenticatedRequest } from '../../../src/orders/types/auth-request.types';
 
 const headers = new BaseApiHeaders();
 const aircraftOperatorRoleKey = 'aircraft_operator';
@@ -48,6 +55,19 @@ function createController(overrides?: {
 }
 
 describe('FuelOrdersController', () => {
+    it('uses shared auth guards and permission metadata', () => {
+        expect(Reflect.getMetadata(GUARDS_METADATA, FuelOrdersController)).toEqual([
+            JwtIntrospectionAuthGuard,
+            PermissionsGuard,
+        ]);
+        expect(Reflect.getMetadata(REQUIRED_PERMISSIONS_METADATA_KEY, FuelOrdersController.prototype.createFuelOrder)).toEqual([
+            ORDER_PERMISSIONS.fuelOrderCreate.key,
+        ]);
+        expect(Reflect.getMetadata(REQUIRED_PERMISSIONS_METADATA_KEY, FuelOrdersController.prototype.listFuelOrders)).toEqual([
+            ORDER_PERMISSIONS.fuelOrderReadAll.key,
+        ]);
+    });
+
     it('delegates create requests to the create endpoint service', async () => {
         const response = ApiResponse.builder().withSuccess({ status: 201, data: fuelOrder }).build();
         const createFuelOrder = jest.fn().mockResolvedValue(response);
