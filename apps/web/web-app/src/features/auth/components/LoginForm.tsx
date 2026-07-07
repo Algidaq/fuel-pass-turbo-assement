@@ -2,6 +2,7 @@ import { Alert, Button, FormField, Input } from '@fuel-pass/ui';
 import { useState, type FormEvent } from 'react';
 
 import { loginReqDtoSchema, type TLoginRequestDto } from '@fuel-pass/contracts';
+import { getApiErrorMessage } from '../../../services/apiErrorMessages';
 import { isApiError } from '../../../services/httpClient';
 
 type LoginFormProps = {
@@ -32,7 +33,7 @@ const getErrorMessage = (error: unknown): string => {
             return 'Invalid email or password.';
         }
 
-        return error.message;
+        return getApiErrorMessage(error, 'Unable to sign in. Check your credentials and try again.');
     }
 
     return 'Unable to sign in. Check your credentials and try again.';

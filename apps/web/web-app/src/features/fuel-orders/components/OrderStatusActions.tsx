@@ -1,7 +1,7 @@
 import { Alert, Button } from '@fuel-pass/ui';
 import { useState } from 'react';
 
-import { isApiError } from '../../../services/httpClient';
+import { getApiErrorMessage } from '../../../services/apiErrorMessages';
 import { useUpdateFuelOrderStatus } from '../hooks/useUpdateFuelOrderStatus';
 import type { FuelOrder } from '../types/fuelOrder.types';
 import { getNextFuelOrderStatus, getStatusActionLabel } from '../utils/fuelOrderStatus';
@@ -11,11 +11,7 @@ type OrderStatusActionsProps = {
 };
 
 const getUpdateErrorMessage = (error: unknown): string => {
-  if (isApiError(error)) {
-    return error.message;
-  }
-
-  return 'Unable to update this order status. Please try again.';
+  return getApiErrorMessage(error, 'Unable to update this order status. Please try again.');
 };
 
 export const OrderStatusActions = ({ order }: OrderStatusActionsProps) => {

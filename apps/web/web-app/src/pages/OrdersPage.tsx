@@ -2,16 +2,12 @@ import { useState } from 'react';
 
 import { PageError } from '../components/feedback/PageError';
 import { PageLoader } from '../components/feedback/PageLoader';
-import { isApiError } from '../services/httpClient';
+import { getApiErrorMessage } from '../services/apiErrorMessages';
 import { OrderFilters, OrderSummaryCards, OrdersEmptyState, OrdersTable, useFuelOrders } from '../features/fuel-orders';
 import type { FuelOrderFilters } from '../features/fuel-orders';
 
 const getOrdersErrorMessage = (error: unknown): string => {
-  if (isApiError(error)) {
-    return error.message;
-  }
-
-  return 'Unable to load fuel orders. Please try again.';
+  return getApiErrorMessage(error, 'Unable to load fuel orders. Please try again.');
 };
 
 export const OrdersPage = () => {

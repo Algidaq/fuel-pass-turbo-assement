@@ -1,7 +1,7 @@
 import { Alert, Button, FormField, Input, NumberInput } from '@fuel-pass/ui';
 import { useState, type FormEvent } from 'react';
 
-import { isApiError } from '../../../services/httpClient';
+import { getApiErrorMessage } from '../../../services/apiErrorMessages';
 import { useCreateFuelOrder } from '../hooks/useCreateFuelOrder';
 import type { CreateFuelOrderFormErrors, CreateFuelOrderFormValues, FuelOrder } from '../types/fuelOrder.types';
 import {
@@ -15,11 +15,7 @@ import { validateCreateFuelOrderForm } from '../utils/fuelOrderValidation';
 const normalizeAirportInput = (value: string): string => value.trim().toUpperCase().replace(/[^A-Z]/gu, '').slice(0, 4);
 
 const getSubmitErrorMessage = (error: unknown): string => {
-  if (isApiError(error)) {
-    return error.message;
-  }
-
-  return 'Unable to submit the fuel order. Please try again.';
+  return getApiErrorMessage(error, 'Unable to submit the fuel order. Please try again.');
 };
 
 export const FuelOrderForm = () => {
