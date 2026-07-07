@@ -12,6 +12,7 @@ type AuthState = {
   isAuthenticated: boolean;
   isHydrated: boolean;
   setSession: (session: LoginResponse) => void;
+  updateTokens: (tokens: Pick<LoginResponse, 'accessToken' | 'refreshToken'>) => void;
   clearSession: () => void;
   setHydrated: (isHydrated: boolean) => void;
 };
@@ -33,6 +34,12 @@ export const useAuthStore = create<AuthState>()(
           user: session.user,
           isAuthenticated: true,
         }),
+      updateTokens: (tokens) =>
+        set((state) => ({
+          accessToken: tokens.accessToken,
+          refreshToken: tokens.refreshToken,
+          isAuthenticated: Boolean(tokens.accessToken && state.user),
+        })),
       clearSession: () =>
         set({
           accessToken: null,

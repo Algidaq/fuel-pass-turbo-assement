@@ -1,9 +1,12 @@
+import styles from './PageLoader.module.css';
+
 type PageLoaderProps = {
     message?: string;
+    className?: string;
 };
 
-export const PageLoader = ({ message = 'Loading...' }: PageLoaderProps) => (
-    <div className="page-loader" role="status">
+export const PageLoader = ({ className, message = 'Loading...' }: PageLoaderProps) => (
+    <div className={[styles.loader, className].filter(Boolean).join(' ')} role="status">
         {message}
     </div>
 );

@@ -2,12 +2,11 @@ import type { PermissionKey } from '@fuel-pass/contracts';
 import type { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 
-import { PageError } from '../components/feedback/PageError';
 import { PageLoader } from '../components/feedback/PageLoader';
 import { useAuthHydration } from '../features/auth/hooks/useAuthHydration';
 import { useAuthStore } from '../features/auth/store/auth.store';
 import { hasAllPermissions } from '../features/auth/utils/permissionAccess';
-import { getDefaultRouteForUser, routes } from './roleRoutes';
+import { routes } from './roleRoutes';
 
 type PermissionGuardProps = {
     requiredPermissions: readonly PermissionKey[];
@@ -29,13 +28,7 @@ export const PermissionGuard = ({ requiredPermissions, children }: PermissionGua
     }
 
     if (!hasAllPermissions(user, requiredPermissions)) {
-        const defaultRoute = getDefaultRouteForUser(user);
-
-        if (defaultRoute !== location.pathname) {
-            return <Navigate replace to={defaultRoute} />;
-        }
-
-        return <PageError message="You do not have permission to access this page." />;
+        return <Navigate replace state={{ from: location }} to={routes.restricted} />;
     }
 
     return children;

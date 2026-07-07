@@ -3,6 +3,7 @@ import { useState, type FormEvent } from 'react';
 
 import type { FuelOrderFilters } from '../types/fuelOrder.types';
 import { normalizeAirportIcaoCode } from '../utils/fuelOrderFormatting';
+import styles from './OrderFilters.module.css';
 
 type OrderFiltersProps = {
   filters: FuelOrderFilters;
@@ -27,10 +28,11 @@ export const OrderFilters = ({ filters, onApply }: OrderFiltersProps) => {
   };
 
   return (
-    <Card>
+    <Card className={styles.card}>
       <CardBody>
-        <form className="orders-filter-form" noValidate onSubmit={handleSubmit}>
-          <FormField label="Airport ICAO Code">
+        <h2>Filter orders</h2>
+        <form className={styles.form} noValidate onSubmit={handleSubmit}>
+          <FormField hint="Filter orders by 4-letter airport code." label="Airport ICAO Code">
             <Input
               autoComplete="off"
               maxLength={4}
@@ -40,8 +42,8 @@ export const OrderFilters = ({ filters, onApply }: OrderFiltersProps) => {
               value={airportIcaoCode}
             />
           </FormField>
-          <div className="orders-filter-actions">
-            <Button type="submit">Apply</Button>
+          <div className={styles.actions}>
+            <Button type="submit">Apply filter</Button>
             <Button onClick={handleClear} type="button" variant="secondary">
               Clear
             </Button>

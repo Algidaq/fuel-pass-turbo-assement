@@ -1,0 +1,55 @@
+.card {
+  overflow: hidden;
+}
+
+.header {
+  padding: 32px;
+}
+
+.header h2 {
+  margin: 0;
+  color: #131b2e;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 28px;
+  letter-spacing: -0.01em;
+}
+
+.header p {
+  margin: 4px 0 0;
+  color: #5d5e60;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.body {
+  padding: 0;
+}
+
+.scroll {
+  overflow-x: auto;
+}
+
+.scroll table {
+  min-width: 920px;
+}
+
+.actionsHead,
+.actionsCell {
+  text-align: right;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-top: 1px solid #f1f5f9;
+  background: rgb(242 243 255 / 0.3);
+}
+
+.footer span {
+  color: #5d5e60;
+  font-size: 13px;
+  line-height: 18px;
+}

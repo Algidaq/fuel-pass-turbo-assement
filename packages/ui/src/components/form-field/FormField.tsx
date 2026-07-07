@@ -1,16 +1,16 @@
-import { Field } from '@base-ui/react/field';
+import { FormControl, FormHelperText, FormLabel } from '@mui/material';
 
 import { cn } from '../../utils/index.js';
 import styles from './FormField.module.css';
 import type { FormFieldProps } from './FormField.types.js';
 
 export const FormField = ({ children, className, error, hint, label, required = false, ...props }: FormFieldProps) => (
-    <Field.Root className={cn(styles.root, className)} invalid={Boolean(error)} {...props}>
-        <Field.Label className={styles.label}>
+    <FormControl className={cn(styles.root, className)} error={Boolean(error)} required={required} {...props}>
+        <FormLabel className={styles.label}>
             {label} {required ? <span className={styles.required}>*</span> : null}
-        </Field.Label>
+        </FormLabel>
         {children}
-        {hint ? <Field.Description className={styles.hint}>{hint}</Field.Description> : null}
-        {error && <span className={styles.error}>{error}</span>}
-    </Field.Root>
+        {hint ? <FormHelperText className={styles.hint}>{hint}</FormHelperText> : null}
+        {error ? <FormHelperText className={styles.error}>{error}</FormHelperText> : null}
+    </FormControl>
 );

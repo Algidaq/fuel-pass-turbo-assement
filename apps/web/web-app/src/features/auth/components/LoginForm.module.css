@@ -1,0 +1,46 @@
+.form {
+  display: grid;
+  gap: 16px;
+}
+
+.form button[type='submit'] {
+  margin-top: 8px;
+  width: 100%;
+  justify-content: center;
+}
+
+.passwordLabel {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.passwordToggle {
+  border: 0;
+  background: transparent;
+  color: #5d5e60;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  padding: 0;
+  transition: color 120ms ease;
+}
+
+.passwordToggle:hover,
+.passwordToggle:focus-visible {
+  color: #0f766e;
+}
+
+.passwordToggle:focus-visible {
+  outline: 2px solid #0f766e;
+  outline-offset: 2px;
+}
+
+.passwordToggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}

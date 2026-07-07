@@ -1,3 +1,4 @@
+export * from './components/AuthSessionSubscriber';
 export * from './components/LoginForm';
 export * from './hooks/useCurrentUser';
 export * from './hooks/useLogin';
