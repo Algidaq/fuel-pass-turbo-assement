@@ -232,8 +232,7 @@ a {
   padding: 48px;
 }
 
-.placeholder-page,
-.not-found-page {
+.placeholder-page {
   padding: 32px;
   border: 1px solid #e2e8f0;
   border-radius: 14px;
@@ -242,16 +241,131 @@ a {
 }
 
 .not-found-page {
-  width: min(100% - 48px, 640px);
-  margin: 48px auto;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+  background: #f8fafc;
+  color: #0f172a;
 }
 
-.not-found-page a {
+.not-found-brand {
   display: inline-flex;
-  margin-top: 18px;
-  color: #005c55;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 32px 16px 24px;
+  color: #0f172a;
+  font-size: 28px;
   font-weight: 600;
-  text-decoration: none;
+  letter-spacing: -0.01em;
+  line-height: 32px;
+}
+
+.not-found-brand-mark {
+  display: inline-grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: 6px;
+  background: #0f766e;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.not-found-main {
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+
+.not-found-card {
+  width: min(100%, 520px);
+  border-radius: 14px;
+}
+
+.not-found-card-body {
+  display: grid;
+  justify-items: center;
+  padding: 32px;
+  text-align: center;
+}
+
+.not-found-icon {
+  display: inline-grid;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 24px;
+  place-items: center;
+  border-radius: 8px;
+  background: #f4f4f5;
+  color: #64748b;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.not-found-code {
+  margin-bottom: 4px;
+  color: #cbd5e1;
+  font-size: 56px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 64px;
+  user-select: none;
+}
+
+.not-found-copy {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.not-found-copy h1 {
+  margin: 0 0 8px;
+  color: #0f172a;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 32px;
+}
+
+.not-found-copy p {
+  margin: 0;
+  color: #475569;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.not-found-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.not-found-actions button {
+  justify-content: center;
+}
+
+.not-found-note,
+.not-found-footer {
+  color: #94a3b8;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.not-found-note {
+  margin: 0;
+}
+
+.not-found-footer {
+  padding: 32px 16px;
+  text-align: center;
+  letter-spacing: 0.02em;
 }
 
 .restricted-page {
@@ -897,6 +1011,29 @@ a {
 
   .restricted-card-body {
     padding: 24px;
+  }
+
+  .not-found-brand {
+    padding-top: 24px;
+  }
+
+  .not-found-card-body {
+    padding: 24px;
+  }
+
+  .not-found-code {
+    font-size: 48px;
+    line-height: 52px;
+  }
+
+  .not-found-actions {
+    align-items: stretch;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .not-found-actions button {
+    width: 100%;
   }
 
   .orders-page {
