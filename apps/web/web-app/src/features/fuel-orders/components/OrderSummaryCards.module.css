@@ -1,0 +1,65 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.body {
+  display: grid;
+  gap: 4px;
+  padding: 32px;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.card span {
+  color: #5d5e60;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+.card strong {
+  color: #131b2e;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 32px;
+  letter-spacing: -0.02em;
+  margin-top: 4px;
+}
+
+.card p {
+  margin: 0;
+  color: #5d5e60;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+}
+
+.pending {
+  background: #d97706;
+}
+
+.confirmed {
+  background: #2563eb;
+}
+
+.completed {
+  background: #16a34a;
+}
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

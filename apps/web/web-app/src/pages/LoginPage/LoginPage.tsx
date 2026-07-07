@@ -1,9 +1,10 @@
 import { Card } from '@fuel-pass/ui';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { LoginForm, useLogin } from '../features/auth';
-import { getRedirectPathAfterLogin } from '../features/auth/utils/authRedirect';
-import type { LoginRequest } from '../features/auth/types/auth.types';
+import { LoginForm, useLogin } from '../../features/auth';
+import { getRedirectPathAfterLogin } from '../../features/auth/utils/authRedirect';
+import type { LoginRequest } from '../../features/auth/types/auth.types';
+import styles from './LoginPage.module.css';
 
 export const LoginPage = () => {
   const location = useLocation();
@@ -18,13 +19,13 @@ export const LoginPage = () => {
   };
 
   return (
-    <Card className="auth-card">
-      <div className="auth-card-header">
+    <Card className={styles.card}>
+      <div className={styles.header}>
         <h1>Sign in to FuelPass</h1>
         <p>Access fuel order operations and aircraft refueling workflows.</p>
       </div>
       <LoginForm error={login.error} isSubmitting={login.isPending} onSubmit={handleSubmit} />
-      <p className="auth-helper">Use your assigned FuelPass account credentials.</p>
+      <p className={styles.helper}>Use your assigned FuelPass account credentials.</p>
     </Card>
   );
 };

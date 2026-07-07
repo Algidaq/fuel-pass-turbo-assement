@@ -1,14 +1,15 @@
 import { Badge, Button } from '@fuel-pass/ui';
 import { useState } from 'react';
 
-import { PageError } from '../components/feedback/PageError';
-import { PageLoader } from '../components/feedback/PageLoader';
-import { useAuthStore } from '../features/auth/store/auth.store';
-import type { AuthUser } from '../features/auth/types/auth.types';
-import { getApiErrorMessage } from '../services/apiErrorMessages';
-import { OrderFilters, OrderSummaryCards, OrdersEmptyState, OrdersTable, useFuelOrders } from '../features/fuel-orders';
-import type { FuelOrderFilters } from '../features/fuel-orders';
-import { canCreateOrders, canViewOrders } from '../routes/roleRoutes';
+import { PageError } from '../../components/feedback/PageError';
+import { PageLoader } from '../../components/feedback/PageLoader';
+import { useAuthStore } from '../../features/auth/store/auth.store';
+import type { AuthUser } from '../../features/auth/types/auth.types';
+import { getApiErrorMessage } from '../../services/apiErrorMessages';
+import { OrderFilters, OrderSummaryCards, OrdersEmptyState, OrdersTable, useFuelOrders } from '../../features/fuel-orders';
+import type { FuelOrderFilters } from '../../features/fuel-orders';
+import { canCreateOrders, canViewOrders } from '../../routes/roleRoutes';
+import styles from './OrdersPage.module.css';
 
 const getOrdersErrorMessage = (error: unknown): string => {
   return getApiErrorMessage(error, 'Unable to load fuel orders. Please try again.');
@@ -42,10 +43,10 @@ export const OrdersPage = () => {
   const roleLabel = getOrdersRoleLabel(user);
 
   return (
-    <section className="orders-page">
-      <header className="orders-page-header">
+    <section className={styles.page}>
+      <header className={styles.header}>
         <div>
-          <div className="page-header-title-row">
+          <div className={styles.titleRow}>
             <h1>Fuel Orders</h1>
             <Badge variant="info">{roleLabel}</Badge>
           </div>
@@ -66,7 +67,7 @@ export const OrdersPage = () => {
 
       <OrderFilters filters={filters} onApply={setFilters} />
 
-      {fuelOrdersQuery.isLoading ? <PageLoader message="Loading fuel orders..." /> : null}
+      {fuelOrdersQuery.isLoading ? <PageLoader className={styles.loader} message="Loading fuel orders..." /> : null}
 
       {fuelOrdersQuery.error ? (
         <PageError message={getOrdersErrorMessage(fuelOrdersQuery.error)} onRetry={() => void fuelOrdersQuery.refetch()} />

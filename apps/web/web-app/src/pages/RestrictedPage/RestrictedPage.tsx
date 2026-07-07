@@ -1,10 +1,11 @@
 import { Badge, Button, Card, CardBody } from '@fuel-pass/ui';
 import { useNavigate } from 'react-router-dom';
 
-import { useLogout } from '../features/auth/hooks/useLogout';
-import { useAuthStore } from '../features/auth/store/auth.store';
-import type { AuthUser } from '../features/auth/types/auth.types';
-import { getWorkspaceRouteForUser } from '../routes/roleRoutes';
+import { useLogout } from '../../features/auth/hooks/useLogout';
+import { useAuthStore } from '../../features/auth/store/auth.store';
+import type { AuthUser } from '../../features/auth/types/auth.types';
+import { getWorkspaceRouteForUser } from '../../routes/roleRoutes';
+import styles from './RestrictedPage.module.css';
 
 const formatRoleName = (role: string): string =>
     role
@@ -28,12 +29,12 @@ export const RestrictedPage = () => {
     const workspaceRoute = user ? getWorkspaceRouteForUser(user) : null;
 
     return (
-        <section className="restricted-page" aria-labelledby="restricted-page-title">
-            <Card className="restricted-card">
-                <CardBody className="restricted-card-body">
-                    <div className="restricted-icon" aria-hidden="true" />
+        <section className={styles.page} aria-labelledby="restricted-page-title">
+            <Card className={styles.card}>
+                <CardBody className={styles.body}>
+                    <div className={styles.icon} aria-hidden="true" />
 
-                    <div className="restricted-copy">
+                    <div className={styles.copy}>
                         <h1 id="restricted-page-title">Access restricted</h1>
                         <p>You do not have permission to view this page with your current role.</p>
                         <p>
@@ -43,14 +44,14 @@ export const RestrictedPage = () => {
                         </p>
                     </div>
 
-                    <div className="restricted-divider" />
+                    <div className={styles.divider} />
 
-                    <div className="restricted-access-row">
+                    <div className={styles.accessRow}>
                         <span>Current access</span>
                         <Badge variant="neutral">{getAccessLabel(user)}</Badge>
                     </div>
 
-                    <div className="restricted-actions">
+                    <div className={styles.actions}>
                         {workspaceRoute ? (
                             <Button onClick={() => navigate(workspaceRoute, { replace: true })} type="button">
                                 Go to my workspace
@@ -61,7 +62,7 @@ export const RestrictedPage = () => {
                         </Button>
                     </div>
 
-                    <p className="restricted-note">Access is based on your FuelPass role.</p>
+                    <p className={styles.note}>Access is based on your FuelPass role.</p>
                 </CardBody>
             </Card>
         </section>

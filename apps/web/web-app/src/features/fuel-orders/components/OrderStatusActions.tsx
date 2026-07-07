@@ -5,6 +5,7 @@ import { getApiErrorMessage } from '../../../services/apiErrorMessages';
 import { useUpdateFuelOrderStatus } from '../hooks/useUpdateFuelOrderStatus';
 import type { FuelOrder } from '../types/fuelOrder.types';
 import { getNextFuelOrderStatus, getStatusActionLabel } from '../utils/fuelOrderStatus';
+import styles from './OrderStatusActions.module.css';
 
 type OrderStatusActionsProps = {
   order: FuelOrder;
@@ -21,7 +22,7 @@ export const OrderStatusActions = ({ order }: OrderStatusActionsProps) => {
   const actionLabel = getStatusActionLabel(order.status);
 
   if (!nextStatus || !actionLabel) {
-    return <span className="order-status-complete-text">Completed</span>;
+    return <span className={styles.completeText}>Completed</span>;
   }
 
   const handleUpdateStatus = async () => {
@@ -35,12 +36,12 @@ export const OrderStatusActions = ({ order }: OrderStatusActionsProps) => {
   };
 
   return (
-    <div className="order-status-actions">
+    <div className={styles.actions}>
       <Button disabled={updateFuelOrderStatus.isPending} onClick={handleUpdateStatus} size="sm" type="button">
         {updateFuelOrderStatus.isPending ? 'Updating...' : actionLabel}
       </Button>
       {errorMessage ? (
-        <Alert className="order-status-error" role="alert" variant="danger">
+        <Alert className={styles.error} role="alert" variant="danger">
           {errorMessage}
         </Alert>
       ) : null}

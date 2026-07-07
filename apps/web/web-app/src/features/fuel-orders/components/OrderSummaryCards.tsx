@@ -1,6 +1,7 @@
 import { Card, CardBody } from '@fuel-pass/ui';
 
 import type { FuelOrder, FuelOrderStatus } from '../types/fuelOrder.types';
+import styles from './OrderSummaryCards.module.css';
 
 type OrderSummaryCardsProps = {
   orders: FuelOrder[];
@@ -18,13 +19,13 @@ export const OrderSummaryCards = ({ orders }: OrderSummaryCardsProps) => {
   ];
 
   return (
-    <div className="order-summary-grid" aria-label="Fuel order summary">
+    <div className={styles.grid} aria-label="Fuel order summary">
       {summaryItems.map((item) => (
-        <Card className="order-summary-card" key={item.label}>
-          <CardBody className="order-summary-card-body">
-            <div className="order-summary-card-title">
+        <Card className={styles.card} key={item.label}>
+          <CardBody className={styles.body}>
+            <div className={styles.title}>
               <span>{item.label}</span>
-              {item.status ? <i className={`order-summary-dot ${item.status}`} aria-hidden="true" /> : null}
+              {item.status ? <i className={[styles.dot, styles[item.status]].join(' ')} aria-hidden="true" /> : null}
             </div>
             <strong>{item.value}</strong>
             <p>{item.description}</p>

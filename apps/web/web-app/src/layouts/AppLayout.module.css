@@ -1,0 +1,22 @@
+.layout {
+  min-height: 100vh;
+  background: #faf8ff;
+}
+
+.main {
+  width: min(100%, 1440px);
+  margin: 0 auto;
+  padding: 48px;
+}
+
+@media (max-width: 720px) {
+  .main {
+    padding: 20px 16px;
+  }
+}
+
+@media (min-width: 721px) and (max-width: 1024px) {
+  .main {
+    padding: 32px;
+  }
+}

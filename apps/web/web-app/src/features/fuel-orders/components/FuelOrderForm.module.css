@@ -1,0 +1,77 @@
+.form {
+  display: grid;
+  gap: 0;
+}
+
+.alert {
+  margin: 0 32px 16px;
+}
+
+.fields {
+  display: grid;
+  gap: 16px;
+  padding: 24px 32px 32px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.volumeInput {
+  position: relative;
+}
+
+.volumeInput input {
+  padding-right: 40px;
+}
+
+.volumeInput > span {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  color: #5d5e60;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  justify-content: flex-end;
+  padding: 16px 32px;
+  border-top: 1px solid #e2e8f0;
+  border-radius: 0 0 14px 14px;
+  background: #f8fafc;
+}
+
+@media (max-width: 720px) {
+  .alert {
+    margin: 0 24px 16px;
+  }
+
+  .fields {
+    padding: 20px 24px 24px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    flex-direction: column-reverse;
+    justify-content: stretch;
+    padding: 16px 24px 24px;
+  }
+
+  .actions button {
+    width: 100%;
+    justify-content: center;
+  }
+}

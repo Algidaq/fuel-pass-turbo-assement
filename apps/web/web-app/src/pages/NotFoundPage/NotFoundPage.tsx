@@ -1,8 +1,9 @@
 import { Button, Card, CardBody } from '@fuel-pass/ui';
 import { useNavigate } from 'react-router-dom';
 
-import { useAuthStore } from '../features/auth/store/auth.store';
-import { getWorkspaceRouteForUser, routes } from '../routes/roleRoutes';
+import { useAuthStore } from '../../features/auth/store/auth.store';
+import { getWorkspaceRouteForUser, routes } from '../../routes/roleRoutes';
+import styles from './NotFoundPage.module.css';
 
 export const NotFoundPage = () => {
     const navigate = useNavigate();
@@ -12,29 +13,29 @@ export const NotFoundPage = () => {
     const fallbackRoute = isAuthenticated ? (workspaceRoute ?? routes.restricted) : routes.login;
 
     return (
-        <div className="not-found-page">
-            <header className="not-found-brand" aria-label="FuelPass">
-                <span className="not-found-brand-mark" aria-hidden="true">
+        <div className={styles.page}>
+            <header className={styles.brand} aria-label="FuelPass">
+                <span className={styles.brandMark} aria-hidden="true">
                     F
                 </span>
                 <span>FuelPass</span>
             </header>
 
-            <main className="not-found-main">
-                <Card className="not-found-card">
-                    <CardBody className="not-found-card-body">
-                        <span className="not-found-icon" aria-hidden="true">
+            <main className={styles.main}>
+                <Card className={styles.card}>
+                    <CardBody className={styles.body}>
+                        <span className={styles.icon} aria-hidden="true">
                             ?
                         </span>
-                        <div className="not-found-code" aria-hidden="true">
+                        <div className={styles.code} aria-hidden="true">
                             404
                         </div>
-                        <div className="not-found-copy">
+                        <div className={styles.copy}>
                             <h1>Page not found</h1>
                             <p>The page you are looking for does not exist or may have been moved.</p>
                             <p>Return to your workspace or sign in again to continue.</p>
                         </div>
-                        <div className="not-found-actions">
+                        <div className={styles.actions}>
                             <Button onClick={() => navigate(fallbackRoute, { replace: true })} type="button">
                                 Go to workspace
                             </Button>
@@ -42,12 +43,12 @@ export const NotFoundPage = () => {
                                 Back to login
                             </Button>
                         </div>
-                        <p className="not-found-note">If the issue continues, check the route or contact your administrator.</p>
+                        <p className={styles.note}>If the issue continues, check the route or contact your administrator.</p>
                     </CardBody>
                 </Card>
             </main>
 
-            <footer className="not-found-footer">FuelPass Operations Platform</footer>
+            <footer className={styles.footer}>FuelPass Operations Platform</footer>
         </div>
     );
 };

@@ -1,0 +1,18 @@
+.actions {
+  display: inline-grid;
+  gap: 8px;
+  justify-items: end;
+}
+
+.error {
+  max-width: 260px;
+  padding: 8px 10px;
+  font-size: 0.85rem;
+}
+
+.completeText {
+  color: #5d5e60;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}

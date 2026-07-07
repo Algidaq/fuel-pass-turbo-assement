@@ -4,6 +4,7 @@ import { useState, type FormEvent } from 'react';
 import { loginReqDtoSchema, type TLoginRequestDto } from '@fuel-pass/contracts';
 import { getApiErrorMessage } from '../../../services/apiErrorMessages';
 import { isApiError } from '../../../services/httpClient';
+import styles from './LoginForm.module.css';
 
 type LoginFormProps = {
     error?: unknown;
@@ -65,7 +66,7 @@ export const LoginForm = ({ error, isSubmitting, onSubmit }: LoginFormProps) => 
     };
 
     return (
-        <form className="auth-form" noValidate onSubmit={handleSubmit}>
+        <form className={styles.form} noValidate onSubmit={handleSubmit}>
             {error ? (
                 <Alert role="alert" variant="danger">
                     {getErrorMessage(error)}
@@ -88,10 +89,10 @@ export const LoginForm = ({ error, isSubmitting, onSubmit }: LoginFormProps) => 
             <FormField
                 error={errors.password}
                 label={
-                    <span className="auth-password-label">
+                    <span className={styles.passwordLabel}>
                         <span>Password</span>
                         <button
-                            className="auth-password-toggle"
+                            className={styles.passwordToggle}
                             disabled={isSubmitting}
                             onClick={() => setIsPasswordVisible((currentValue) => !currentValue)}
                             type="button"

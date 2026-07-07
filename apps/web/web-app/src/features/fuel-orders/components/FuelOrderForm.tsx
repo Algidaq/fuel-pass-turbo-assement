@@ -11,6 +11,7 @@ import {
   toCreateFuelOrderRequest,
 } from '../utils/fuelOrderFormatting';
 import { validateCreateFuelOrderForm } from '../utils/fuelOrderValidation';
+import styles from './FuelOrderForm.module.css';
 
 const normalizeAirportInput = (value: string): string => value.trim().toUpperCase().replace(/[^A-Z]/gu, '').slice(0, 4);
 
@@ -63,22 +64,22 @@ export const FuelOrderForm = () => {
   };
 
   return (
-    <form className="fuel-order-form" id="fuelOrderForm" noValidate onReset={handleReset} onSubmit={handleSubmit}>
+    <form className={styles.form} id="fuelOrderForm" noValidate onReset={handleReset} onSubmit={handleSubmit}>
       {createdOrder ? (
-        <Alert className="fuel-order-form-alert" role="status" variant="success">
+        <Alert className={styles.alert} role="status" variant="success">
           Fuel order {createdOrder.id} was submitted with status {createdOrder.status}. Requested {formatFuelVolume(createdOrder)} for{' '}
           {createdOrder.airportIcaoCode}, {formatDeliveryWindow(createdOrder)}.
         </Alert>
       ) : null}
 
       {createFuelOrder.error ? (
-        <Alert className="fuel-order-form-alert" role="alert" variant="danger">
+        <Alert className={styles.alert} role="alert" variant="danger">
           {getSubmitErrorMessage(createFuelOrder.error)}
         </Alert>
       ) : null}
 
-      <div className="fuel-order-form-fields">
-        <div className="fuel-order-form-grid">
+      <div className={styles.fields}>
+        <div className={styles.grid}>
           <FormField error={errors.tailNumber} label="Tail Number" required>
             <Input
               autoComplete="off"
@@ -106,7 +107,7 @@ export const FuelOrderForm = () => {
         </div>
 
         <FormField error={errors.requestedFuelVolume} label="Requested Fuel Volume" required>
-          <div className="fuel-volume-input">
+          <div className={styles.volumeInput}>
             <NumberInput
               disabled={createFuelOrder.isPending}
               error={Boolean(errors.requestedFuelVolume)}
@@ -121,7 +122,7 @@ export const FuelOrderForm = () => {
           </div>
         </FormField>
 
-        <div className="fuel-order-form-grid">
+        <div className={styles.grid}>
           <FormField error={errors.deliveryWindowStartAt} label="Delivery Window Start" required>
             <Input
               disabled={createFuelOrder.isPending}
@@ -146,7 +147,7 @@ export const FuelOrderForm = () => {
         </div>
       </div>
 
-      <div className="fuel-order-form-actions">
+      <div className={styles.actions}>
         <Button disabled={createFuelOrder.isPending} type="reset" variant="ghost">
           Reset
         </Button>
