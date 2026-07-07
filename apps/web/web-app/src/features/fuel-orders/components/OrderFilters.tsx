@@ -27,10 +27,11 @@ export const OrderFilters = ({ filters, onApply }: OrderFiltersProps) => {
   };
 
   return (
-    <Card>
+    <Card className="orders-filter-card">
       <CardBody>
+        <h2>Filter orders</h2>
         <form className="orders-filter-form" noValidate onSubmit={handleSubmit}>
-          <FormField label="Airport ICAO Code">
+          <FormField hint="Filter orders by 4-letter airport code." label="Airport ICAO Code">
             <Input
               autoComplete="off"
               maxLength={4}
@@ -41,7 +42,7 @@ export const OrderFilters = ({ filters, onApply }: OrderFiltersProps) => {
             />
           </FormField>
           <div className="orders-filter-actions">
-            <Button type="submit">Apply</Button>
+            <Button type="submit">Apply filter</Button>
             <Button onClick={handleClear} type="button" variant="secondary">
               Clear
             </Button>

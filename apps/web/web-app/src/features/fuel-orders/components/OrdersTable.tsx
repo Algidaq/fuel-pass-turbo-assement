@@ -10,7 +10,11 @@ type OrdersTableProps = {
 };
 
 export const OrdersTable = ({ orders }: OrdersTableProps) => (
-  <Card>
+  <Card className="orders-table-card">
+    <div className="orders-table-header">
+      <h2>Submitted orders</h2>
+      <p>Review requests and move orders through the operational workflow.</p>
+    </div>
     <CardBody className="orders-table-card-body">
       <div className="orders-table-scroll">
         <Table>
@@ -22,7 +26,7 @@ export const OrdersTable = ({ orders }: OrdersTableProps) => (
               <TableHead>Delivery Window</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Created At</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead className="orders-table-actions-head">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -36,7 +40,7 @@ export const OrdersTable = ({ orders }: OrdersTableProps) => (
                   <StatusChip label={getFuelOrderStatusLabel(order.status)} variant={getStatusChipVariant(order.status)} />
                 </TableCell>
                 <TableCell>{formatDateTime(order.createdAt)}</TableCell>
-                <TableCell>
+                <TableCell className="orders-table-actions-cell">
                   <OrderStatusActions order={order} />
                 </TableCell>
               </TableRow>
@@ -45,5 +49,10 @@ export const OrdersTable = ({ orders }: OrdersTableProps) => (
         </Table>
       </div>
     </CardBody>
+    <div className="orders-table-footer">
+      <span>
+        Showing {orders.length} of {orders.length} {orders.length === 1 ? 'order' : 'orders'}
+      </span>
+    </div>
   </Card>
 );
