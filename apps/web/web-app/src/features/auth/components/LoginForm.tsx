@@ -22,7 +22,7 @@ const validateForm = (values: TLoginRequestDto): LoginFormErrors => {
     const formattedError = result.error.format();
     return {
         email: formattedError.email?._errors.at(0),
-        password: formattedError.email?._errors.at(0),
+        password: formattedError.password?._errors.at(0),
     };
 };
 

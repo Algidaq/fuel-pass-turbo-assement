@@ -11,6 +11,6 @@ export const FormField = ({ children, className, error, hint, label, required = 
         </Field.Label>
         {children}
         {hint ? <Field.Description className={styles.hint}>{hint}</Field.Description> : null}
-        {error ? <Field.Error className={styles.error}>{error}</Field.Error> : null}
+        {error && <span className={styles.error}>{error}</span>}
     </Field.Root>
 );
