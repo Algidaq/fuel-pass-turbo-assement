@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
-import type { Field } from '@base-ui/react/field';
 
-export type FormFieldProps = Omit<Field.Root.Props, 'children' | 'className'> & {
+export type FormFieldProps = {
     children: ReactNode;
     className?: string;
     error?: ReactNode;

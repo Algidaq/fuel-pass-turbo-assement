@@ -1,5 +1,5 @@
+import type { SelectChangeEvent, SelectProps as MuiSelectProps } from '@mui/material/Select';
 import type { ReactNode } from 'react';
-import type { Select as BaseSelect } from '@base-ui/react/select';
 
 export type SelectOption = {
     disabled?: boolean;
@@ -7,9 +7,11 @@ export type SelectOption = {
     value: string;
 };
 
-export type SelectProps = Omit<BaseSelect.Root.Props<string>, 'children' | 'items'> & {
+export type SelectProps = Omit<MuiSelectProps<string>, 'children' | 'className' | 'onChange'> & {
     className?: string;
     error?: boolean;
+    onChange?: (event: SelectChangeEvent<string>, child: ReactNode) => void;
+    onValueChange?: (value: string) => void;
     options: SelectOption[];
     placeholder?: ReactNode;
     popupClassName?: string;

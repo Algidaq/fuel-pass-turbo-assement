@@ -18,9 +18,21 @@
         box-shadow 120ms ease;
 }
 
-.trigger:focus-visible {
+.trigger:focus-visible,
+.trigger:global(.Mui-focused) {
     outline: none;
     box-shadow: var(--fp-focus-ring);
+}
+
+.trigger :global(.MuiOutlinedInput-notchedOutline) {
+    border: 0;
+}
+
+.trigger :global(.MuiSelect-select) {
+    display: flex;
+    min-height: auto;
+    align-items: center;
+    padding: 0;
 }
 
 .trigger[data-disabled] {
@@ -29,6 +41,10 @@
 }
 
 .trigger[data-placeholder] {
+    color: var(--fp-muted-foreground);
+}
+
+.placeholder {
     color: var(--fp-muted-foreground);
 }
 

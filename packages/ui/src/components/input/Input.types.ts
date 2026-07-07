@@ -1,6 +1,6 @@
-import type { Input } from '@base-ui/react/input';
+import type { InputHTMLAttributes } from 'react';
 
-export type InputProps = Omit<Input.Props, 'className'> & {
+export type InputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'className'> & {
     className?: string;
     error?: boolean;
 };

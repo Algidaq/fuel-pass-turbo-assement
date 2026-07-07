@@ -1,6 +1,6 @@
 :root {
-  color: #1f2933;
-  background: #f5f7fa;
+  color: #131b2e;
+  background: #faf8ff;
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
     sans-serif;
@@ -38,7 +38,10 @@ a {
   display: grid;
   min-height: 100vh;
   place-items: center;
-  padding: 24px;
+  padding: 32px;
+  background:
+    linear-gradient(180deg, rgb(242 243 255 / 0.76), rgb(250 248 255 / 0.92)),
+    #faf8ff;
 }
 
 .auth-shell {
@@ -47,14 +50,14 @@ a {
 
 .brand {
   margin: 0 0 18px;
-  color: #0f172a;
+  color: #131b2e;
   font-size: 1.15rem;
   font-weight: 700;
   letter-spacing: 0;
 }
 
 .auth-card {
-  padding: 28px;
+  padding: 0;
 }
 
 .auth-card-header {
@@ -66,10 +69,11 @@ a {
 .not-found-page h1,
 .page-header h1 {
   margin: 0;
-  color: #111827;
-  font-size: 1.65rem;
-  line-height: 1.2;
-  letter-spacing: 0;
+  color: #131b2e;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 32px;
+  letter-spacing: -0.02em;
 }
 
 .auth-card-header p,
@@ -77,7 +81,7 @@ a {
 .not-found-page p,
 .page-header p {
   margin: 8px 0 0;
-  color: #667085;
+  color: #3e4947;
 }
 
 .auth-form {
@@ -92,7 +96,7 @@ a {
 
 .app-layout {
   min-height: 100vh;
-  background: #f5f7fa;
+  background: #faf8ff;
 }
 
 .app-header {
@@ -100,9 +104,10 @@ a {
   align-items: center;
   gap: 18px;
   min-height: 64px;
-  padding: 0 28px;
-  border-bottom: 1px solid #e4e7ec;
+  padding: 0 48px;
+  border-bottom: 1px solid #e2e8f0;
   background: #ffffff;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.06);
 }
 
 .app-brand {
@@ -118,29 +123,32 @@ a {
 
 .app-nav a {
   padding: 8px 12px;
-  border-radius: 6px;
-  color: #475467;
+  border-radius: 10px;
+  color: #3e4947;
+  font-size: 14px;
+  font-weight: 500;
   text-decoration: none;
 }
 
 .app-nav a.active,
 .app-nav a:hover {
-  background: #eef4ff;
-  color: #1849a9;
+  background: #e6f7f5;
+  color: #005c55;
 }
 
 .app-main {
-  width: min(100%, 1120px);
+  width: min(100%, 1440px);
   margin: 0 auto;
-  padding: 32px 24px;
+  padding: 48px;
 }
 
 .placeholder-page,
 .not-found-page {
-  padding: 28px;
-  border: 1px solid #e4e7ec;
-  border-radius: 8px;
+  padding: 32px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
   background: #ffffff;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.06);
 }
 
 .not-found-page {
@@ -151,7 +159,7 @@ a {
 .not-found-page a {
   display: inline-flex;
   margin-top: 18px;
-  color: #1849a9;
+  color: #005c55;
   font-weight: 600;
   text-decoration: none;
 }
@@ -161,14 +169,14 @@ a {
   display: grid;
   min-height: 100vh;
   place-items: center;
-  color: #667085;
+  color: #3e4947;
 }
 
 .orders-page .page-loader {
   min-height: auto;
-  padding: 28px;
-  border: 1px solid #e4e7ec;
-  border-radius: 8px;
+  padding: 32px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
   background: #ffffff;
 }
 
@@ -195,9 +203,11 @@ a {
 
 .submit-order-card h2 {
   margin: 0;
-  color: #111827;
-  font-size: 1.1rem;
-  letter-spacing: 0;
+  color: #131b2e;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 28px;
+  letter-spacing: -0.01em;
 }
 
 .fuel-order-form {
@@ -232,12 +242,12 @@ a {
 }
 
 .order-summary-card span {
-  color: #667085;
+  color: #3e4947;
   font-size: 0.9rem;
 }
 
 .order-summary-card strong {
-  color: #111827;
+  color: #131b2e;
   font-size: 1.65rem;
   line-height: 1;
 }
@@ -279,7 +289,7 @@ a {
 }
 
 .order-status-complete-text {
-  color: #667085;
+  color: #3e4947;
   font-size: 0.9rem;
 }
 
@@ -294,17 +304,17 @@ a {
 
 .empty-state h2 {
   margin: 0;
-  color: #111827;
+  color: #131b2e;
   font-size: 1.1rem;
 }
 
 .empty-state p {
   margin: 8px 0 0;
-  color: #667085;
+  color: #3e4947;
 }
 
 .orders-loading-state {
-  color: #667085;
+  color: #3e4947;
 }
 
 @media (max-width: 720px) {
@@ -351,5 +361,15 @@ a {
 
   .orders-filter-actions button {
     justify-content: center;
+  }
+}
+
+@media (min-width: 721px) and (max-width: 1024px) {
+  .app-header {
+    padding: 0 32px;
+  }
+
+  .app-main {
+    padding: 32px;
   }
 }
