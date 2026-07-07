@@ -156,11 +156,27 @@ a {
   text-decoration: none;
 }
 
-.route-status {
+.route-status,
+.page-loader {
   display: grid;
   min-height: 100vh;
   place-items: center;
   color: #667085;
+}
+
+.orders-page .page-loader {
+  min-height: auto;
+  padding: 28px;
+  border: 1px solid #e4e7ec;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.page-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
 }
 
 .submit-order-page {
@@ -267,25 +283,22 @@ a {
   font-size: 0.9rem;
 }
 
-.orders-empty-state,
 .orders-loading-state {
   padding: 28px;
   text-align: center;
 }
 
-.orders-empty-state {
-  border: 1px solid #e4e7ec;
-  border-radius: 8px;
-  background: #ffffff;
+.empty-state {
+  text-align: center;
 }
 
-.orders-empty-state h2 {
+.empty-state h2 {
   margin: 0;
   color: #111827;
   font-size: 1.1rem;
 }
 
-.orders-empty-state p {
+.empty-state p {
   margin: 8px 0 0;
   color: #667085;
 }

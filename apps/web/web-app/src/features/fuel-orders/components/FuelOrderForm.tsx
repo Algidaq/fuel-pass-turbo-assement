@@ -12,6 +12,8 @@ import {
 } from '../utils/fuelOrderFormatting';
 import { validateCreateFuelOrderForm } from '../utils/fuelOrderValidation';
 
+const normalizeAirportInput = (value: string): string => value.trim().toUpperCase().replace(/[^A-Z]/gu, '').slice(0, 4);
+
 const getSubmitErrorMessage = (error: unknown): string => {
   if (isApiError(error)) {
     return error.message;
@@ -92,7 +94,7 @@ export const FuelOrderForm = () => {
             error={Boolean(errors.airportIcaoCode)}
             maxLength={4}
             name="airportIcaoCode"
-            onChange={(event) => updateField('airportIcaoCode', event.target.value.toUpperCase())}
+            onChange={(event) => updateField('airportIcaoCode', normalizeAirportInput(event.target.value))}
             placeholder="OMDB"
             value={values.airportIcaoCode}
           />

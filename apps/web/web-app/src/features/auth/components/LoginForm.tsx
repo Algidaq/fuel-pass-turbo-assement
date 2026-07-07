@@ -28,6 +28,10 @@ const validateForm = (values: TLoginRequestDto): LoginFormErrors => {
 
 const getErrorMessage = (error: unknown): string => {
     if (isApiError(error)) {
+        if (error.status === 401) {
+            return 'Invalid email or password.';
+        }
+
         return error.message;
     }
 

@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 
+import { PageLoader } from '../components/feedback/PageLoader';
+import { useAuthHydration } from '../features/auth/hooks/useAuthHydration';
 import { useAuthStore } from '../features/auth/store/auth.store';
 import { getDefaultRouteForUser } from './roleRoutes';
 
@@ -9,12 +11,12 @@ type PublicRouteProps = {
 };
 
 export const PublicRoute = ({ children }: PublicRouteProps) => {
-  const isHydrated = useAuthStore((state) => state.isHydrated);
+  const isHydrated = useAuthHydration();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const user = useAuthStore((state) => state.user);
 
   if (!isHydrated) {
-    return <div className="route-status">Loading...</div>;
+    return <PageLoader />;
   }
 
   if (isAuthenticated && user) {

@@ -1,6 +1,7 @@
-import { Alert, Card, CardBody } from '@fuel-pass/ui';
 import { useState } from 'react';
 
+import { PageError } from '../components/feedback/PageError';
+import { PageLoader } from '../components/feedback/PageLoader';
 import { isApiError } from '../services/httpClient';
 import { OrderFilters, OrderSummaryCards, OrdersEmptyState, OrdersTable, useFuelOrders } from '../features/fuel-orders';
 import type { FuelOrderFilters } from '../features/fuel-orders';
@@ -30,20 +31,10 @@ export const OrdersPage = () => {
 
       <OrderFilters filters={filters} onApply={setFilters} />
 
-      {fuelOrdersQuery.isLoading ? (
-        <Card>
-          <CardBody>
-            <div className="orders-loading-state" role="status">
-              Loading fuel orders...
-            </div>
-          </CardBody>
-        </Card>
-      ) : null}
+      {fuelOrdersQuery.isLoading ? <PageLoader message="Loading fuel orders..." /> : null}
 
       {fuelOrdersQuery.error ? (
-        <Alert role="alert" variant="danger">
-          {getOrdersErrorMessage(fuelOrdersQuery.error)}
-        </Alert>
+        <PageError message={getOrdersErrorMessage(fuelOrdersQuery.error)} onRetry={() => void fuelOrdersQuery.refetch()} />
       ) : null}
 
       {!fuelOrdersQuery.isLoading && !fuelOrdersQuery.error && orders.length === 0 ? <OrdersEmptyState isFiltered={isFiltered} /> : null}

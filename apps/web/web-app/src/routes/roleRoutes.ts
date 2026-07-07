@@ -1,4 +1,11 @@
 import type { AuthUser } from '../features/auth/types/auth.types';
+import {
+  hasAnyRole,
+  isAdmin,
+  isAircraftOperator,
+  isOperationsManager,
+  roles,
+} from '../features/auth/utils/roleAccess';
 
 export const routes = {
   login: '/login',
@@ -6,17 +13,19 @@ export const routes = {
   submitOrder: '/orders/new',
 } as const;
 
-const normalizeRole = (role: string): string => role.trim().replace(/^ROLE_/i, '').toLowerCase();
+export const routeAllowedRoles = {
+  [routes.orders]: [roles.operationsManager, roles.admin],
+  [routes.submitOrder]: [roles.aircraftOperator, roles.admin],
+} as const;
 
-export const hasUserRole = (user: AuthUser | null, role: string): boolean =>
-  Boolean(user?.roles.some((userRole) => normalizeRole(userRole) === normalizeRole(role)));
+export const hasUserRole = (user: AuthUser | null, role: string): boolean => hasAnyRole(user, [role]);
 
 export const getDefaultRouteForUser = (user: AuthUser): string => {
-  if (hasUserRole(user, 'admin') || hasUserRole(user, 'operations_manager')) {
+  if (isAdmin(user) || isOperationsManager(user)) {
     return routes.orders;
   }
 
-  if (hasUserRole(user, 'aircraft_operator')) {
+  if (isAircraftOperator(user)) {
     return routes.submitOrder;
   }
 
@@ -24,17 +33,7 @@ export const getDefaultRouteForUser = (user: AuthUser): string => {
 };
 
 export const isRouteAllowedForUser = (path: string, user: AuthUser): boolean => {
-  if (hasUserRole(user, 'admin')) {
-    return path === routes.orders || path === routes.submitOrder;
-  }
+  const allowedRoles = routeAllowedRoles[path as keyof typeof routeAllowedRoles];
 
-  if (hasUserRole(user, 'operations_manager')) {
-    return path === routes.orders;
-  }
-
-  if (hasUserRole(user, 'aircraft_operator')) {
-    return path === routes.submitOrder;
-  }
-
-  return path === routes.orders;
+  return allowedRoles ? hasAnyRole(user, allowedRoles) : path === routes.orders;
 };

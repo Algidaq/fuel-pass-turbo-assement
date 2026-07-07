@@ -60,6 +60,12 @@ const getErrorMessage = (payload: unknown, fallback: string): string => {
     if (typeof message === 'string' && message.trim().length > 0) {
       return message;
     }
+
+    if (Array.isArray(message)) {
+      const firstMessage = message.find((item): item is string => typeof item === 'string' && item.trim().length > 0);
+
+      return firstMessage ?? fallback;
+    }
   }
 
   return fallback;
@@ -71,18 +77,32 @@ export const isApiError = (error: unknown): error is ApiError =>
 export const httpClient = async <TResponse>(path: string, options: RequestOptions = {}): Promise<TResponse> => {
   const accessToken = useAuthStore.getState().accessToken;
   const headers = new Headers(options.headers);
+  const hasJsonBody = options.body !== undefined;
 
-  headers.set('Content-Type', 'application/json');
+  if (hasJsonBody) {
+    headers.set('Content-Type', 'application/json');
+  }
 
   if (accessToken) {
     headers.set('Authorization', `Bearer ${accessToken}`);
   }
 
-  const response = await fetch(buildUrl(path), {
-    ...options,
-    headers,
-    body: options.body === undefined ? undefined : JSON.stringify(options.body),
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(buildUrl(path), {
+      ...options,
+      headers,
+      body: hasJsonBody ? JSON.stringify(options.body) : undefined,
+    });
+  } catch (error) {
+    throw {
+      status: 0,
+      message: 'Unable to reach the server. Check your connection and try again.',
+      details: error instanceof Error ? error.message : error,
+    } satisfies ApiError;
+  }
+
   const payload = await parseJsonSafely(response);
 
   if (!response.ok) {

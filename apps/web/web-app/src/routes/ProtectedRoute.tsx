@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 
+import { PageLoader } from '../components/feedback/PageLoader';
+import { useAuthHydration } from '../features/auth/hooks/useAuthHydration';
 import { useAuthStore } from '../features/auth/store/auth.store';
 import { getDefaultRouteForUser, isRouteAllowedForUser, routes } from './roleRoutes';
 
@@ -11,12 +13,12 @@ type ProtectedRouteProps = {
 
 export const ProtectedRoute = ({ children, routePath }: ProtectedRouteProps) => {
   const location = useLocation();
-  const isHydrated = useAuthStore((state) => state.isHydrated);
+  const isHydrated = useAuthHydration();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const user = useAuthStore((state) => state.user);
 
   if (!isHydrated) {
-    return <div className="route-status">Loading...</div>;
+    return <PageLoader />;
   }
 
   if (!isAuthenticated || !user) {
