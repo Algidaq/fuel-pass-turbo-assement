@@ -1,4 +1,5 @@
 import { createFuelOrderReqDtoSchema, listFuelOrdersQueryDtoSchema, updateFuelOrderStatusReqDtoSchema } from '../../src/contracts/orders';
+import { AUTH_ERRORS } from '../../src/contracts/users/auth';
 import type { LoginRequestDto } from '../../src/contracts/users/auth';
 
 describe('contracts', () => {
@@ -9,6 +10,10 @@ describe('contracts', () => {
         };
 
         expect(request.email).toEqual('manager@fuelpass.test');
+    });
+
+    it('exports auth error catalog codes', () => {
+        expect(AUTH_ERRORS.InvalidCredentials.code).toEqual('AUTH.INVALID-CREDENTIALS');
     });
 
     it('normalizes valid fuel order create requests', () => {

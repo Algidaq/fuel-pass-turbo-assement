@@ -1,4 +1,5 @@
 export * from './auth.contracts.js';
+export * from './auth.errors.js';
 export * from './create-internal-user-dto/create-internal-user-req.schema.js';
 export * from './create-internal-user-dto/create-internal-user-res.dto.js';
 export * from './current-user-dto/current-user-res.dto.js';
