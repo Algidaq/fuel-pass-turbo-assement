@@ -55,87 +55,103 @@ export const FuelOrderForm = () => {
     }
   };
 
+  const handleReset = () => {
+    setValues(emptyCreateFuelOrderFormValues);
+    setErrors({});
+    setCreatedOrder(null);
+    createFuelOrder.reset();
+  };
+
   return (
-    <form className="fuel-order-form" noValidate onSubmit={handleSubmit}>
+    <form className="fuel-order-form" id="fuelOrderForm" noValidate onReset={handleReset} onSubmit={handleSubmit}>
       {createdOrder ? (
-        <Alert role="status" variant="success">
+        <Alert className="fuel-order-form-alert" role="status" variant="success">
           Fuel order {createdOrder.id} was submitted with status {createdOrder.status}. Requested {formatFuelVolume(createdOrder)} for{' '}
           {createdOrder.airportIcaoCode}, {formatDeliveryWindow(createdOrder)}.
         </Alert>
       ) : null}
 
       {createFuelOrder.error ? (
-        <Alert role="alert" variant="danger">
+        <Alert className="fuel-order-form-alert" role="alert" variant="danger">
           {getSubmitErrorMessage(createFuelOrder.error)}
         </Alert>
       ) : null}
 
-      <div className="fuel-order-form-grid">
-        <FormField error={errors.tailNumber} label="Tail Number" required>
-          <Input
-            autoComplete="off"
-            disabled={createFuelOrder.isPending}
-            error={Boolean(errors.tailNumber)}
-            name="tailNumber"
-            onChange={(event) => updateField('tailNumber', event.target.value)}
-            placeholder="N123AB"
-            value={values.tailNumber}
-          />
+      <div className="fuel-order-form-fields">
+        <div className="fuel-order-form-grid">
+          <FormField error={errors.tailNumber} label="Tail Number" required>
+            <Input
+              autoComplete="off"
+              disabled={createFuelOrder.isPending}
+              error={Boolean(errors.tailNumber)}
+              name="tailNumber"
+              onChange={(event) => updateField('tailNumber', event.target.value)}
+              placeholder="N123AB"
+              value={values.tailNumber}
+            />
+          </FormField>
+
+          <FormField error={errors.airportIcaoCode} label="Airport ICAO Code" required>
+            <Input
+              autoComplete="off"
+              disabled={createFuelOrder.isPending}
+              error={Boolean(errors.airportIcaoCode)}
+              maxLength={4}
+              name="airportIcaoCode"
+              onChange={(event) => updateField('airportIcaoCode', normalizeAirportInput(event.target.value))}
+              placeholder="OMDB"
+              value={values.airportIcaoCode}
+            />
+          </FormField>
+        </div>
+
+        <FormField error={errors.requestedFuelVolume} label="Requested Fuel Volume" required>
+          <div className="fuel-volume-input">
+            <NumberInput
+              disabled={createFuelOrder.isPending}
+              error={Boolean(errors.requestedFuelVolume)}
+              min={0}
+              name="requestedFuelVolume"
+              onValueChange={(value) => updateField('requestedFuelVolume', value)}
+              placeholder="12000"
+              step="any"
+              value={values.requestedFuelVolume}
+            />
+            <span aria-hidden="true">L</span>
+          </div>
         </FormField>
 
-        <FormField error={errors.airportIcaoCode} label="Airport ICAO Code" required>
-          <Input
-            autoComplete="off"
-            disabled={createFuelOrder.isPending}
-            error={Boolean(errors.airportIcaoCode)}
-            maxLength={4}
-            name="airportIcaoCode"
-            onChange={(event) => updateField('airportIcaoCode', normalizeAirportInput(event.target.value))}
-            placeholder="OMDB"
-            value={values.airportIcaoCode}
-          />
-        </FormField>
+        <div className="fuel-order-form-grid">
+          <FormField error={errors.deliveryWindowStartAt} label="Delivery Window Start" required>
+            <Input
+              disabled={createFuelOrder.isPending}
+              error={Boolean(errors.deliveryWindowStartAt)}
+              name="deliveryWindowStartAt"
+              onChange={(event) => updateField('deliveryWindowStartAt', event.target.value)}
+              type="datetime-local"
+              value={values.deliveryWindowStartAt}
+            />
+          </FormField>
 
-        <FormField error={errors.requestedFuelVolume} hint="Unit: liters" label="Requested Fuel Volume" required>
-          <NumberInput
-            disabled={createFuelOrder.isPending}
-            error={Boolean(errors.requestedFuelVolume)}
-            min={0}
-            name="requestedFuelVolume"
-            onValueChange={(value) => updateField('requestedFuelVolume', value)}
-            step="any"
-            value={values.requestedFuelVolume}
-          />
-        </FormField>
-      </div>
-
-      <div className="fuel-order-form-grid">
-        <FormField error={errors.deliveryWindowStartAt} label="Delivery Window Start" required>
-          <Input
-            disabled={createFuelOrder.isPending}
-            error={Boolean(errors.deliveryWindowStartAt)}
-            name="deliveryWindowStartAt"
-            onChange={(event) => updateField('deliveryWindowStartAt', event.target.value)}
-            type="datetime-local"
-            value={values.deliveryWindowStartAt}
-          />
-        </FormField>
-
-        <FormField error={errors.deliveryWindowEndAt} label="Delivery Window End" required>
-          <Input
-            disabled={createFuelOrder.isPending}
-            error={Boolean(errors.deliveryWindowEndAt)}
-            name="deliveryWindowEndAt"
-            onChange={(event) => updateField('deliveryWindowEndAt', event.target.value)}
-            type="datetime-local"
-            value={values.deliveryWindowEndAt}
-          />
-        </FormField>
+          <FormField error={errors.deliveryWindowEndAt} label="Delivery Window End" required>
+            <Input
+              disabled={createFuelOrder.isPending}
+              error={Boolean(errors.deliveryWindowEndAt)}
+              name="deliveryWindowEndAt"
+              onChange={(event) => updateField('deliveryWindowEndAt', event.target.value)}
+              type="datetime-local"
+              value={values.deliveryWindowEndAt}
+            />
+          </FormField>
+        </div>
       </div>
 
       <div className="fuel-order-form-actions">
+        <Button disabled={createFuelOrder.isPending} type="reset" variant="ghost">
+          Reset
+        </Button>
         <Button disabled={createFuelOrder.isPending} type="submit">
-          {createFuelOrder.isPending ? 'Submitting...' : 'Submit Fuel Order'}
+          {createFuelOrder.isPending ? 'Submitting...' : 'Submit order'}
         </Button>
       </div>
     </form>
