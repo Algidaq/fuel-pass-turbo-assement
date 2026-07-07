@@ -1,8 +1,8 @@
-import type { FuelOrderResponseDto } from '@fuel-pass/contracts';
+import { FuelOrderResDto } from '@fuel-pass/contracts';
 import type { FuelOrderEntity } from '../entities/fuel-order.entity';
 
-export function mapFuelOrderToResponse(fuelOrder: FuelOrderEntity): FuelOrderResponseDto {
-    return {
+export function mapFuelOrderToResponse(fuelOrder: FuelOrderEntity): FuelOrderResDto {
+    return new FuelOrderResDto({
         id: fuelOrder.id,
         tailNumber: fuelOrder.tailNumber,
         airportIcaoCode: fuelOrder.airportIcaoCode,
@@ -13,7 +13,7 @@ export function mapFuelOrderToResponse(fuelOrder: FuelOrderEntity): FuelOrderRes
         status: fuelOrder.status,
         createdAt: fuelOrder.createdAt.toISOString(),
         updatedAt: fuelOrder.updatedAt.toISOString(),
-    };
+    });
 }
 
 function formatNumericScale(value: string, scale: number): string {

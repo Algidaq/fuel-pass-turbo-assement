@@ -1,9 +1,12 @@
-import { HttpStatus } from '@nestjs/common';
-import { ORDER_ERRORS, OrderFailure } from '../../../src/orders/orders.errors';
+import { ApiResponse, BaseApiHeaders } from '@fuel-pass/node-commons';
 import { FuelOrdersController } from '../../../src/orders/controllers/fuel-orders.controller';
-import type { FuelOrdersService } from '../../../src/orders/services/fuel-orders.service';
+import type { CreateFuelOrderService } from '../../../src/orders/services/create-fuel-order.service';
+import type { GetFuelOrderService } from '../../../src/orders/services/get-fuel-order.service';
+import type { ListFuelOrdersService } from '../../../src/orders/services/list-fuel-orders.service';
+import type { UpdateFuelOrderStatusService } from '../../../src/orders/services/update-fuel-order-status.service';
 import type { AuthenticatedRequest } from '../../../src/orders/types/auth-request.types';
 
+const headers = new BaseApiHeaders();
 const authRequest = {
     auth: {
         userId: 'user-1',
@@ -28,65 +31,65 @@ const fuelOrder = {
     updatedAt: '2026-07-06T12:00:00.000Z',
 };
 
-function createController(fuelOrdersService: Partial<FuelOrdersService>): FuelOrdersController {
-    return new FuelOrdersController(fuelOrdersService as FuelOrdersService);
+function createController(overrides?: {
+    createFuelOrderService?: Partial<CreateFuelOrderService>;
+    listFuelOrdersService?: Partial<ListFuelOrdersService>;
+    getFuelOrderService?: Partial<GetFuelOrderService>;
+    updateFuelOrderStatusService?: Partial<UpdateFuelOrderStatusService>;
+}): FuelOrdersController {
+    return new FuelOrdersController(
+        overrides?.createFuelOrderService as CreateFuelOrderService,
+        overrides?.listFuelOrdersService as ListFuelOrdersService,
+        overrides?.getFuelOrderService as GetFuelOrderService,
+        overrides?.updateFuelOrderStatusService as UpdateFuelOrderStatusService
+    );
 }
 
 describe('FuelOrdersController', () => {
-    it('returns created fuel orders with 201 responses', async () => {
-        const controller = createController({
-            createFuelOrder: jest.fn().mockResolvedValue(fuelOrder),
-        });
+    it('delegates create requests to the create endpoint service', async () => {
+        const response = ApiResponse.builder().withSuccess({ status: 201, data: fuelOrder }).build();
+        const createFuelOrder = jest.fn().mockResolvedValue(response);
+        const controller = createController({ createFuelOrderService: { createFuelOrder } });
+        const body = {
+            tailNumber: 'A6-ABC',
+            airportIcaoCode: 'OMDB',
+            requestedFuelVolume: '12000.50',
+            deliveryWindowStartAt: '2026-07-10T08:00:00.000Z',
+            deliveryWindowEndAt: '2026-07-10T10:00:00.000Z',
+        };
 
-        const response = await controller.createFuelOrder(
-            {
-                tailNumber: 'A6-ABC',
-                airportIcaoCode: 'OMDB',
-                requestedFuelVolume: 12000.5,
-                deliveryWindowStartAt: '2026-07-10T08:00:00.000Z',
-                deliveryWindowEndAt: '2026-07-10T10:00:00.000Z',
-            },
-            authRequest
-        );
-
-        expect(response.success).toBe(true);
-        expect(response.status).toBe(HttpStatus.CREATED);
-        expect(response.data).toEqual(fuelOrder);
+        await expect(controller.createFuelOrder(body, authRequest, headers)).resolves.toBe(response);
+        expect(createFuelOrder).toHaveBeenCalledWith({ headers, body, principal: authRequest.auth });
     });
 
-    it('maps invalid requests to 400 responses', async () => {
-        const controller = createController({
-            createFuelOrder: jest.fn().mockRejectedValue(new OrderFailure('InvalidRequest')),
-        });
+    it('delegates list requests to the list endpoint service', async () => {
+        const response = ApiResponse.builder()
+            .withSuccess({ status: 200, data: { items: [], pagination: {} } })
+            .build();
+        const listFuelOrders = jest.fn().mockResolvedValue(response);
+        const controller = createController({ listFuelOrdersService: { listFuelOrders } });
+        const query = { airportIcaoCode: 'OMDB', status: 'PENDING' as const, page: 1, pageSize: 20 };
 
-        const response = await controller.createFuelOrder({}, authRequest);
-
-        expect(response.success).toBe(false);
-        expect(response.status).toBe(HttpStatus.BAD_REQUEST);
-        expect(response.errors).toEqual([ORDER_ERRORS.InvalidRequest]);
+        await expect(controller.listFuelOrders(query, headers)).resolves.toBe(response);
+        expect(listFuelOrders).toHaveBeenCalledWith({ headers, query });
     });
 
-    it('maps missing orders to 404 responses', async () => {
-        const controller = createController({
-            getFuelOrderById: jest.fn().mockRejectedValue(new OrderFailure('FuelOrderNotFound')),
-        });
+    it('delegates get requests to the get endpoint service', async () => {
+        const response = ApiResponse.builder().withSuccess({ status: 200, data: fuelOrder }).build();
+        const getFuelOrder = jest.fn().mockResolvedValue(response);
+        const controller = createController({ getFuelOrderService: { getFuelOrder } });
 
-        const response = await controller.getFuelOrderById(fuelOrder.id);
-
-        expect(response.success).toBe(false);
-        expect(response.status).toBe(HttpStatus.NOT_FOUND);
-        expect(response.errors).toEqual([ORDER_ERRORS.FuelOrderNotFound]);
+        await expect(controller.getFuelOrderById(fuelOrder.id, headers)).resolves.toBe(response);
+        expect(getFuelOrder).toHaveBeenCalledWith({ headers, id: fuelOrder.id });
     });
 
-    it('maps invalid transitions to 409 responses', async () => {
-        const controller = createController({
-            updateFuelOrderStatus: jest.fn().mockRejectedValue(new OrderFailure('InvalidStatusTransition')),
-        });
+    it('delegates status updates to the update endpoint service', async () => {
+        const response = ApiResponse.builder().withSuccess({ status: 200, data: fuelOrder }).build();
+        const updateFuelOrderStatus = jest.fn().mockResolvedValue(response);
+        const controller = createController({ updateFuelOrderStatusService: { updateFuelOrderStatus } });
+        const body = { status: 'CONFIRMED' as const, note: 'Confirmed.' };
 
-        const response = await controller.updateFuelOrderStatus(fuelOrder.id, { status: 'COMPLETED' }, authRequest);
-
-        expect(response.success).toBe(false);
-        expect(response.status).toBe(HttpStatus.CONFLICT);
-        expect(response.errors).toEqual([ORDER_ERRORS.InvalidStatusTransition]);
+        await expect(controller.updateFuelOrderStatus(fuelOrder.id, body, authRequest, headers)).resolves.toBe(response);
+        expect(updateFuelOrderStatus).toHaveBeenCalledWith({ headers, id: fuelOrder.id, body, principal: authRequest.auth });
     });
 });

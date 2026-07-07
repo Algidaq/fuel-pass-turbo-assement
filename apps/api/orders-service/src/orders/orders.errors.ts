@@ -1,4 +1,5 @@
-import { defineErrorCatalog } from '@fuel-pass/node-commons';
+import { AppHttpError, defineErrorCatalog } from '@fuel-pass/node-commons';
+import type { HttpStatus } from '@nestjs/common';
 
 export const ORDER_ERRORS = defineErrorCatalog({
     InvalidRequest: {
@@ -31,5 +32,11 @@ export class OrderFailure extends Error {
         message?: string
     ) {
         super(message ?? ORDER_ERRORS[key].message);
+    }
+}
+
+export class OrderException extends AppHttpError<typeof ORDER_ERRORS> {
+    public constructor(httpCode: HttpStatus, key: OrderErrorKey) {
+        super(httpCode, ORDER_ERRORS[key]);
     }
 }
