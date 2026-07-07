@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { ACCESS_PERMISSIONS, ACCESS_ROLES } from '@fuel-pass/contracts/backend';
+import { ORDER_PERMISSIONS } from '@fuel-pass/contracts/backend';
 import { BaseApiHeaders } from '@fuel-pass/node-commons';
 import type { DataSource, EntityManager } from 'typeorm';
 import { FuelOrderEntity, FuelOrderStatus, VolumeUnit } from '../../../src/orders/entities';
@@ -12,6 +12,7 @@ import type { AuthenticatedPrincipal } from '../../../src/orders/types/auth-requ
 
 const headers = new BaseApiHeaders();
 const userId = randomUUID();
+const aircraftOperatorRoleKey = 'aircraft_operator';
 const orderId = randomUUID();
 const deliveryWindowStartAt = new Date('2026-07-10T08:00:00.000Z');
 const deliveryWindowEndAt = new Date('2026-07-10T10:00:00.000Z');
@@ -19,8 +20,8 @@ const principal: AuthenticatedPrincipal = {
     userId,
     sessionId: randomUUID(),
     email: 'operator@fuelpass.test',
-    roles: [ACCESS_ROLES.aircraftOperator.key],
-    permissions: [ACCESS_PERMISSIONS.fuelOrderCreate.key],
+    roles: [aircraftOperatorRoleKey],
+    permissions: [ORDER_PERMISSIONS.fuelOrderCreate.key],
     jti: randomUUID(),
 };
 

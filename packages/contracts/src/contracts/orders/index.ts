@@ -1,3 +1,4 @@
+export * from './order.permissions.js';
 export * from './order.errors.js';
 export * from './fuel-order-dto/create-fuel-order-req.schema.js';
 export * from './fuel-order-dto/fuel-order-params.schema.js';

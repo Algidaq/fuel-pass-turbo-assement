@@ -1,4 +1,4 @@
-import { ACCESS_PERMISSIONS, ACCESS_ROLES } from '@fuel-pass/contracts/backend';
+import { ORDER_PERMISSIONS } from '@fuel-pass/contracts/backend';
 import { ApiResponse, BaseApiHeaders } from '@fuel-pass/node-commons';
 import { FuelOrdersController } from '../../../src/orders/controllers/fuel-orders.controller';
 import type { CreateFuelOrderService } from '../../../src/orders/services/create-fuel-order.service';
@@ -8,13 +8,14 @@ import type { UpdateFuelOrderStatusService } from '../../../src/orders/services/
 import type { AuthenticatedRequest } from '../../../src/orders/types/auth-request.types';
 
 const headers = new BaseApiHeaders();
+const aircraftOperatorRoleKey = 'aircraft_operator';
 const authRequest = {
     auth: {
         userId: 'user-1',
         sessionId: 'session-1',
         email: 'operator@fuelpass.test',
-        roles: [ACCESS_ROLES.aircraftOperator.key],
-        permissions: [ACCESS_PERMISSIONS.fuelOrderCreate.key],
+        roles: [aircraftOperatorRoleKey],
+        permissions: [ORDER_PERMISSIONS.fuelOrderCreate.key],
         jti: 'jti-1',
     },
 } as AuthenticatedRequest;

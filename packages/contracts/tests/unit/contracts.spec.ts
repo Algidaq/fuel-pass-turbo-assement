@@ -1,14 +1,11 @@
 import {
-    ACCESS_PERMISSIONS,
-    ACCESS_ROLES,
-    ROLE_PERMISSION_MATRIX,
+    ORDER_PERMISSIONS,
+    PERMISSIONS,
     createFuelOrderReqDtoSchema,
     isPermissionKey,
-    isRoleKey,
     listFuelOrdersQueryDtoSchema,
     ORDER_ERRORS,
     permissionKeys,
-    roleKeys,
     updateFuelOrderStatusReqDtoSchema,
 } from '../../src/contracts';
 import { AUTH_ERRORS } from '../../src/contracts/users/auth';
@@ -32,29 +29,22 @@ describe('contracts', () => {
         expect(ORDER_ERRORS.FuelOrderNotFound.code).toEqual('ORDER.FUEL-ORDER-NOT-FOUND');
     });
 
-    it('exports canonical access role and permission keys', () => {
-        expect(ACCESS_ROLES.aircraftOperator.key).toEqual('aircraft_operator');
-        expect(ACCESS_ROLES.operationsManager.key).toEqual('operations_manager');
-        expect(ACCESS_ROLES.admin.key).toEqual('admin');
-        expect(ACCESS_PERMISSIONS.fuelOrderCreate.key).toEqual('fuel_order:create');
-        expect(ACCESS_PERMISSIONS.fuelOrderReadAll.key).toEqual('fuel_order:read_all');
+    it('exports canonical orders permission keys', () => {
+        expect(ORDER_PERMISSIONS.fuelOrderCreate.key).toEqual('fuel_order:create');
+        expect(ORDER_PERMISSIONS.fuelOrderReadAll.key).toEqual('fuel_order:read_all');
+        expect(PERMISSIONS.fuelOrderUpdateStatus.key).toEqual('fuel_order:update_status');
     });
 
-    it('validates access role and permission keys', () => {
-        expect(isRoleKey(ACCESS_ROLES.admin.key)).toBe(true);
-        expect(isRoleKey('unknown_role')).toBe(false);
-        expect(isPermissionKey(ACCESS_PERMISSIONS.fuelOrderUpdateStatus.key)).toBe(true);
+    it('validates permission keys across service catalogs', () => {
+        expect(isPermissionKey(ORDER_PERMISSIONS.fuelOrderUpdateStatus.key)).toBe(true);
         expect(isPermissionKey('fuel_order:delete')).toBe(false);
     });
 
-    it('maps roles only to declared permission keys', () => {
-        const declaredRoleKeys = new Set(roleKeys);
+    it('aggregates service-owned permission keys', () => {
         const declaredPermissionKeys = new Set(permissionKeys);
 
-        for (const [roleKey, assignedPermissionKeys] of Object.entries(ROLE_PERMISSION_MATRIX)) {
-            expect(declaredRoleKeys.has(roleKey)).toBe(true);
-            expect(assignedPermissionKeys.every((permissionKey) => declaredPermissionKeys.has(permissionKey))).toBe(true);
-        }
+        expect(declaredPermissionKeys.has(ORDER_PERMISSIONS.fuelOrderCreate.key)).toBe(true);
+        expect(declaredPermissionKeys.has(ORDER_PERMISSIONS.fuelOrderReadAll.key)).toBe(true);
     });
 
     it('normalizes valid fuel order create requests', () => {

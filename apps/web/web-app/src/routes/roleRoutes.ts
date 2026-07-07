@@ -1,39 +1,40 @@
+import { ORDER_PERMISSIONS, type PermissionKey } from '@fuel-pass/contracts';
 import type { AuthUser } from '../features/auth/types/auth.types';
-import {
-  hasAnyRole,
-  isAdmin,
-  isAircraftOperator,
-  isOperationsManager,
-  roles,
-} from '../features/auth/utils/roleAccess';
+import { hasAllPermissions, hasAnyPermission, hasPermission } from '../features/auth/utils/permissionAccess';
 
 export const routes = {
-  login: '/login',
-  orders: '/orders',
-  submitOrder: '/orders/new',
+    login: '/login',
+    orders: '/orders',
+    submitOrder: '/orders/new',
 } as const;
 
-export const routeAllowedRoles = {
-  [routes.orders]: [roles.operationsManager, roles.admin],
-  [routes.submitOrder]: [roles.aircraftOperator, roles.admin],
+export const routeRequiredPermissions = {
+    [routes.orders]: [ORDER_PERMISSIONS.fuelOrderReadAll.key],
+    [routes.submitOrder]: [ORDER_PERMISSIONS.fuelOrderCreate.key],
 } as const;
 
-export const hasUserRole = (user: AuthUser | null, role: string): boolean => hasAnyRole(user, [role]);
+export const hasUserPermission = (user: AuthUser | null, permission: PermissionKey): boolean => hasPermission(user, permission);
 
 export const getDefaultRouteForUser = (user: AuthUser): string => {
-  if (isAdmin(user) || isOperationsManager(user)) {
+    if (hasPermission(user, ORDER_PERMISSIONS.fuelOrderReadAll.key)) {
+        return routes.orders;
+    }
+
+    if (hasPermission(user, ORDER_PERMISSIONS.fuelOrderCreate.key)) {
+        return routes.submitOrder;
+    }
+
     return routes.orders;
-  }
-
-  if (isAircraftOperator(user)) {
-    return routes.submitOrder;
-  }
-
-  return routes.orders;
 };
 
 export const isRouteAllowedForUser = (path: string, user: AuthUser): boolean => {
-  const allowedRoles = routeAllowedRoles[path as keyof typeof routeAllowedRoles];
+    const requiredPermissions = routeRequiredPermissions[path as keyof typeof routeRequiredPermissions];
 
-  return allowedRoles ? hasAnyRole(user, allowedRoles) : path === routes.orders;
+    return requiredPermissions ? hasAllPermissions(user, requiredPermissions) : path === routes.orders;
 };
+
+export const canViewOrders = (user: AuthUser | null | undefined): boolean =>
+    hasAnyPermission(user, [ORDER_PERMISSIONS.fuelOrderReadAll.key]);
+
+export const canCreateOrders = (user: AuthUser | null | undefined): boolean =>
+    hasAnyPermission(user, [ORDER_PERMISSIONS.fuelOrderCreate.key]);
