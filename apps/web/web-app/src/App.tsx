@@ -1,8 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ThemeProvider } from '@fuel-pass/ui';
+import { lazy, Suspense } from 'react';
 
 import { AppRouter } from './routes/AppRouter';
+
+const ReactQueryDevtools = import.meta.env.DEV
+  ? lazy(() => import('@tanstack/react-query-devtools').then((module) => ({ default: module.ReactQueryDevtools })))
+  : null;
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,7 +24,11 @@ function App() {
       <ThemeProvider>
         <AppRouter />
       </ThemeProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
+      {ReactQueryDevtools ? (
+        <Suspense fallback={null}>
+          <ReactQueryDevtools initialIsOpen={false} />
+        </Suspense>
+      ) : null}
     </QueryClientProvider>
   );
 }

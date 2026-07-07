@@ -1,4 +1,4 @@
-import { ApiResponseInterceptor, CoreMiddlewareModule } from '@fuel-pass/node-commons';
+import { ApiResponseInterceptor, CoreMiddlewareModule, DEFAULT_CORE_MIDDLEWARE_MODULE_OPTIONS, getOsEnv } from '@fuel-pass/node-commons';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
@@ -14,10 +14,10 @@ import { AppService } from './app.service';
         ConfigModule.forRoot({
             isGlobal: true,
             envFilePath: [
-                'apps/api/orders/.env',
-                process.env['NODE_ENV'] === 'production'
-                    ? 'apps/api/orders/orders-service-prod.env'
-                    : 'apps/api/orders/orders-service-dev.env',
+                'apps/api/orders-service/.env',
+                getOsEnv('NODE_ENV') === 'production'
+                    ? 'apps/api/orders-service/orders-service-prod.env'
+                    : 'apps/api/orders-service/orders-service-dev.env',
                 '.env',
             ],
             load: [
@@ -31,7 +31,7 @@ import { AppService } from './app.service';
             useFactory: getTypeOrmModuleOptions,
         }),
         OrdersModule,
-        CoreMiddlewareModule.forRoot(),
+        CoreMiddlewareModule.forRoot({ ...DEFAULT_CORE_MIDDLEWARE_MODULE_OPTIONS, security: false }),
     ],
     controllers: [AppController],
     providers: [

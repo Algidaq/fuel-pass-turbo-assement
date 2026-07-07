@@ -63,7 +63,8 @@ a {
 
 .auth-card-header h1,
 .placeholder-page h1,
-.not-found-page h1 {
+.not-found-page h1,
+.page-header h1 {
   margin: 0;
   color: #111827;
   font-size: 1.65rem;
@@ -73,7 +74,8 @@ a {
 
 .auth-card-header p,
 .placeholder-page p,
-.not-found-page p {
+.not-found-page p,
+.page-header p {
   margin: 8px 0 0;
   color: #667085;
 }
@@ -161,6 +163,42 @@ a {
   color: #667085;
 }
 
+.submit-order-page {
+  display: grid;
+  gap: 24px;
+}
+
+.submit-order-card {
+  max-width: 860px;
+}
+
+.submit-order-card h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 1.1rem;
+  letter-spacing: 0;
+}
+
+.fuel-order-form {
+  display: grid;
+  gap: 20px;
+}
+
+.fuel-order-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.fuel-order-form-grid:first-of-type {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.fuel-order-form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
 @media (max-width: 720px) {
   .app-header {
     align-items: flex-start;
@@ -174,5 +212,19 @@ a {
 
   .app-main {
     padding: 20px 16px;
+  }
+
+  .fuel-order-form-grid,
+  .fuel-order-form-grid:first-of-type {
+    grid-template-columns: 1fr;
+  }
+
+  .fuel-order-form-actions {
+    justify-content: stretch;
+  }
+
+  .fuel-order-form-actions button {
+    width: 100%;
+    justify-content: center;
   }
 }
