@@ -1,4 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
+import { ACCESS_ROLES } from '@fuel-pass/contracts/backend';
 import { ApiResponse, BaseApiHeaders } from '@fuel-pass/node-commons';
 import { InternalAuthController } from '../src/auth/controllers/internal-auth.controller';
 import type { AuthIntrospectionService } from '../src/auth/services/auth-introspection.service';
@@ -40,7 +41,7 @@ describe('InternalAuthController', () => {
                 email: 'admin@fuelpass.local',
                 fullName: 'Admin User',
                 password: 'Password123!',
-                roleKeys: ['admin'],
+                roleKeys: [ACCESS_ROLES.admin.key],
             },
             headers
         );
@@ -54,7 +55,7 @@ describe('InternalAuthController', () => {
             id: 'user-1',
             email: 'admin@fuelpass.local',
             fullName: 'Admin User',
-            roles: ['admin'],
+            roles: [ACCESS_ROLES.admin.key],
             permissions: [],
         };
         const controller = createController({
@@ -70,7 +71,7 @@ describe('InternalAuthController', () => {
                 email: 'admin@fuelpass.local',
                 fullName: 'Admin User',
                 password: 'Password123!',
-                roleKeys: ['admin'],
+                roleKeys: [ACCESS_ROLES.admin.key],
             },
             headers
         );

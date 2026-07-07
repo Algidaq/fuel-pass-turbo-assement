@@ -1,3 +1,4 @@
+import { ACCESS_PERMISSIONS, ACCESS_ROLES } from '@fuel-pass/contracts/backend';
 import { ApiResponse, BaseApiHeaders } from '@fuel-pass/node-commons';
 import { FuelOrdersController } from '../../../src/orders/controllers/fuel-orders.controller';
 import type { CreateFuelOrderService } from '../../../src/orders/services/create-fuel-order.service';
@@ -12,8 +13,8 @@ const authRequest = {
         userId: 'user-1',
         sessionId: 'session-1',
         email: 'operator@fuelpass.test',
-        roles: ['aircraft_operator'],
-        permissions: ['fuel_order:create'],
+        roles: [ACCESS_ROLES.aircraftOperator.key],
+        permissions: [ACCESS_PERMISSIONS.fuelOrderCreate.key],
         jti: 'jti-1',
     },
 } as AuthenticatedRequest;

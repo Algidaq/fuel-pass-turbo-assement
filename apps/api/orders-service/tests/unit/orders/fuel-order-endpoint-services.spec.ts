@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { ACCESS_PERMISSIONS, ACCESS_ROLES } from '@fuel-pass/contracts/backend';
 import { BaseApiHeaders } from '@fuel-pass/node-commons';
 import type { DataSource, EntityManager } from 'typeorm';
 import { FuelOrderEntity, FuelOrderStatus, VolumeUnit } from '../../../src/orders/entities';
@@ -18,8 +19,8 @@ const principal: AuthenticatedPrincipal = {
     userId,
     sessionId: randomUUID(),
     email: 'operator@fuelpass.test',
-    roles: ['aircraft_operator'],
-    permissions: ['fuel_order:create'],
+    roles: [ACCESS_ROLES.aircraftOperator.key],
+    permissions: [ACCESS_PERMISSIONS.fuelOrderCreate.key],
     jti: randomUUID(),
 };
 

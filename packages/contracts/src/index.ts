@@ -1,3 +1,4 @@
+export * from './contracts/access-catalog.js';
 export * from './contracts/error-catalog.js';
 export * from './contracts/orders/fuel-order-dto/create-fuel-order-req.schema.js';
 export * from './contracts/orders/fuel-order-dto/fuel-order-params.schema.js';

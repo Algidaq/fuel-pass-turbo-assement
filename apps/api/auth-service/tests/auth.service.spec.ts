@@ -1,4 +1,5 @@
 import type { DataSource, EntityManager } from 'typeorm';
+import { ACCESS_ROLES } from '@fuel-pass/contracts/backend';
 import { BaseApiHeaders } from '@fuel-pass/node-commons';
 import { CredentialProvider, UserStatus } from '../src/auth/entities/auth.enums';
 import { RoleEntity } from '../src/auth/entities/role.entity';
@@ -16,7 +17,7 @@ describe('InternalUserCreationService.createUser', () => {
         passwordService: { hashPassword: jest.Mock };
         currentUserService: { buildCurrentUser: jest.Mock };
     } {
-        const roles = overrides?.roles ?? [Object.assign(new RoleEntity(), { id: 'role-1', key: 'admin' })];
+        const roles = overrides?.roles ?? [Object.assign(new RoleEntity(), { id: 'role-1', key: ACCESS_ROLES.admin.key })];
         const manager = {
             find: jest.fn().mockResolvedValue(roles),
             create: jest.fn((target: unknown, data: unknown): unknown => ({ target, ...(data as Record<string, unknown>) })),
@@ -41,7 +42,7 @@ describe('InternalUserCreationService.createUser', () => {
                 id: 'user-1',
                 email: 'admin@fuelpass.local',
                 fullName: 'Admin User',
-                roles: ['admin'],
+                roles: [ACCESS_ROLES.admin.key],
                 permissions: [],
             }),
         };
@@ -66,7 +67,7 @@ describe('InternalUserCreationService.createUser', () => {
                 email: 'admin@fuelpass.local',
                 fullName: 'Admin User',
                 password: 'Password123!',
-                roleKeys: ['admin'],
+                roleKeys: [ACCESS_ROLES.admin.key],
             },
         });
 
@@ -109,7 +110,7 @@ describe('InternalUserCreationService.createUser', () => {
                 email: 'admin@fuelpass.local',
                 fullName: 'Admin User',
                 password: 'Password123!',
-                roleKeys: ['admin'],
+                roleKeys: [ACCESS_ROLES.admin.key],
             },
         });
 
@@ -127,7 +128,7 @@ describe('InternalUserCreationService.createUser', () => {
                 email: 'admin@fuelpass.local',
                 fullName: 'Admin User',
                 password: 'Password123!',
-                roleKeys: ['admin'],
+                roleKeys: [ACCESS_ROLES.admin.key],
             },
         });
 

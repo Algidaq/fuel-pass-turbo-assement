@@ -1,4 +1,6 @@
 import { createHash } from 'node:crypto';
+import { ACCESS_PERMISSIONS, ACCESS_ROLES } from '@fuel-pass/contracts/backend';
+import { BaseApiHeaders } from '@fuel-pass/node-commons';
 import { DataSource } from 'typeorm';
 import { AuditService } from '../../../src/auth/services/audit.service';
 import { AuthLoginService } from '../../../src/auth/services/auth-login.service';
@@ -26,7 +28,6 @@ import { UserEntity } from '../../../src/auth/entities/user.entity';
 import { UserRoleEntity } from '../../../src/auth/entities/user-role.entity';
 import { UserSessionEntity } from '../../../src/auth/entities/user-session.entity';
 import { authDatabaseEntities } from '../../../src/configs/typeorm.config';
-import { BaseApiHeaders } from '@fuel-pass/node-commons';
 
 const headers = new BaseApiHeaders({
     clientIp: '127.0.0.1',
@@ -128,13 +129,13 @@ describe('auth persistence with SQLite', () => {
         await credentialRepository.createLocalCredential(seededUser.id, 'hashed-password');
 
         const role = await dataSource.getRepository(RoleEntity).save({
-            key: 'operations_manager',
-            name: 'Operations Manager',
+            key: ACCESS_ROLES.operationsManager.key,
+            name: ACCESS_ROLES.operationsManager.name,
         });
         const permission = await dataSource.getRepository(PermissionEntity).save({
-            key: 'fuel_order:read_all',
-            resource: 'fuel_order',
-            action: 'read_all',
+            key: ACCESS_PERMISSIONS.fuelOrderReadAll.key,
+            resource: ACCESS_PERMISSIONS.fuelOrderReadAll.resource,
+            action: ACCESS_PERMISSIONS.fuelOrderReadAll.action,
         });
 
         await roleRepository.assignRoleToUser(seededUser.id, role.id);
@@ -155,8 +156,8 @@ describe('auth persistence with SQLite', () => {
 
         expect(user?.id).toEqual(seededUser.id);
         expect(credential?.provider).toEqual(CredentialProvider.LOCAL);
-        expect(roles.map((role): string => role.key)).toEqual(['operations_manager']);
-        expect(permissions.map((permission): string => permission.key)).toEqual(['fuel_order:read_all']);
+        expect(roles.map((role): string => role.key)).toEqual([ACCESS_ROLES.operationsManager.key]);
+        expect(permissions.map((permission): string => permission.key)).toEqual([ACCESS_PERMISSIONS.fuelOrderReadAll.key]);
 
         await userRepository.updateStatus(seededUser.id, UserStatus.LOCKED);
 
@@ -176,8 +177,8 @@ describe('auth persistence with SQLite', () => {
             tokenType: 'Bearer',
             user: {
                 id: seededUser.id,
-                roles: ['operations_manager'],
-                permissions: ['fuel_order:read_all'],
+                roles: [ACCESS_ROLES.operationsManager.key],
+                permissions: [ACCESS_PERMISSIONS.fuelOrderReadAll.key],
             },
         });
         expect(sessions).toHaveLength(1);
@@ -241,8 +242,8 @@ describe('auth persistence with SQLite', () => {
                     userId: seededUser.id,
                     sessionId: session.id,
                     email: seededUser.email,
-                    roles: ['operations_manager'],
-                    permissions: ['fuel_order:read_all'],
+                    roles: [ACCESS_ROLES.operationsManager.key],
+                    permissions: [ACCESS_PERMISSIONS.fuelOrderReadAll.key],
                     jti: 'access-jti',
                 },
             })

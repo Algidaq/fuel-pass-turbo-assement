@@ -1,3 +1,4 @@
+import { ACCESS_PERMISSIONS, ACCESS_ROLES } from '@fuel-pass/contracts/backend';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
@@ -43,14 +44,14 @@ describe('OrdersJwtAuthGuard', () => {
                         sub: 'user-1',
                         sessionId: 'session-1',
                         email: 'operator@fuelpass.test',
-                        roles: ['aircraft_operator'],
-                        permissions: ['fuel_order:create'],
+                        roles: [ACCESS_ROLES.aircraftOperator.key],
+                        permissions: [ACCESS_PERMISSIONS.fuelOrderCreate.key],
                         user: {
                             id: 'user-1',
                             email: 'operator@fuelpass.test',
                             fullName: 'Operator',
-                            roles: ['aircraft_operator'],
-                            permissions: ['fuel_order:create'],
+                            roles: [ACCESS_ROLES.aircraftOperator.key],
+                            permissions: [ACCESS_PERMISSIONS.fuelOrderCreate.key],
                         },
                     },
                 }),
@@ -81,7 +82,7 @@ describe('OrdersJwtAuthGuard', () => {
         expect(request).toMatchObject({
             auth: {
                 userId: 'user-1',
-                permissions: ['fuel_order:create'],
+                permissions: [ACCESS_PERMISSIONS.fuelOrderCreate.key],
             },
         });
     });
@@ -100,14 +101,14 @@ describe('OrdersJwtAuthGuard', () => {
 describe('OrdersPermissionsGuard', () => {
     it('allows requests with all required permissions', () => {
         const reflector = new Reflector();
-        jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(['fuel_order:create']);
+        jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([ACCESS_PERMISSIONS.fuelOrderCreate.key]);
         const guard = new OrdersPermissionsGuard(reflector);
 
         expect(
             guard.canActivate(
                 createExecutionContext({
                     header: (): undefined => undefined,
-                    auth: { permissions: ['fuel_order:create'] },
+                    auth: { permissions: [ACCESS_PERMISSIONS.fuelOrderCreate.key] },
                 })
             )
         ).toBe(true);
@@ -116,14 +117,14 @@ describe('OrdersPermissionsGuard', () => {
 
     it('rejects requests missing required permissions', () => {
         const reflector = new Reflector();
-        jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(['fuel_order:update_status']);
+        jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([ACCESS_PERMISSIONS.fuelOrderUpdateStatus.key]);
         const guard = new OrdersPermissionsGuard(reflector);
 
         expect(() =>
             guard.canActivate(
                 createExecutionContext({
                     header: (): undefined => undefined,
-                    auth: { permissions: ['fuel_order:create'] },
+                    auth: { permissions: [ACCESS_PERMISSIONS.fuelOrderCreate.key] },
                 })
             )
         ).toThrow(ForbiddenException);

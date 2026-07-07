@@ -3,6 +3,7 @@ jest.mock('../../../src/auth/repositories/role.repository', () => ({ RoleReposit
 jest.mock('../../../src/auth/repositories/user.repository', () => ({ UserRepository: class UserRepository {} }));
 jest.mock('../../../src/auth/services/session.service', () => ({ SessionService: class SessionService {} }));
 
+import { ACCESS_PERMISSIONS, ACCESS_ROLES } from '@fuel-pass/contracts/backend';
 import { AuthFailure } from '../../../src/auth/auth.errors';
 import { UserStatus } from '../../../src/auth/entities/auth.enums';
 import { CurrentUserService } from '../../../src/auth/services/current-user.service';
@@ -22,10 +23,10 @@ describe('CurrentUserService', () => {
             }),
         };
         const roleRepository = {
-            findUserRoles: jest.fn().mockResolvedValue([{ key: 'operations_manager' }]),
+            findUserRoles: jest.fn().mockResolvedValue([{ key: ACCESS_ROLES.operationsManager.key }]),
         };
         const permissionRepository = {
-            findPermissionsByUserId: jest.fn().mockResolvedValue([{ key: 'fuel_order:read_all' }]),
+            findPermissionsByUserId: jest.fn().mockResolvedValue([{ key: ACCESS_PERMISSIONS.fuelOrderReadAll.key }]),
         };
         const sessionService = {
             validateActiveSession: jest.fn().mockResolvedValue({ id: 'session-1', userId: params?.sessionUserId ?? 'user-1' }),
@@ -51,8 +52,8 @@ describe('CurrentUserService', () => {
                 id: 'user-1',
                 email: 'manager@fuelpass.test',
                 fullName: 'Operations Manager',
-                roles: ['operations_manager'],
-                permissions: ['fuel_order:read_all'],
+                roles: [ACCESS_ROLES.operationsManager.key],
+                permissions: [ACCESS_PERMISSIONS.fuelOrderReadAll.key],
             },
         });
         expect(roleRepository.findUserRoles).toHaveBeenCalledWith('user-1');

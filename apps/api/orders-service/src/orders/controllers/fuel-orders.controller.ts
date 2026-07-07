@@ -5,6 +5,7 @@ import {
     ListFuelOrdersResDto,
     listFuelOrdersQueryDtoSchema,
     updateFuelOrderStatusReqDtoSchema,
+    ACCESS_PERMISSIONS,
     type TCreateFuelOrderRequestDto,
     type TListFuelOrdersQueryDto,
     type TUpdateFuelOrderStatusRequestDto,
@@ -31,7 +32,7 @@ export class FuelOrdersController {
     ) {}
 
     @Post()
-    @RequirePermissions('fuel_order:create')
+    @RequirePermissions(ACCESS_PERMISSIONS.fuelOrderCreate.key)
     public async createFuelOrder(
         @Body(new ZodValidationPipe(createFuelOrderReqDtoSchema)) body: TCreateFuelOrderRequestDto,
         @Req() request: AuthenticatedRequest,
@@ -41,7 +42,7 @@ export class FuelOrdersController {
     }
 
     @Get()
-    @RequirePermissions('fuel_order:read_all')
+    @RequirePermissions(ACCESS_PERMISSIONS.fuelOrderReadAll.key)
     public async listFuelOrders(
         @Query(new ZodValidationPipe(listFuelOrdersQueryDtoSchema)) query: TListFuelOrdersQueryDto,
         @CsHeaders() headers: BaseApiHeaders
@@ -50,7 +51,7 @@ export class FuelOrdersController {
     }
 
     @Get(':id')
-    @RequirePermissions('fuel_order:read_all')
+    @RequirePermissions(ACCESS_PERMISSIONS.fuelOrderReadAll.key)
     public async getFuelOrderById(
         @Param('id', new ZodValidationPipe(fuelOrderIdParamSchema)) id: string,
         @CsHeaders() headers: BaseApiHeaders
@@ -59,7 +60,7 @@ export class FuelOrdersController {
     }
 
     @Patch(':id/status')
-    @RequirePermissions('fuel_order:update_status')
+    @RequirePermissions(ACCESS_PERMISSIONS.fuelOrderUpdateStatus.key)
     public async updateFuelOrderStatus(
         @Param('id', new ZodValidationPipe(fuelOrderIdParamSchema)) id: string,
         @Body(new ZodValidationPipe(updateFuelOrderStatusReqDtoSchema)) body: TUpdateFuelOrderStatusRequestDto,

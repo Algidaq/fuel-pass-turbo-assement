@@ -1,3 +1,4 @@
+import { ACCESS_PERMISSIONS, ACCESS_ROLES } from '@fuel-pass/contracts/backend';
 import { BaseApiHeaders } from '@fuel-pass/node-commons';
 import { AuthFailure } from '../../../src/auth/auth.errors';
 import { RefreshTokenStatus, UserStatus } from '../../../src/auth/entities/auth.enums';
@@ -23,8 +24,8 @@ const currentUser = {
     id: activeUser.id,
     email: activeUser.email,
     fullName: activeUser.fullName,
-    roles: ['operations_manager'],
-    permissions: ['fuel_order:read_all'],
+    roles: [ACCESS_ROLES.operationsManager.key],
+    permissions: [ACCESS_PERMISSIONS.fuelOrderReadAll.key],
 };
 
 describe('AuthLoginService', () => {
