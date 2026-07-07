@@ -168,6 +168,11 @@ a {
   gap: 24px;
 }
 
+.orders-page {
+  display: grid;
+  gap: 24px;
+}
+
 .submit-order-card {
   max-width: 860px;
 }
@@ -199,6 +204,96 @@ a {
   justify-content: flex-end;
 }
 
+.order-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.order-summary-card-body {
+  display: grid;
+  gap: 8px;
+}
+
+.order-summary-card span {
+  color: #667085;
+  font-size: 0.9rem;
+}
+
+.order-summary-card strong {
+  color: #111827;
+  font-size: 1.65rem;
+  line-height: 1;
+}
+
+.orders-filter-form {
+  display: grid;
+  grid-template-columns: minmax(180px, 280px) auto;
+  align-items: end;
+  gap: 16px;
+}
+
+.orders-filter-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.orders-table-card-body {
+  padding: 0;
+}
+
+.orders-table-scroll {
+  overflow-x: auto;
+}
+
+.orders-table-scroll table {
+  min-width: 920px;
+}
+
+.order-status-actions {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+}
+
+.order-status-error {
+  max-width: 260px;
+  padding: 8px 10px;
+  font-size: 0.85rem;
+}
+
+.order-status-complete-text {
+  color: #667085;
+  font-size: 0.9rem;
+}
+
+.orders-empty-state,
+.orders-loading-state {
+  padding: 28px;
+  text-align: center;
+}
+
+.orders-empty-state {
+  border: 1px solid #e4e7ec;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.orders-empty-state h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 1.1rem;
+}
+
+.orders-empty-state p {
+  margin: 8px 0 0;
+  color: #667085;
+}
+
+.orders-loading-state {
+  color: #667085;
+}
+
 @media (max-width: 720px) {
   .app-header {
     align-items: flex-start;
@@ -225,6 +320,23 @@ a {
 
   .fuel-order-form-actions button {
     width: 100%;
+    justify-content: center;
+  }
+
+  .order-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .orders-filter-form {
+    grid-template-columns: 1fr;
+  }
+
+  .orders-filter-actions,
+  .orders-filter-actions button {
+    width: 100%;
+  }
+
+  .orders-filter-actions button {
     justify-content: center;
   }
 }

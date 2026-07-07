@@ -1,0 +1,53 @@
+import { Alert, Button } from '@fuel-pass/ui';
+import { useState } from 'react';
+
+import { isApiError } from '../../../services/httpClient';
+import { useUpdateFuelOrderStatus } from '../hooks/useUpdateFuelOrderStatus';
+import type { FuelOrder } from '../types/fuelOrder.types';
+import { getNextFuelOrderStatus, getStatusActionLabel } from '../utils/fuelOrderStatus';
+
+type OrderStatusActionsProps = {
+  order: FuelOrder;
+};
+
+const getUpdateErrorMessage = (error: unknown): string => {
+  if (isApiError(error)) {
+    return error.message;
+  }
+
+  return 'Unable to update this order status. Please try again.';
+};
+
+export const OrderStatusActions = ({ order }: OrderStatusActionsProps) => {
+  const updateFuelOrderStatus = useUpdateFuelOrderStatus();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const nextStatus = getNextFuelOrderStatus(order.status);
+  const actionLabel = getStatusActionLabel(order.status);
+
+  if (!nextStatus || !actionLabel) {
+    return <span className="order-status-complete-text">Completed</span>;
+  }
+
+  const handleUpdateStatus = async () => {
+    setErrorMessage(null);
+
+    try {
+      await updateFuelOrderStatus.mutateAsync({ id: order.id, status: nextStatus });
+    } catch (error: unknown) {
+      setErrorMessage(getUpdateErrorMessage(error));
+    }
+  };
+
+  return (
+    <div className="order-status-actions">
+      <Button disabled={updateFuelOrderStatus.isPending} onClick={handleUpdateStatus} size="sm" type="button">
+        {updateFuelOrderStatus.isPending ? 'Updating...' : actionLabel}
+      </Button>
+      {errorMessage ? (
+        <Alert className="order-status-error" role="alert" variant="danger">
+          {errorMessage}
+        </Alert>
+      ) : null}
+    </div>
+  );
+};

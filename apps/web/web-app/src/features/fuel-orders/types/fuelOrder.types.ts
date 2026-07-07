@@ -1,8 +1,20 @@
-import type { FuelOrderResDto, TCreateFuelOrderRequestDto } from '@fuel-pass/contracts/backend';
+import type {
+  FuelOrderResDto,
+  FuelOrderStatusDto,
+  TCreateFuelOrderRequestDto,
+  TListFuelOrdersQueryDto,
+  TUpdateFuelOrderStatusRequestDto,
+} from '@fuel-pass/contracts/backend';
 
 export type CreateFuelOrderRequest = TCreateFuelOrderRequestDto;
 
 export type FuelOrder = FuelOrderResDto;
+
+export type FuelOrderStatus = FuelOrderStatusDto;
+
+export type FuelOrderFilters = Pick<TListFuelOrdersQueryDto, 'airportIcaoCode'>;
+
+export type UpdateFuelOrderStatusRequest = TUpdateFuelOrderStatusRequestDto;
 
 export type CreateFuelOrderFormValues = {
   tailNumber: string;

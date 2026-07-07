@@ -22,11 +22,60 @@ export const toCreateFuelOrderRequest = (values: CreateFuelOrderFormValues): Cre
   deliveryWindowEndAt: toIsoDateTime(values.deliveryWindowEndAt),
 });
 
-export const formatFuelVolume = (order: FuelOrder): string => `${order.requestedFuelVolume} ${order.volumeUnit.toLowerCase()}`;
+const dateTimeFormatter = new Intl.DateTimeFormat('en-GB', {
+  day: '2-digit',
+  hour: '2-digit',
+  hour12: false,
+  minute: '2-digit',
+  month: 'short',
+  year: 'numeric',
+});
+
+const volumeFormatter = new Intl.NumberFormat('en-US', {
+  maximumFractionDigits: 2,
+  minimumFractionDigits: 0,
+});
+
+const volumeUnitLabels: Record<FuelOrder['volumeUnit'], string> = {
+  LITERS: 'L',
+};
+
+const formatDateTimePart = (value: string, options?: Intl.DateTimeFormatOptions): string =>
+  new Intl.DateTimeFormat('en-GB', {
+    hour12: false,
+    ...options,
+  }).format(new Date(value));
+
+export const formatDateTime = (value: string): string => dateTimeFormatter.format(new Date(value));
+
+export const formatFuelVolume = (order: FuelOrder): string => {
+  const volume = Number(order.requestedFuelVolume);
+  const formattedVolume = Number.isFinite(volume) ? volumeFormatter.format(volume) : order.requestedFuelVolume;
+
+  return `${formattedVolume} ${volumeUnitLabels[order.volumeUnit]}`;
+};
 
 export const formatDeliveryWindow = (order: FuelOrder): string => {
-  const start = new Date(order.deliveryWindowStartAt).toLocaleString();
-  const end = new Date(order.deliveryWindowEndAt).toLocaleString();
+  const startDate = formatDateTimePart(order.deliveryWindowStartAt, {
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+  const endDate = formatDateTimePart(order.deliveryWindowEndAt, {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+  const endTime = formatDateTimePart(order.deliveryWindowEndAt, {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 
-  return `${start} to ${end}`;
+  if (startDate.startsWith(endDate)) {
+    return `${startDate} - ${endTime}`;
+  }
+
+  return `${startDate} - ${formatDateTime(order.deliveryWindowEndAt)}`;
 };
