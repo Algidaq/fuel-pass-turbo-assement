@@ -5,6 +5,7 @@ export * from './components/OrderSummaryCards';
 export * from './components/OrdersEmptyState';
 export * from './components/OrdersTable';
 export * from './hooks/useCreateFuelOrder';
+export * from './hooks/useFuelOrder';
 export * from './hooks/useFuelOrders';
 export * from './hooks/useUpdateFuelOrderStatus';
 export * from './services/fuelOrdersService';

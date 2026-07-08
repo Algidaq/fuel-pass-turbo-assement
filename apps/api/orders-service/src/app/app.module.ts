@@ -1,7 +1,13 @@
-import { ApiResponseInterceptor, CoreMiddlewareModule, DEFAULT_CORE_MIDDLEWARE_MODULE_OPTIONS, getOsEnv } from '@fuel-pass/node-commons';
+import {
+    ApiResponseInterceptor,
+    AppHttpErrorExceptionFilter,
+    CoreMiddlewareModule,
+    DEFAULT_CORE_MIDDLEWARE_MODULE_OPTIONS,
+    getOsEnv,
+} from '@fuel-pass/node-commons';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { configs } from '../configs/config';
 import { getTypeOrmModuleOptions } from '../configs/typeorm.config';
@@ -39,6 +45,10 @@ import { AppService } from './app.service';
         {
             provide: APP_INTERCEPTOR,
             useClass: ApiResponseInterceptor,
+        },
+        {
+            provide: APP_FILTER,
+            useClass: AppHttpErrorExceptionFilter,
         },
     ],
 })

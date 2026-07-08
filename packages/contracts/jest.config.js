@@ -1,15 +1,11 @@
-import { defineConfig } from 'jest';
-import { readFileSync } from 'node:fs';
+const { readFileSync } = require('node:fs');
 
 // Reading the SWC compilation config for the spec files
-const swcJestConfig = JSON.parse(readFileSync(`${import.meta.dirname}/.spec.swcrc`, 'utf-8'));
+const swcJestConfig = JSON.parse(readFileSync(`${__dirname}/.spec.swcrc`, 'utf-8'));
 
 // Disable .swcrc look-up by SWC core because we're passing in swcJestConfig ourselves
 swcJestConfig.swcrc = false;
-/**
- * @type {import('jest')}
- */
-export default defineConfig({
+module.exports = {
     displayName: { name: '@fuel-pass/contracts', color: 'yellow' },
     testEnvironment: 'node',
     transform: {
@@ -22,4 +18,4 @@ export default defineConfig({
     coverageDirectory: 'test-output/jest/coverage',
     testMatch: ['<rootDir>/tests/**/*.spec.{ts,js}', '<rootDir>/tests/**/*.test.{ts,js}'],
     maxWorkers: '50%',
-});
+};

@@ -1,11 +1,19 @@
 import { ORDER_PERMISSIONS } from '@fuel-pass/contracts/backend';
-import { ApiResponse, BaseApiHeaders } from '@fuel-pass/node-commons';
+import {
+    ApiResponse,
+    BaseApiHeaders,
+    JwtIntrospectionAuthGuard,
+    PermissionsGuard,
+    REQUIRED_ANY_PERMISSIONS_METADATA_KEY,
+    REQUIRED_PERMISSIONS_METADATA_KEY,
+    type AuthenticatedRequest,
+} from '@fuel-pass/node-commons';
+import { GUARDS_METADATA } from '@nestjs/common/constants';
 import { FuelOrdersController } from '../../../src/orders/controllers/fuel-orders.controller';
 import type { CreateFuelOrderService } from '../../../src/orders/services/create-fuel-order.service';
 import type { GetFuelOrderService } from '../../../src/orders/services/get-fuel-order.service';
 import type { ListFuelOrdersService } from '../../../src/orders/services/list-fuel-orders.service';
 import type { UpdateFuelOrderStatusService } from '../../../src/orders/services/update-fuel-order-status.service';
-import type { AuthenticatedRequest } from '../../../src/orders/types/auth-request.types';
 
 const headers = new BaseApiHeaders();
 const aircraftOperatorRoleKey = 'aircraft_operator';
@@ -48,6 +56,21 @@ function createController(overrides?: {
 }
 
 describe('FuelOrdersController', () => {
+    it('uses shared auth guards and permission metadata', () => {
+        expect(Reflect.getMetadata(GUARDS_METADATA, FuelOrdersController)).toEqual([JwtIntrospectionAuthGuard, PermissionsGuard]);
+        expect(Reflect.getMetadata(REQUIRED_PERMISSIONS_METADATA_KEY, FuelOrdersController.prototype.createFuelOrder)).toEqual([
+            ORDER_PERMISSIONS.fuelOrderCreate.key,
+        ]);
+        expect(Reflect.getMetadata(REQUIRED_ANY_PERMISSIONS_METADATA_KEY, FuelOrdersController.prototype.listFuelOrders)).toEqual([
+            ORDER_PERMISSIONS.fuelOrderReadOwn.key,
+            ORDER_PERMISSIONS.fuelOrderReadAll.key,
+        ]);
+        expect(Reflect.getMetadata(REQUIRED_ANY_PERMISSIONS_METADATA_KEY, FuelOrdersController.prototype.getFuelOrderById)).toEqual([
+            ORDER_PERMISSIONS.fuelOrderReadOwn.key,
+            ORDER_PERMISSIONS.fuelOrderReadAll.key,
+        ]);
+    });
+
     it('delegates create requests to the create endpoint service', async () => {
         const response = ApiResponse.builder().withSuccess({ status: 201, data: fuelOrder }).build();
         const createFuelOrder = jest.fn().mockResolvedValue(response);
@@ -70,19 +93,20 @@ describe('FuelOrdersController', () => {
             .build();
         const listFuelOrders = jest.fn().mockResolvedValue(response);
         const controller = createController({ listFuelOrdersService: { listFuelOrders } });
-        const query = { airportIcaoCode: 'OMDB', status: 'PENDING' as const, page: 1, pageSize: 20 };
+        const query = { airportIcaoCode: 'OMDB', status: 'PENDING' as const, include_status: true, include_user: true, page: 1, pageSize: 20 };
 
-        await expect(controller.listFuelOrders(query, headers)).resolves.toBe(response);
-        expect(listFuelOrders).toHaveBeenCalledWith({ headers, query });
+        await expect(controller.listFuelOrders(query, authRequest, headers)).resolves.toBe(response);
+        expect(listFuelOrders).toHaveBeenCalledWith({ headers, query, principal: authRequest.auth });
     });
 
     it('delegates get requests to the get endpoint service', async () => {
         const response = ApiResponse.builder().withSuccess({ status: 200, data: fuelOrder }).build();
         const getFuelOrder = jest.fn().mockResolvedValue(response);
         const controller = createController({ getFuelOrderService: { getFuelOrder } });
+        const query = { include_status_history: true, include_user: true };
 
-        await expect(controller.getFuelOrderById(fuelOrder.id, headers)).resolves.toBe(response);
-        expect(getFuelOrder).toHaveBeenCalledWith({ headers, id: fuelOrder.id });
+        await expect(controller.getFuelOrderById(fuelOrder.id, query, authRequest, headers)).resolves.toBe(response);
+        expect(getFuelOrder).toHaveBeenCalledWith({ headers, id: fuelOrder.id, query, principal: authRequest.auth });
     });
 
     it('delegates status updates to the update endpoint service', async () => {

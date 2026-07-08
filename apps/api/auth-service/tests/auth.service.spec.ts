@@ -6,6 +6,7 @@ import { UserCredentialEntity } from '../src/auth/entities/user-credential.entit
 import { UserRoleEntity } from '../src/auth/entities/user-role.entity';
 import { UserEntity } from '../src/auth/entities/user.entity';
 import { InternalUserCreationService } from '../src/auth/services/internal-user-creation.service';
+import { InternalUserLookupService } from '../src/auth/services/internal-user-lookup.service';
 
 const headers = new BaseApiHeaders();
 const adminRoleKey = 'admin';
@@ -135,5 +136,35 @@ describe('InternalUserCreationService.createUser', () => {
         expect(response.success).toBe(false);
         expect(response.status).toBe(400);
         expect(response.errors[0]?.code).toEqual('AUTH.INVALID-REQUEST');
+    });
+});
+
+describe('InternalUserLookupService.lookupUsers', () => {
+    it('returns user details for found IDs only', async () => {
+        const foundUser = Object.assign(new UserEntity(), {
+            id: '8c2d1c4a-c42e-4e77-8ff1-6f76c473f6aa',
+            email: 'operator@fuelpass.test',
+            fullName: 'Aircraft Operator',
+        });
+        const userRepository = {
+            findByIds: jest.fn().mockResolvedValue([foundUser]),
+        };
+        const service = new InternalUserLookupService(userRepository as never);
+
+        const response = await service.lookupUsers({
+            headers,
+            body: {
+                userIds: ['8c2d1c4a-c42e-4e77-8ff1-6f76c473f6aa', '8c2d1c4a-c42e-4e77-8ff1-6f76c473f6aa'],
+            },
+        });
+
+        expect(userRepository.findByIds).toHaveBeenCalledWith(['8c2d1c4a-c42e-4e77-8ff1-6f76c473f6aa']);
+        expect(response.data?.users).toEqual([
+            {
+                id: '8c2d1c4a-c42e-4e77-8ff1-6f76c473f6aa',
+                email: 'operator@fuelpass.test',
+                fullName: 'Aircraft Operator',
+            },
+        ]);
     });
 });

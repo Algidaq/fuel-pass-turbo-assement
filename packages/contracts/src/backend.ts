@@ -4,6 +4,7 @@ export * from './contracts/orders/fuel-order-dto/list-fuel-orders-res.dto.js';
 export * from './contracts/users/auth/create-internal-user-dto/create-internal-user-res.dto.js';
 export * from './contracts/users/auth/current-user-dto/current-user-res.dto.js';
 export * from './contracts/users/auth/introspect-dto/introspect-res.dto.js';
+export * from './contracts/users/auth/internal-user-lookup-dto/internal-user-lookup-res.dto.js';
 export * from './contracts/users/auth/login-dto/login-res.dto.js';
 export * from './contracts/users/auth/logout-dto/logout-res.dto.js';
 export * from './contracts/users/auth/refresh-dto/refresh-res.dto.js';

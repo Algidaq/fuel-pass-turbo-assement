@@ -1,27 +1,11 @@
-import {
-    Check,
-    Column,
-    CreateDateColumn,
-    Entity,
-    Index,
-    OneToMany,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn,
-} from 'typeorm';
-import { FuelOrderStatus, VolumeUnit } from './order.enums';
+import { Column, CreateDateColumn, Entity, Index, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import type { FuelOrderStatusHistoryEntity } from './fuel-order-status-history.entity';
+import { FuelOrderStatus, VolumeUnit } from './order.enums';
 
 @Entity({ name: 'fuel_orders' })
 @Index('idx_fuel_orders_airport_icao_code', ['airportIcaoCode'])
 @Index('idx_fuel_orders_created_at', ['createdAt'])
 @Index('idx_fuel_orders_status', ['status'])
-@Check('ck_fuel_orders_tail_number_not_empty', 'length(trim("tail_number")) > 0')
-@Check(
-    'ck_fuel_orders_airport_icao_code_format',
-    'length("airport_icao_code") = 4 AND "airport_icao_code" = upper("airport_icao_code") AND "airport_icao_code" GLOB \'[A-Z][A-Z][A-Z][A-Z]\''
-)
-@Check('ck_fuel_orders_requested_fuel_volume_positive', '"requested_fuel_volume" > 0')
-@Check('ck_fuel_orders_delivery_window_order', '"delivery_window_end_at" > "delivery_window_start_at"')
 export class FuelOrderEntity {
     @PrimaryGeneratedColumn('uuid')
     public id!: string;

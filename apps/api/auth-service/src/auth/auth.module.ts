@@ -13,6 +13,7 @@ import { AuthLogoutService } from './services/auth-logout.service';
 import { AuthRefreshService } from './services/auth-refresh.service';
 import { CurrentUserService } from './services/current-user.service';
 import { InternalUserCreationService } from './services/internal-user-creation.service';
+import { InternalUserLookupService } from './services/internal-user-lookup.service';
 import { PasswordService } from './services/password.service';
 import { RefreshTokenService } from './services/refresh-token.service';
 import { AbstractSessionCreationService } from './services/session-creation-service/abstract-session-creation.service';
@@ -28,6 +29,7 @@ const authEndpointServices = [
     AuthLogoutService,
     AuthRefreshService,
     InternalUserCreationService,
+    InternalUserLookupService,
 ];
 
 @Module({

@@ -1,0 +1,23 @@
+{
+    "extends": "@fuel-pass/typescript-config/backend",
+    "compilerOptions": {
+        "emitDeclarationOnly": false,
+        "types": [
+            "node",
+            "jest"
+        ],
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
+    },
+    "include": [
+        "src/**/*.ts",
+        "tests/**/*.spec.ts",
+        "tests/**/*.test.ts",
+        "eslint.config.mjs"
+    ],
+    "exclude": [
+        "out-tsc",
+        "dist",
+        "jest.config.js"
+    ]
+}

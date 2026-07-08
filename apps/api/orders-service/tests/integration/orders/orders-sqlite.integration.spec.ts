@@ -138,6 +138,81 @@ describe('orders persistence with SQLite', () => {
         });
     });
 
+    it('lists orders filtered by submitting user', async () => {
+        const submittedByUserId = randomUUID();
+        await fuelOrderRepository.createFuelOrder({
+            tailNumber: 'N123FP',
+            airportIcaoCode: 'OMDB',
+            requestedFuelVolume: '1500.00',
+            deliveryWindowStartAt,
+            deliveryWindowEndAt,
+            submittedByUserId,
+        });
+        await fuelOrderRepository.createFuelOrder({
+            tailNumber: 'N456FP',
+            airportIcaoCode: 'OMDB',
+            requestedFuelVolume: '2000.00',
+            deliveryWindowStartAt,
+            deliveryWindowEndAt,
+            submittedByUserId: randomUUID(),
+        });
+
+        const [fuelOrders, totalItems] = await fuelOrderRepository.findManyAndCount({
+            submittedByUserId,
+            page: 1,
+            pageSize: 20,
+        });
+
+        expect(totalItems).toBe(1);
+        expect(fuelOrders[0]).toMatchObject({
+            tailNumber: 'N123FP',
+            submittedByUserId,
+        });
+    });
+
+    it('counts orders grouped by status with filters', async () => {
+        const submittedByUserId = randomUUID();
+        const pendingFuelOrder = await fuelOrderRepository.createFuelOrder({
+            tailNumber: 'N123FP',
+            airportIcaoCode: 'OMDB',
+            requestedFuelVolume: '1500.00',
+            deliveryWindowStartAt,
+            deliveryWindowEndAt,
+            submittedByUserId,
+        });
+        const confirmedFuelOrder = await fuelOrderRepository.createFuelOrder({
+            tailNumber: 'N456FP',
+            airportIcaoCode: 'OMDB',
+            requestedFuelVolume: '2000.00',
+            deliveryWindowStartAt,
+            deliveryWindowEndAt,
+            submittedByUserId,
+        });
+        await fuelOrderRepository.createFuelOrder({
+            tailNumber: 'N789FP',
+            airportIcaoCode: 'OMAA',
+            requestedFuelVolume: '3000.00',
+            deliveryWindowStartAt,
+            deliveryWindowEndAt,
+        });
+        await fuelOrderRepository.updateStatus({
+            fuelOrderId: confirmedFuelOrder.id,
+            status: FuelOrderStatus.CONFIRMED,
+        });
+        await fuelOrderRepository.updateStatus({
+            fuelOrderId: pendingFuelOrder.id,
+            status: FuelOrderStatus.COMPLETED,
+        });
+
+        const counts = await fuelOrderRepository.countByStatus({ airportIcaoCode: 'OMDB', submittedByUserId });
+
+        expect(counts).toEqual({
+            [FuelOrderStatus.PENDING]: 0,
+            [FuelOrderStatus.CONFIRMED]: 1,
+            [FuelOrderStatus.COMPLETED]: 1,
+        });
+    });
+
     it('inserts status history', async () => {
         const fuelOrder = await fuelOrderRepository.createFuelOrder({
             tailNumber: 'N123FP',
@@ -162,6 +237,36 @@ describe('orders persistence with SQLite', () => {
             note: 'Submitted',
         });
         expect(history.changedAt).toBeInstanceOf(Date);
+    });
+
+    it('loads status history ordered by change time', async () => {
+        const fuelOrder = await fuelOrderRepository.createFuelOrder({
+            tailNumber: 'N123FP',
+            airportIcaoCode: 'OMDB',
+            requestedFuelVolume: '1500.00',
+            deliveryWindowStartAt,
+            deliveryWindowEndAt,
+        });
+
+        await fuelOrderRepository.createStatusHistory({
+            fuelOrderId: fuelOrder.id,
+            fromStatus: FuelOrderStatus.PENDING,
+            toStatus: FuelOrderStatus.CONFIRMED,
+            changedAt: new Date('2026-07-06T13:00:00.000Z'),
+        });
+        await fuelOrderRepository.createStatusHistory({
+            fuelOrderId: fuelOrder.id,
+            fromStatus: null,
+            toStatus: FuelOrderStatus.PENDING,
+            changedAt: new Date('2026-07-06T12:00:00.000Z'),
+        });
+
+        const fuelOrderWithHistory = await fuelOrderRepository.findByIdWithStatusHistoryOrThrow(fuelOrder.id);
+
+        expect(fuelOrderWithHistory.statusHistory.map((history) => history.toStatus)).toEqual([
+            FuelOrderStatus.PENDING,
+            FuelOrderStatus.CONFIRMED,
+        ]);
     });
 
     it('updates status and persists status history in a transaction', async () => {

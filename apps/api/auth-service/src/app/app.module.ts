@@ -1,7 +1,7 @@
-import { ApiResponseInterceptor, CoreMiddlewareModule } from '@fuel-pass/node-commons';
+import { ApiResponseInterceptor, AppHttpErrorExceptionFilter, CoreMiddlewareModule } from '@fuel-pass/node-commons';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
 import { configs } from '../configs/config';
@@ -32,6 +32,10 @@ import { AppService } from './app.service';
         {
             provide: APP_INTERCEPTOR,
             useClass: ApiResponseInterceptor,
+        },
+        {
+            provide: APP_FILTER,
+            useClass: AppHttpErrorExceptionFilter,
         },
     ],
 })

@@ -3,6 +3,7 @@ import { ApiResponse, BaseApiHeaders } from '@fuel-pass/node-commons';
 import { InternalAuthController } from '../src/auth/controllers/internal-auth.controller';
 import type { AuthIntrospectionService } from '../src/auth/services/auth-introspection.service';
 import type { InternalUserCreationService } from '../src/auth/services/internal-user-creation.service';
+import type { InternalUserLookupService } from '../src/auth/services/internal-user-lookup.service';
 
 const headers = new BaseApiHeaders();
 const adminRoleKey = 'admin';
@@ -11,10 +12,12 @@ describe('InternalAuthController', () => {
     function createController(params?: {
         introspectionService?: Partial<AuthIntrospectionService>;
         internalUserCreationService?: Partial<InternalUserCreationService>;
+        internalUserLookupService?: Partial<InternalUserLookupService>;
     }): InternalAuthController {
         return new InternalAuthController(
             (params?.introspectionService ?? {}) as AuthIntrospectionService,
-            (params?.internalUserCreationService ?? {}) as InternalUserCreationService
+            (params?.internalUserCreationService ?? {}) as InternalUserCreationService,
+            (params?.internalUserLookupService ?? {}) as InternalUserLookupService
         );
     }
 
@@ -79,5 +82,22 @@ describe('InternalAuthController', () => {
         expect(response.success).toBe(true);
         expect(response.status).toBe(HttpStatus.CREATED);
         expect(response.data).toEqual({ user });
+    });
+
+    it('delegates internal user lookup requests', async () => {
+        const response = ApiResponse.builder()
+            .withSuccess({
+                status: HttpStatus.OK,
+                data: {
+                    users: [{ id: 'user-1', email: 'operator@fuelpass.test', fullName: 'Aircraft Operator' }],
+                },
+            })
+            .build();
+        const lookupUsers = jest.fn().mockResolvedValue(response);
+        const controller = createController({ internalUserLookupService: { lookupUsers } });
+        const body = { userIds: ['8c2d1c4a-c42e-4e77-8ff1-6f76c473f6aa'] };
+
+        await expect(controller.lookupUsers(body, headers)).resolves.toBe(response);
+        expect(lookupUsers).toHaveBeenCalledWith({ headers, body });
     });
 });

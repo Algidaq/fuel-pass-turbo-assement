@@ -11,6 +11,7 @@ export * from './contracts/users/auth/auth.contracts.js';
 export * from './contracts/users/auth/auth.errors.js';
 export * from './contracts/users/auth/create-internal-user-dto/create-internal-user-req.schema.js';
 export * from './contracts/users/auth/introspect-dto/introspect-req.schema.js';
+export * from './contracts/users/auth/internal-user-lookup-dto/internal-user-lookup-req.schema.js';
 export * from './contracts/users/auth/login-dto/login-req.schema.js';
 export * from './contracts/users/auth/logout-dto/logout-req.schema.js';
 export * from './contracts/users/auth/refresh-dto/refresh-req.schema.js';
