@@ -1,70 +1,31 @@
-import { Badge, Button, Card, CardBody } from '@fuel-pass/ui';
 import { useNavigate } from 'react-router-dom';
 
 import { useLogout } from '../../features/auth/hooks/useLogout';
 import { useAuthStore } from '../../features/auth/store/auth.store';
-import type { AuthUser } from '../../features/auth/types/auth.types';
+import { getPrimaryRoleLabel } from '../../features/auth/utils/userDisplay';
 import { getWorkspaceRouteForUser } from '../../routes/roleRoutes';
+import { RestrictedAccessCard } from './components/RestrictedAccessCard';
 import styles from './RestrictedPage.module.css';
-
-const formatRoleName = (role: string): string =>
-    role
-        .split(/[_\s-]+/u)
-        .filter(Boolean)
-        .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
-        .join(' ');
-
-const getAccessLabel = (user: AuthUser | null): string => {
-    if (!user?.roles.length) {
-        return 'Role-based';
-    }
-
-    return formatRoleName(user.roles[0]);
-};
 
 export const RestrictedPage = () => {
     const logout = useLogout();
     const navigate = useNavigate();
     const user = useAuthStore((state) => state.user);
     const workspaceRoute = user ? getWorkspaceRouteForUser(user) : null;
+    const accessLabel = getPrimaryRoleLabel(user, 'Role-based');
 
     return (
         <section className={styles.page} aria-labelledby="restricted-page-title">
-            <Card className={styles.card}>
-                <CardBody className={styles.body}>
-                    <div className={styles.icon} aria-hidden="true" />
-
-                    <div className={styles.copy}>
-                        <h1 id="restricted-page-title">Access restricted</h1>
-                        <p>You do not have permission to view this page with your current role.</p>
-                        <p>
-                            {workspaceRoute
-                                ? 'Return to your assigned workspace or sign out and use a different account.'
-                                : 'No FuelPass workspace is assigned to your current account.'}
-                        </p>
-                    </div>
-
-                    <div className={styles.divider} />
-
-                    <div className={styles.accessRow}>
-                        <span>Current access</span>
-                        <Badge variant="neutral">{getAccessLabel(user)}</Badge>
-                    </div>
-
-                    <div className={styles.actions}>
-                        {workspaceRoute ? (
-                            <Button onClick={() => navigate(workspaceRoute, { replace: true })} type="button">
-                                Go to my workspace
-                            </Button>
-                        ) : null}
-                        <Button onClick={() => void logout()} type="button" variant={workspaceRoute ? 'secondary' : 'primary'}>
-                            Logout
-                        </Button>
-                    </div>
-
-                    <p className={styles.note}>Access is based on your FuelPass role.</p>
-                </CardBody>
-            </Card>
+            <RestrictedAccessCard
+                accessLabel={accessLabel}
+                hasWorkspaceRoute={Boolean(workspaceRoute)}
+                onGoToWorkspace={() => {
+                    if (workspaceRoute) {
+                        navigate(workspaceRoute, { replace: true });
+                    }
+                }}
+                onLogout={() => void logout()}
+            />
         </section>
     );
 };
