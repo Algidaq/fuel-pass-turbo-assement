@@ -70,6 +70,7 @@ function createHarness(overrides?: {
             FuelOrderRepository,
             | 'createFuelOrder'
             | 'createStatusHistory'
+            | 'countByStatus'
             | 'findManyAndCount'
             | 'findById'
             | 'findByIdOrThrow'
@@ -93,6 +94,11 @@ function createHarness(overrides?: {
     const fuelOrderRepository = {
         createFuelOrder: jest.fn().mockResolvedValue(createFuelOrder()),
         createStatusHistory: jest.fn().mockResolvedValue({}),
+        countByStatus: jest.fn().mockResolvedValue({
+            [FuelOrderStatus.PENDING]: 1,
+            [FuelOrderStatus.CONFIRMED]: 2,
+            [FuelOrderStatus.COMPLETED]: 3,
+        }),
         findManyAndCount: jest.fn().mockResolvedValue([[createFuelOrder()], 1]),
         findById,
         findByIdOrThrow: jest.fn().mockResolvedValue(createFuelOrder()),
@@ -162,6 +168,7 @@ describe('fuel order endpoint services', () => {
             query: {
                 airportIcaoCode: 'OMDB',
                 status: 'PENDING',
+                include_status: false,
                 page: 2,
                 pageSize: 10,
             },
@@ -173,11 +180,36 @@ describe('fuel order endpoint services', () => {
             page: 2,
             pageSize: 10,
         });
+        expect(fuelOrderRepository.countByStatus).not.toHaveBeenCalled();
         expect(response.data?.pagination).toMatchObject({
             page: 2,
             pageSize: 10,
             totalItems: 1,
             totalPages: 1,
+        });
+    });
+
+    it('includes grouped status counts when requested', async () => {
+        const { listService, fuelOrderRepository } = createHarness();
+
+        const response = await listService.listFuelOrders({
+            headers,
+            query: {
+                airportIcaoCode: 'OMDB',
+                include_status: true,
+                page: 1,
+                pageSize: 20,
+            },
+        });
+
+        expect(fuelOrderRepository.countByStatus).toHaveBeenCalledWith({
+            airportIcaoCode: 'OMDB',
+            status: undefined,
+        });
+        expect(response.data?.statusCounts).toMatchObject({
+            [FuelOrderStatus.PENDING]: 1,
+            [FuelOrderStatus.CONFIRMED]: 2,
+            [FuelOrderStatus.COMPLETED]: 3,
         });
     });
 

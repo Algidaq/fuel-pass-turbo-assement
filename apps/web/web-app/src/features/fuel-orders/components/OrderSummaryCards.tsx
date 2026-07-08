@@ -1,21 +1,19 @@
 import { Card, CardBody } from '@fuel-pass/ui';
 
-import type { FuelOrder, FuelOrderStatus } from '../types/fuelOrder.types';
+import type { FuelOrderStatusCounts } from '../types/fuelOrder.types';
 import styles from './OrderSummaryCards.module.css';
 
 type OrderSummaryCardsProps = {
-  orders: FuelOrder[];
+  statusCounts?: FuelOrderStatusCounts;
+  totalOrders: number;
 };
 
-const countOrdersByStatus = (orders: FuelOrder[], status: FuelOrderStatus): number =>
-  orders.filter((order) => order.status === status).length;
-
-export const OrderSummaryCards = ({ orders }: OrderSummaryCardsProps) => {
+export const OrderSummaryCards = ({ statusCounts, totalOrders }: OrderSummaryCardsProps) => {
   const summaryItems = [
-    { description: 'All submitted requests', label: 'Total Orders', value: orders.length },
-    { description: 'Awaiting confirmation', label: 'Pending', status: 'pending', value: countOrdersByStatus(orders, 'PENDING') },
-    { description: 'Scheduled for fueling', label: 'Confirmed', status: 'confirmed', value: countOrdersByStatus(orders, 'CONFIRMED') },
-    { description: 'Fueling completed', label: 'Completed', status: 'completed', value: countOrdersByStatus(orders, 'COMPLETED') },
+    { description: 'All submitted requests', label: 'Total Orders', value: totalOrders },
+    { description: 'Awaiting confirmation', label: 'Pending', status: 'pending', value: statusCounts?.PENDING ?? 0 },
+    { description: 'Scheduled for fueling', label: 'Confirmed', status: 'confirmed', value: statusCounts?.CONFIRMED ?? 0 },
+    { description: 'Fueling completed', label: 'Completed', status: 'completed', value: statusCounts?.COMPLETED ?? 0 },
   ];
 
   return (

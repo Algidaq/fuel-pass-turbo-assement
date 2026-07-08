@@ -25,6 +25,13 @@ export interface FindFuelOrdersFilters {
     pageSize?: number;
 }
 
+export type FuelOrderStatusCounts = Record<FuelOrderStatus, number>;
+
+interface FuelOrderStatusCountRaw {
+    status: FuelOrderStatus;
+    count: string | number;
+}
+
 export interface UpdateFuelOrderStatusData {
     fuelOrderId: string;
     status: FuelOrderStatus;
@@ -118,6 +125,35 @@ export class FuelOrderRepository {
             skip: this.toSkip(filters),
             take: filters.pageSize,
         });
+    }
+
+    public async countByStatus(filters: FindFuelOrdersFilters = {}, manager?: EntityManager): Promise<FuelOrderStatusCounts> {
+        const counts: FuelOrderStatusCounts = {
+            [FuelOrderStatus.PENDING]: 0,
+            [FuelOrderStatus.CONFIRMED]: 0,
+            [FuelOrderStatus.COMPLETED]: 0,
+        };
+        const queryBuilder = this.getFuelOrderRepository(manager)
+            .createQueryBuilder('fuelOrder')
+            .select('fuelOrder.status', 'status')
+            .addSelect('COUNT(fuelOrder.id)', 'count')
+            .groupBy('fuelOrder.status');
+
+        if (filters.airportIcaoCode !== undefined) {
+            queryBuilder.andWhere('fuelOrder.airportIcaoCode = :airportIcaoCode', { airportIcaoCode: filters.airportIcaoCode });
+        }
+
+        if (filters.status !== undefined) {
+            queryBuilder.andWhere('fuelOrder.status = :status', { status: filters.status });
+        }
+
+        const rows = await queryBuilder.getRawMany<FuelOrderStatusCountRaw>();
+
+        for (const row of rows) {
+            counts[row.status] = Number(row.count);
+        }
+
+        return counts;
     }
 
     public async updateStatus(data: UpdateFuelOrderStatusData, manager?: EntityManager): Promise<void> {

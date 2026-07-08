@@ -6,6 +6,7 @@ import type {
     CreateFuelOrderRequest,
     FuelOrder,
     FuelOrderFilters,
+    FuelOrdersList,
     FuelOrderStatus,
     UpdateFuelOrderStatusRequest,
 } from '../types/fuelOrder.types';
@@ -42,6 +43,8 @@ const buildFuelOrdersListUrl = (params?: FuelOrderFilters): string => {
         searchParams.set('airportIcaoCode', params.airportIcaoCode);
     }
 
+    searchParams.set('include_status', 'true');
+
     const queryString = searchParams.toString();
 
     return queryString ? `${fuelOrdersUrl}?${queryString}` : fuelOrdersUrl;
@@ -69,13 +72,12 @@ export const fuelOrdersService = {
         return unwrapApiResponse(response, 'Fuel order was submitted, but no order was returned.');
     },
 
-    async getFuelOrders(params?: FuelOrderFilters): Promise<FuelOrder[]> {
+    async getFuelOrders(params?: FuelOrderFilters): Promise<FuelOrdersList> {
         const response = await httpClient<ListFuelOrdersResponseDto | ApiResponse<ListFuelOrdersResponseDto>>(
             buildFuelOrdersListUrl(params)
         );
-        const list = unwrapApiResponse(response, 'Fuel orders could not be loaded.');
 
-        return list.items;
+        return unwrapApiResponse(response, 'Fuel orders could not be loaded.');
     },
 
     async getFuelOrder(id: string, params?: { includeStatusHistory?: boolean }): Promise<FuelOrder> {

@@ -87,7 +87,7 @@ describe('FuelOrdersController', () => {
             .build();
         const listFuelOrders = jest.fn().mockResolvedValue(response);
         const controller = createController({ listFuelOrdersService: { listFuelOrders } });
-        const query = { airportIcaoCode: 'OMDB', status: 'PENDING' as const, page: 1, pageSize: 20 };
+        const query = { airportIcaoCode: 'OMDB', status: 'PENDING' as const, include_status: true, page: 1, pageSize: 20 };
 
         await expect(controller.listFuelOrders(query, headers)).resolves.toBe(response);
         expect(listFuelOrders).toHaveBeenCalledWith({ headers, query });

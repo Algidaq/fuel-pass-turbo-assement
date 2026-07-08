@@ -17,6 +17,18 @@ function normalizeInteger(value: number | string | undefined, fallback: number):
     return parsedValue;
 }
 
+function normalizeBoolean(value: boolean | string | undefined, fallback: boolean): boolean {
+    if (value === undefined) {
+        return fallback;
+    }
+
+    if (typeof value === 'boolean') {
+        return value;
+    }
+
+    return value === 'true';
+}
+
 export const listFuelOrdersQueryDtoSchema = z.object({
     airportIcaoCode: z
         .string()
@@ -25,6 +37,10 @@ export const listFuelOrdersQueryDtoSchema = z.object({
         .refine((value): boolean => /^[A-Z]{4}$/u.test(value), 'airportIcaoCode must be a valid ICAO code')
         .optional(),
     status: z.enum(fuelOrderStatusValues).optional(),
+    include_status: z
+        .union([z.boolean(), z.string()])
+        .optional()
+        .transform((value): boolean => normalizeBoolean(value, false)),
     page: z
         .union([z.number(), z.string()])
         .optional()

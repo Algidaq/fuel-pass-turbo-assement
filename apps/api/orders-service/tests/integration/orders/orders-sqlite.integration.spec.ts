@@ -138,6 +138,46 @@ describe('orders persistence with SQLite', () => {
         });
     });
 
+    it('counts orders grouped by status with filters', async () => {
+        const pendingFuelOrder = await fuelOrderRepository.createFuelOrder({
+            tailNumber: 'N123FP',
+            airportIcaoCode: 'OMDB',
+            requestedFuelVolume: '1500.00',
+            deliveryWindowStartAt,
+            deliveryWindowEndAt,
+        });
+        const confirmedFuelOrder = await fuelOrderRepository.createFuelOrder({
+            tailNumber: 'N456FP',
+            airportIcaoCode: 'OMDB',
+            requestedFuelVolume: '2000.00',
+            deliveryWindowStartAt,
+            deliveryWindowEndAt,
+        });
+        await fuelOrderRepository.createFuelOrder({
+            tailNumber: 'N789FP',
+            airportIcaoCode: 'OMAA',
+            requestedFuelVolume: '3000.00',
+            deliveryWindowStartAt,
+            deliveryWindowEndAt,
+        });
+        await fuelOrderRepository.updateStatus({
+            fuelOrderId: confirmedFuelOrder.id,
+            status: FuelOrderStatus.CONFIRMED,
+        });
+        await fuelOrderRepository.updateStatus({
+            fuelOrderId: pendingFuelOrder.id,
+            status: FuelOrderStatus.COMPLETED,
+        });
+
+        const counts = await fuelOrderRepository.countByStatus({ airportIcaoCode: 'OMDB' });
+
+        expect(counts).toEqual({
+            [FuelOrderStatus.PENDING]: 0,
+            [FuelOrderStatus.CONFIRMED]: 1,
+            [FuelOrderStatus.COMPLETED]: 1,
+        });
+    });
+
     it('inserts status history', async () => {
         const fuelOrder = await fuelOrderRepository.createFuelOrder({
             tailNumber: 'N123FP',

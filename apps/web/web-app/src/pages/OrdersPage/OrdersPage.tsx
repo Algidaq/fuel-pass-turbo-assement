@@ -38,7 +38,9 @@ export const OrdersPage = () => {
   const [filters, setFilters] = useState<FuelOrderFilters>({});
   const user = useAuthStore((state) => state.user);
   const fuelOrdersQuery = useFuelOrders(filters);
-  const orders = fuelOrdersQuery.data ?? [];
+  const ordersList = fuelOrdersQuery.data;
+  const orders = ordersList?.items ?? [];
+  const totalOrders = ordersList?.pagination.totalItems ?? orders.length;
   const isFiltered = Boolean(filters.airportIcaoCode);
   const roleLabel = getOrdersRoleLabel(user);
 
@@ -63,7 +65,7 @@ export const OrdersPage = () => {
         </Button>
       </header>
 
-      <OrderSummaryCards orders={orders} />
+      <OrderSummaryCards statusCounts={ordersList?.statusCounts} totalOrders={totalOrders} />
 
       <OrderFilters filters={filters} onApply={setFilters} />
 

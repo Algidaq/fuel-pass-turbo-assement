@@ -3,7 +3,10 @@ import {
     PERMISSIONS,
     createFuelOrderReqDtoSchema,
     FuelOrderResDto,
+    FuelOrderStatusCountsResDto,
     isPermissionKey,
+    ListFuelOrdersResDto,
+    PaginationResDto,
     fuelOrderQueryDtoSchema,
     listFuelOrdersQueryDtoSchema,
     ORDER_ERRORS,
@@ -96,20 +99,23 @@ describe('contracts', () => {
     });
 
     it('normalizes list query defaults and filters', () => {
-        expect(listFuelOrdersQueryDtoSchema.parse({})).toEqual({ page: 1, pageSize: 20 });
+        expect(listFuelOrdersQueryDtoSchema.parse({})).toEqual({ include_status: false, page: 1, pageSize: 20 });
         expect(
             listFuelOrdersQueryDtoSchema.parse({
                 airportIcaoCode: ' omdb ',
                 status: 'PENDING',
+                include_status: 'true',
                 page: '2',
                 pageSize: '10',
             })
         ).toEqual({
             airportIcaoCode: 'OMDB',
             status: 'PENDING',
+            include_status: true,
             page: 2,
             pageSize: 10,
         });
+        expect(listFuelOrdersQueryDtoSchema.parse({ include_status: 'false' }).include_status).toBe(false);
     });
 
     it('normalizes fuel order detail query defaults and include flags', () => {
@@ -143,6 +149,25 @@ describe('contracts', () => {
         });
 
         expect(response.statusHistory?.[0]?.toStatus).toBe('PENDING');
+    });
+
+    it('accepts optional list fuel order status counts response data', () => {
+        const response = new ListFuelOrdersResDto({
+            items: [],
+            pagination: new PaginationResDto({
+                page: 1,
+                pageSize: 20,
+                totalItems: 0,
+                totalPages: 0,
+            }),
+            statusCounts: new FuelOrderStatusCountsResDto({
+                PENDING: 1,
+                CONFIRMED: 2,
+                COMPLETED: 3,
+            }),
+        });
+
+        expect(response.statusCounts?.CONFIRMED).toBe(2);
     });
 
     it('validates status update requests', () => {

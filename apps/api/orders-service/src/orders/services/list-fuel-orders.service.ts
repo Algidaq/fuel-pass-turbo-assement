@@ -1,4 +1,4 @@
-import { ListFuelOrdersResDto, PaginationResDto, type TListFuelOrdersQueryDto } from '@fuel-pass/contracts/backend';
+import { FuelOrderStatusCountsResDto, ListFuelOrdersResDto, PaginationResDto, type TListFuelOrdersQueryDto } from '@fuel-pass/contracts/backend';
 import { ApiResponse, AppHttpError, type WithAppCtx } from '@fuel-pass/node-commons';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { FuelOrderStatus } from '../entities/order.enums';
@@ -18,6 +18,13 @@ export class ListFuelOrdersService {
                 page: query.page,
                 pageSize: query.pageSize,
             });
+            const statusCounts =
+                query.include_status === true
+                    ? await this.fuelOrderRepository.countByStatus({
+                          airportIcaoCode: query.airportIcaoCode,
+                          status: query.status as FuelOrderStatus | undefined,
+                      })
+                    : undefined;
             const totalPages = Math.ceil(totalItems / query.pageSize);
 
             return ApiResponse.builder<ListFuelOrdersResDto>()
@@ -31,6 +38,7 @@ export class ListFuelOrdersService {
                             totalItems,
                             totalPages,
                         }),
+                        ...(statusCounts === undefined ? {} : { statusCounts: new FuelOrderStatusCountsResDto(statusCounts) }),
                     }),
                 })
                 .build();

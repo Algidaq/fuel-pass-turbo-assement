@@ -1,6 +1,8 @@
 import type {
   FuelOrderResDto,
+  FuelOrderStatusCountsResponseDto,
   FuelOrderStatusDto,
+  ListFuelOrdersResponseDto,
   TCreateFuelOrderRequestDto,
   TListFuelOrdersQueryDto,
   TUpdateFuelOrderStatusRequestDto,
@@ -10,7 +12,11 @@ export type CreateFuelOrderRequest = TCreateFuelOrderRequestDto;
 
 export type FuelOrder = FuelOrderResDto;
 
+export type FuelOrdersList = ListFuelOrdersResponseDto;
+
 export type FuelOrderStatus = FuelOrderStatusDto;
+
+export type FuelOrderStatusCounts = FuelOrderStatusCountsResponseDto;
 
 export type FuelOrderFilters = Pick<TListFuelOrdersQueryDto, 'airportIcaoCode'>;
 
