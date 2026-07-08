@@ -5,14 +5,43 @@ import {
     TableHead as MuiTableHead,
     TableRow as MuiTableRow,
 } from '@mui/material';
+import type { SxProps, Theme } from '@mui/material/styles';
 import { forwardRef } from 'react';
 
-import { cn } from '../../utils/index.js';
-import styles from './Table.module.css';
 import type { TableBodyProps, TableCellProps, TableHeadProps, TableHeaderProps, TableProps, TableRowProps } from './Table.types.js';
 
+const tableSx = {
+    borderCollapse: 'collapse',
+    color: 'var(--fp-foreground)',
+    fontSize: '0.9375rem',
+    width: '100%',
+} satisfies SxProps<Theme>;
+
+const tableCellSx = {
+    borderBottom: '1px solid var(--fp-border)',
+    padding: '0.75rem 1rem',
+    textAlign: 'left',
+    verticalAlign: 'middle',
+} satisfies SxProps<Theme>;
+
+const tableHeadSx = {
+    ...tableCellSx,
+    background: 'var(--fp-surface-subtle)',
+    color: 'var(--fp-muted-foreground)',
+    fontSize: '0.8125rem',
+    fontWeight: 700,
+    letterSpacing: '0.02em',
+    textTransform: 'uppercase',
+} satisfies SxProps<Theme>;
+
+const tableRowSx = {
+    '&:hover .MuiTableCell-body': {
+        background: '#f4f4f5',
+    },
+} satisfies SxProps<Theme>;
+
 export const Table = forwardRef<HTMLTableElement, TableProps>(({ className, ...props }, ref) => (
-    <MuiTable className={cn(styles.table, className)} ref={ref} {...props} />
+    <MuiTable className={className} ref={ref} sx={tableSx} {...props} />
 ));
 
 Table.displayName = 'Table';
@@ -26,7 +55,7 @@ export const TableBody = forwardRef<HTMLTableSectionElement, TableBodyProps>((pr
 TableBody.displayName = 'TableBody';
 
 export const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(({ className, ...props }, ref) => (
-    <MuiTableRow className={cn(styles.row, className)} ref={ref} {...props} />
+    <MuiTableRow className={className} ref={ref} sx={tableRowSx} {...props} />
 ));
 
 TableRow.displayName = 'TableRow';
@@ -34,10 +63,11 @@ TableRow.displayName = 'TableRow';
 export const TableHead = forwardRef<HTMLTableCellElement, TableHeadProps>(({ align, className, scope = 'col', ...props }, ref) => (
     <MuiTableCell
         align={align === 'char' ? undefined : align}
-        className={cn(styles.head, className)}
+        className={className}
         component="th"
         ref={ref}
         scope={scope}
+        sx={tableHeadSx}
         {...props}
     />
 ));
@@ -45,7 +75,7 @@ export const TableHead = forwardRef<HTMLTableCellElement, TableHeadProps>(({ ali
 TableHead.displayName = 'TableHead';
 
 export const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(({ align, className, ...props }, ref) => (
-    <MuiTableCell align={align === 'char' ? undefined : align} className={cn(styles.cell, className)} ref={ref} {...props} />
+    <MuiTableCell align={align === 'char' ? undefined : align} className={className} ref={ref} sx={tableCellSx} {...props} />
 ));
 
 TableCell.displayName = 'TableCell';
