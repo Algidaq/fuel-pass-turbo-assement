@@ -41,7 +41,7 @@ export class HealthService {
         );
         const healthy = services.every((service): boolean => service.healthy);
 
-        logger.info({ healthy, services }, 'Deep health check completed');
+        logger.info('Deep health check completed', { healthy, services });
 
         return {
             healthy,
@@ -58,13 +58,13 @@ export class HealthService {
             const healthy = response.ok;
 
             logger.debug(
+                'Service health check completed',
                 {
                     namespace: service.namespace,
                     target,
                     status: response.status,
                     healthy,
-                },
-                'Service health check completed'
+                }
             );
 
             return {
@@ -74,7 +74,7 @@ export class HealthService {
                 target,
             };
         } catch (error) {
-            logger.warn({ error, namespace: service.namespace, target }, 'Service health check failed');
+            logger.warn('Service health check failed', { error, namespace: service.namespace, target });
 
             return {
                 namespace: service.namespace,

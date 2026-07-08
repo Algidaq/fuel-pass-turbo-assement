@@ -69,6 +69,8 @@ const createTargetServer = async (
 const createTestConfig = (authUrl: string, ordersUrl: string): AppRuntimeConfig => ({
     port: 0,
     healthTimeoutMs: 500,
+    logLevel: 'silent',
+    logPretty: false,
     services: [
         {
             namespace: 'auth-service',

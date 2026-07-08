@@ -1,5 +1,6 @@
 import cors, { type CorsOptions } from 'cors';
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
+import { logger } from '../logger/logger';
 import { getNamespace, resolveProxyService } from '../utils/service-registry';
 
 const corsForbiddenError = new Error('CORS origin is not allowed for this service.');
@@ -26,6 +27,15 @@ const createCorsOptions = (path: string): CorsOptions => ({
 export const corsMiddleware: RequestHandler = (request: Request, response: Response, next: NextFunction): void => {
     cors(createCorsOptions(request.path))(request, response, (error: unknown): void => {
         if (error === corsForbiddenError) {
+            logger.warn(
+                'CORS origin rejected',
+                {
+                    origin: request.headers.origin,
+                    path: request.path,
+                    namespace: getNamespace(request.path),
+                }
+            );
+
             response.status(403).json({
                 success: false,
                 errors: [{ code: 'PROXY.CORS_ORIGIN_FORBIDDEN', message: 'Origin is not allowed for this service.' }],

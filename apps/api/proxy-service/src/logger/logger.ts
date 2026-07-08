@@ -1,12 +1,8 @@
-import pino, { type Logger, type LoggerOptions } from 'pino';
+import { createPinoAppLogger, type PinoAppLogger } from '@fuel-pass/node-commons';
 import { envs } from '../configs/config';
 
-const loggerOptions: LoggerOptions = {
+export const logger: PinoAppLogger = createPinoAppLogger({
     level: envs.app.logLevel,
-    base: {
-        service: 'proxy-service',
-    },
-    timestamp: pino.stdTimeFunctions.isoTime,
-};
-
-export const logger: Logger = pino(loggerOptions);
+    pretty: envs.app.logPretty,
+    service: 'proxy-service',
+});

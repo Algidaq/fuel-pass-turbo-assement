@@ -25,13 +25,13 @@ export const httpProxyMiddleware = createProxyMiddleware({
         const service = resolveProxyService(namespace);
         const targetBaseUrl = service?.targetBaseUrl ?? 'http://127.0.0.1';
 
-        logger.debug({ namespace, targetBaseUrl, path: request.url }, 'Proxy target resolved');
+        logger.debug('Proxy target resolved', { namespace, targetBaseUrl, path: request.url });
 
         return targetBaseUrl;
     },
     on: {
         error: (error, request, response): void => {
-            logger.error({ error, path: request.url }, 'Proxy request failed');
+            logger.error('Proxy request failed', { error, path: request.url });
 
             if (response instanceof http.ServerResponse && !response.headersSent) {
                 response.writeHead(502, { 'Content-Type': 'application/json' });
@@ -51,6 +51,8 @@ export const proxyGuardMiddleware: RequestHandler = (request: Request, response:
     const [namespace, apiSegment] = segments;
 
     if (namespace === undefined || apiSegment !== 'api') {
+        logger.warn('Malformed proxy route rejected', { path: request.path, namespace, apiSegment });
+
         response.status(404).json({
             success: false,
             errors: [{ code: 'PROXY.ROUTE_NOT_FOUND', message: 'Proxy route was not found.' }],
@@ -59,6 +61,8 @@ export const proxyGuardMiddleware: RequestHandler = (request: Request, response:
     }
 
     if (resolveProxyService(namespace) === undefined) {
+        logger.warn('Unknown proxy namespace rejected', { path: request.path, namespace });
+
         response.status(404).json({
             success: false,
             errors: [{ code: 'PROXY.UNKNOWN_NAMESPACE', message: 'Service namespace was not found.' }],

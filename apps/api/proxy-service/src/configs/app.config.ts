@@ -14,6 +14,7 @@ const appConfigSchema = z.object({
     port: z.number().int().positive(),
     healthTimeoutMs: z.number().int().positive(),
     logLevel: z.string().min(1),
+    logPretty: z.boolean(),
     services: z.array(proxyServiceConfigSchema).min(1),
 });
 
@@ -58,10 +59,13 @@ const getConfiguredServices = (): ProxyServiceConfig[] => {
 };
 
 export function getAppRuntimeConfig(): AppRuntimeConfig {
+    const nodeEnv = getOsEnv('NODE_ENV');
+
     return appConfigSchema.parse({
         port: getOsEnvNumber('PORT', 3100),
         healthTimeoutMs: getOsEnvNumber('HEALTH_TIMEOUT_MS', 2000),
-        logLevel: getOsEnv('LOG_LEVEL', getOsEnv('NODE_ENV') === 'test' ? 'silent' : 'info') ?? 'info',
+        logLevel: getOsEnv('LOG_LEVEL', nodeEnv === 'test' ? 'silent' : 'info') ?? 'info',
+        logPretty: nodeEnv === 'development',
         services: getConfiguredServices(),
     });
 }

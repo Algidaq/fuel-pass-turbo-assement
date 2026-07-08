@@ -39,6 +39,7 @@ describe('getAppRuntimeConfig', () => {
             port: 3100,
             healthTimeoutMs: 2000,
             logLevel: 'info',
+            logPretty: false,
             services: [
                 {
                     namespace: 'auth-service',
@@ -73,6 +74,7 @@ describe('getAppRuntimeConfig', () => {
             port: 4100,
             healthTimeoutMs: 750,
             logLevel: 'debug',
+            logPretty: false,
             services: [
                 {
                     namespace: 'auth-service',
@@ -109,6 +111,7 @@ describe('getAppRuntimeConfig', () => {
             port: 5100,
             healthTimeoutMs: 300,
             logLevel: 'silent',
+            logPretty: false,
             services: [
                 {
                     namespace: 'custom-service',
@@ -118,5 +121,13 @@ describe('getAppRuntimeConfig', () => {
                 },
             ],
         });
+    });
+
+    it('enables pretty logs in development', () => {
+        process.env.NODE_ENV = 'development';
+
+        const config = getAppRuntimeConfig();
+
+        expect(config.logPretty).toBe(true);
     });
 });
