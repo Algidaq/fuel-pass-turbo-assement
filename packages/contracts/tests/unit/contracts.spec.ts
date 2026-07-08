@@ -2,7 +2,9 @@ import {
     ORDER_PERMISSIONS,
     PERMISSIONS,
     createFuelOrderReqDtoSchema,
+    FuelOrderResDto,
     isPermissionKey,
+    fuelOrderQueryDtoSchema,
     listFuelOrdersQueryDtoSchema,
     ORDER_ERRORS,
     permissionKeys,
@@ -108,6 +110,39 @@ describe('contracts', () => {
             page: 2,
             pageSize: 10,
         });
+    });
+
+    it('normalizes fuel order detail query defaults and include flags', () => {
+        expect(fuelOrderQueryDtoSchema.parse({})).toEqual({ include_status_history: false });
+        expect(fuelOrderQueryDtoSchema.parse({ include_status_history: 'true' })).toEqual({ include_status_history: true });
+        expect(fuelOrderQueryDtoSchema.parse({ include_status_history: 'false' })).toEqual({ include_status_history: false });
+    });
+
+    it('accepts optional fuel order status history response data', () => {
+        const response = new FuelOrderResDto({
+            id: '6bd90ef4-8cb8-42b5-b143-05e647fd0bf2',
+            tailNumber: 'A6-ABC',
+            airportIcaoCode: 'OMDB',
+            requestedFuelVolume: '12000.50',
+            volumeUnit: 'LITERS',
+            deliveryWindowStartAt: '2026-07-10T08:00:00.000Z',
+            deliveryWindowEndAt: '2026-07-10T10:00:00.000Z',
+            status: 'PENDING',
+            createdAt: '2026-07-06T12:00:00.000Z',
+            updatedAt: '2026-07-06T12:00:00.000Z',
+            statusHistory: [
+                {
+                    id: 'f7669197-563d-4394-8710-7f0590c00198',
+                    fromStatus: null,
+                    toStatus: 'PENDING',
+                    changedByUserId: null,
+                    changedAt: '2026-07-06T12:00:00.000Z',
+                    note: 'Submitted',
+                },
+            ],
+        });
+
+        expect(response.statusHistory?.[0]?.toStatus).toBe('PENDING');
     });
 
     it('validates status update requests', () => {

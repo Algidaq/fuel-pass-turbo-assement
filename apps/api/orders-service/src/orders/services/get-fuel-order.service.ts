@@ -1,4 +1,4 @@
-import { FuelOrderResDto, type TFuelOrderIdParamDto } from '@fuel-pass/contracts/backend';
+import { FuelOrderResDto, type TFuelOrderIdParamDto, type TFuelOrderQueryDto } from '@fuel-pass/contracts/backend';
 import { ApiResponse, AppHttpError, type WithAppCtx } from '@fuel-pass/node-commons';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { mapFuelOrderToResponse } from '../mappers/fuel-order.mapper';
@@ -8,9 +8,14 @@ import { FuelOrderRepository } from '../repositories/fuel-order.repository';
 export class GetFuelOrderService {
     public constructor(private readonly fuelOrderRepository: FuelOrderRepository) {}
 
-    public async getFuelOrder(params: WithAppCtx<{ id: TFuelOrderIdParamDto }>): Promise<ApiResponse<FuelOrderResDto>> {
+    public async getFuelOrder(
+        params: WithAppCtx<{ id: TFuelOrderIdParamDto; query?: TFuelOrderQueryDto }>
+    ): Promise<ApiResponse<FuelOrderResDto>> {
         try {
-            const fuelOrder = await this.fuelOrderRepository.findByIdOrThrow(params.id);
+            const fuelOrder =
+                params.query?.include_status_history === true
+                    ? await this.fuelOrderRepository.findByIdWithStatusHistoryOrThrow(params.id)
+                    : await this.fuelOrderRepository.findByIdOrThrow(params.id);
 
             return ApiResponse.builder<FuelOrderResDto>()
                 .withSuccess({ status: HttpStatus.OK, data: mapFuelOrderToResponse(fuelOrder) })

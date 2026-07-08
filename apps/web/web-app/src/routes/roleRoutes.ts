@@ -5,12 +5,14 @@ import { hasAllPermissions, hasAnyPermission, hasPermission } from '../features/
 export const routes = {
     login: '/login',
     orders: '/orders',
+    orderDetails: '/orders/:orderId',
     restricted: '/restricted',
     submitOrder: '/orders/new',
 } as const;
 
 export const routeRequiredPermissions = {
     [routes.orders]: [ORDER_PERMISSIONS.fuelOrderReadAll.key],
+    [routes.orderDetails]: [ORDER_PERMISSIONS.fuelOrderReadAll.key],
     [routes.submitOrder]: [ORDER_PERMISSIONS.fuelOrderCreate.key],
 } as const;
 

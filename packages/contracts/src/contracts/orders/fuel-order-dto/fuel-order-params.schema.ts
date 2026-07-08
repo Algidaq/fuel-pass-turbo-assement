@@ -8,10 +8,10 @@ export const fuelOrderParamsDtoSchema = z.object({
 
 export const fuelOrderQueryDtoSchema = z.object({
     include_status_history: z
-        .string()
-        .transform((value): boolean => value.toLowerCase() === 'true')
+        .union([z.string(), z.boolean()])
+        .optional()
         .default(false)
-        .optional(),
+        .transform((value): boolean => value === true || (typeof value === 'string' && value.toLowerCase() === 'true')),
 });
 
 export type TFuelOrderIdParamDto = z.infer<typeof fuelOrderIdParamSchema>;

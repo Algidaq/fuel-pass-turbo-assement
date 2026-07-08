@@ -1,0 +1,376 @@
+.page {
+    display: grid;
+    gap: 32px;
+    max-width: 1120px;
+    margin: 0 auto;
+}
+
+.header {
+    display: grid;
+    gap: 16px;
+}
+
+.backLink {
+    width: fit-content;
+    color: #5d5e60;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.backLink::before {
+    content: '<';
+    margin-right: 8px;
+}
+
+.backLink:hover {
+    color: #0f766e;
+}
+
+.headerContent {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.header h1 {
+    margin: 0;
+    color: #131b2e;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 34px;
+    overflow-wrap: anywhere;
+}
+
+.header p {
+    margin: 8px 0 0;
+    color: #5d5e60;
+    font-size: 14px;
+    line-height: 22px;
+}
+
+.meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+    margin-top: 12px;
+    color: #5d5e60;
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+    gap: 24px;
+}
+
+.mainColumn,
+.sideColumn {
+    display: grid;
+    align-content: start;
+    gap: 24px;
+}
+
+.card {
+    overflow: hidden;
+}
+
+.card h2 {
+    margin: 0;
+    color: #131b2e;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 28px;
+}
+
+.detailsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 32px;
+    margin: 0;
+}
+
+.detailsGrid dt {
+    margin: 0 0 6px;
+    color: #5d5e60;
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.detailsGrid dd {
+    margin: 0;
+    color: #131b2e;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 22px;
+    overflow-wrap: anywhere;
+}
+
+.divider {
+    grid-column: 1 / -1;
+    height: 1px;
+    background: #e2e8f0;
+}
+
+.timeline {
+    display: grid;
+    gap: 24px;
+    margin: 0;
+    padding: 0 0 0 24px;
+    border-left: 2px solid #e2e8f0;
+    list-style: none;
+}
+
+.timeline li {
+    position: relative;
+    display: grid;
+    gap: 6px;
+}
+
+.timeline li::before {
+    position: absolute;
+    top: 4px;
+    left: -33px;
+    width: 14px;
+    height: 14px;
+    border: 4px solid #ffffff;
+    border-radius: 999px;
+    background: #0f766e;
+    content: '';
+}
+
+.timeline p {
+    margin: 0;
+    color: #5d5e60;
+    font-size: 14px;
+    line-height: 22px;
+}
+
+.timeline small,
+.emptyText {
+    color: #5d5e60;
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.timelineHeader {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.timelineHeader strong {
+    color: #131b2e;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.timelineHeader span {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #dbeafe;
+    color: #1e40af;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 16px;
+}
+
+.timelineHeader time {
+    margin-left: auto;
+    color: #5d5e60;
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.currentTimelineItem p {
+    color: #131b2e;
+    font-weight: 600;
+}
+
+.statusCardBody {
+    display: grid;
+    gap: 20px;
+}
+
+.statusHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.statusCardBody p {
+    margin: 0;
+    color: #5d5e60;
+    font-size: 14px;
+    line-height: 22px;
+}
+
+.nextAction {
+    display: grid;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f8fafc;
+}
+
+.nextAction h3 {
+    margin: 0;
+    color: #131b2e;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 20px;
+}
+
+.nextAction button {
+    width: 100%;
+}
+
+.updateError {
+    align-items: flex-start;
+}
+
+.workflow {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0 24px;
+}
+
+.workflow::before {
+    position: absolute;
+    top: 20px;
+    right: 36px;
+    left: 36px;
+    height: 2px;
+    background: #e2e8f0;
+    content: '';
+}
+
+.workflowStep {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+    min-width: 72px;
+    background: #ffffff;
+}
+
+.workflowStep span {
+    display: grid;
+    width: 26px;
+    height: 26px;
+    place-items: center;
+    border-radius: 999px;
+    background: #d2d9f4;
+    color: #5d5e60;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.workflowStep strong {
+    color: #5d5e60;
+    font-size: 11px;
+    line-height: 16px;
+}
+
+.workflowStep[data-state='complete'] span,
+.workflowStep[data-state='current'] span {
+    background: #0f766e;
+    color: #ffffff;
+}
+
+.workflowStep[data-state='current'] span {
+    box-shadow: 0 0 0 4px #dbeafe;
+}
+
+.workflowStep[data-state='current'] strong {
+    color: #131b2e;
+}
+
+.transitionMap {
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.transitionMap p {
+    margin: 0 0 8px;
+    color: #5d5e60;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 18px;
+}
+
+.transitionMap ul {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.transitionMap li {
+    color: #5d5e60;
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.transitionMap li::before {
+    content: '->';
+    margin-right: 8px;
+}
+
+.transitionMap li[data-state='complete'] {
+    color: rgb(15 118 110 / 0.7);
+    text-decoration: line-through;
+}
+
+.transitionMap li[data-state='current'] {
+    color: #131b2e;
+    font-weight: 700;
+}
+
+.loader {
+    min-height: auto;
+    padding: 32px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #ffffff;
+}
+
+@media (max-width: 900px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    .page {
+        gap: 24px;
+    }
+
+    .headerContent {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .headerContent button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .detailsGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .timelineHeader time {
+        width: 100%;
+        margin-left: 0;
+    }
+}

@@ -1,11 +1,13 @@
 import {
     createFuelOrderReqDtoSchema,
+    fuelOrderQueryDtoSchema,
     FuelOrderResDto,
     listFuelOrdersQueryDtoSchema,
     ListFuelOrdersResDto,
     ORDER_PERMISSIONS,
     updateFuelOrderStatusReqDtoSchema,
     type TCreateFuelOrderRequestDto,
+    type TFuelOrderQueryDto,
     type TListFuelOrdersQueryDto,
     type TUpdateFuelOrderStatusRequestDto,
 } from '@fuel-pass/contracts/backend';
@@ -58,16 +60,17 @@ export class FuelOrdersController {
     @Get(':id')
     @RequirePermissions(ORDER_PERMISSIONS.fuelOrderReadAll.key)
     public async getFuelOrderById(
-        @Param('id', UuidValidatorPipe) id: string,
+        @Param('id', new UuidValidatorPipe()) id: string,
+        @Query(new ZodValidationPipe(fuelOrderQueryDtoSchema)) query: TFuelOrderQueryDto,
         @CsHeaders() headers: BaseApiHeaders
     ): Promise<ApiResponse<FuelOrderResDto>> {
-        return this.getFuelOrderService.getFuelOrder({ headers, id });
+        return this.getFuelOrderService.getFuelOrder({ headers, id, query });
     }
 
     @Patch(':id/status')
     @RequirePermissions(ORDER_PERMISSIONS.fuelOrderUpdateStatus.key)
     public async updateFuelOrderStatus(
-        @Param('id', UuidValidatorPipe) id: string,
+        @Param('id', new UuidValidatorPipe()) id: string,
         @Body(new ZodValidationPipe(updateFuelOrderStatusReqDtoSchema)) body: TUpdateFuelOrderStatusRequestDto,
         @Req() request: AuthenticatedRequest,
         @CsHeaders() headers: BaseApiHeaders

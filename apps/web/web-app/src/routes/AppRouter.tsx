@@ -11,6 +11,7 @@ import { PageLoader } from '../components/feedback/PageLoader';
 
 const LoginPage = lazy(() => import('../pages/LoginPage').then((module) => ({ default: module.LoginPage })));
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage').then((module) => ({ default: module.NotFoundPage })));
+const OrderDetailsPage = lazy(() => import('../pages/OrderDetailsPage').then((module) => ({ default: module.OrderDetailsPage })));
 const OrdersPage = lazy(() => import('../pages/OrdersPage').then((module) => ({ default: module.OrdersPage })));
 const RestrictedPage = lazy(() => import('../pages/RestrictedPage').then((module) => ({ default: module.RestrictedPage })));
 const SubmitOrderPage = lazy(() => import('../pages/SubmitOrderPage').then((module) => ({ default: module.SubmitOrderPage })));
@@ -43,6 +44,14 @@ const router = createBrowserRouter([
                 element: (
                     <PermissionGuard requiredPermissions={routeRequiredPermissions[routes.orders]}>
                         {withSuspense(<OrdersPage />)}
+                    </PermissionGuard>
+                ),
+            },
+            {
+                path: routes.orderDetails,
+                element: (
+                    <PermissionGuard requiredPermissions={routeRequiredPermissions[routes.orderDetails]}>
+                        {withSuspense(<OrderDetailsPage />)}
                     </PermissionGuard>
                 ),
             },

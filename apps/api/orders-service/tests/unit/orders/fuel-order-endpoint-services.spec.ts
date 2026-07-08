@@ -2,7 +2,8 @@ import { randomUUID } from 'node:crypto';
 import { ORDER_PERMISSIONS } from '@fuel-pass/contracts/backend';
 import { BaseApiHeaders, type AuthenticatedPrincipal } from '@fuel-pass/node-commons';
 import type { DataSource, EntityManager } from 'typeorm';
-import { FuelOrderEntity, FuelOrderStatus, VolumeUnit } from '../../../src/orders/entities';
+import { FuelOrderEntity, FuelOrderStatus, FuelOrderStatusHistoryEntity, VolumeUnit } from '../../../src/orders/entities';
+import { OrderException } from '../../../src/orders/orders.errors';
 import type { FuelOrderRepository } from '../../../src/orders/repositories';
 import { CreateFuelOrderService } from '../../../src/orders/services/create-fuel-order.service';
 import { GetFuelOrderService } from '../../../src/orders/services/get-fuel-order.service';
@@ -42,6 +43,19 @@ function createFuelOrder(overrides: Partial<FuelOrderEntity> = {}): FuelOrderEnt
     });
 }
 
+function createStatusHistory(overrides: Partial<FuelOrderStatusHistoryEntity> = {}): FuelOrderStatusHistoryEntity {
+    return Object.assign(new FuelOrderStatusHistoryEntity(), {
+        id: randomUUID(),
+        fuelOrderId: orderId,
+        fromStatus: null,
+        toStatus: FuelOrderStatus.PENDING,
+        changedByUserId: userId,
+        changedAt: new Date('2026-07-06T12:00:00.000Z'),
+        note: 'Submitted',
+        ...overrides,
+    });
+}
+
 function createHarness(overrides?: {
     findById?: FuelOrderEntity | null;
     findByIdSequence?: Array<FuelOrderEntity | null>;
@@ -52,7 +66,16 @@ function createHarness(overrides?: {
     getService: GetFuelOrderService;
     updateService: UpdateFuelOrderStatusService;
     fuelOrderRepository: jest.Mocked<
-        Pick<FuelOrderRepository, 'createFuelOrder' | 'createStatusHistory' | 'findManyAndCount' | 'findById' | 'updateStatusIfCurrent'>
+        Pick<
+            FuelOrderRepository,
+            | 'createFuelOrder'
+            | 'createStatusHistory'
+            | 'findManyAndCount'
+            | 'findById'
+            | 'findByIdOrThrow'
+            | 'findByIdWithStatusHistoryOrThrow'
+            | 'updateStatusIfCurrent'
+        >
     >;
     manager: EntityManager;
 } {
@@ -72,6 +95,8 @@ function createHarness(overrides?: {
         createStatusHistory: jest.fn().mockResolvedValue({}),
         findManyAndCount: jest.fn().mockResolvedValue([[createFuelOrder()], 1]),
         findById,
+        findByIdOrThrow: jest.fn().mockResolvedValue(createFuelOrder()),
+        findByIdWithStatusHistoryOrThrow: jest.fn().mockResolvedValue(createFuelOrder({ statusHistory: [createStatusHistory()] })),
         updateStatusIfCurrent: jest.fn().mockResolvedValue(overrides?.updateStatusIfCurrent ?? true),
     };
     const dataSource = {
@@ -157,13 +182,44 @@ describe('fuel order endpoint services', () => {
     });
 
     it('returns not found responses for missing orders', async () => {
-        const { getService } = createHarness({ findById: null });
+        const { getService, fuelOrderRepository } = createHarness({ findById: null });
+        fuelOrderRepository.findByIdOrThrow.mockRejectedValue(new OrderException(404, 'FuelOrderNotFound'));
 
         const response = await getService.getFuelOrder({ headers, id: orderId });
 
         expect(response.success).toBe(false);
         expect(response.status).toBe(404);
         expect(response.errors[0]?.code).toEqual('ORDER.FUEL-ORDER-NOT-FOUND');
+    });
+
+    it('loads a fuel order without status history by default', async () => {
+        const { getService, fuelOrderRepository } = createHarness();
+
+        const response = await getService.getFuelOrder({ headers, id: orderId });
+
+        expect(fuelOrderRepository.findByIdOrThrow).toHaveBeenCalledWith(orderId);
+        expect(fuelOrderRepository.findByIdWithStatusHistoryOrThrow).not.toHaveBeenCalled();
+        expect(response.data?.statusHistory).toBeUndefined();
+    });
+
+    it('loads a fuel order with status history when requested', async () => {
+        const { getService, fuelOrderRepository } = createHarness();
+
+        const response = await getService.getFuelOrder({
+            headers,
+            id: orderId,
+            query: { include_status_history: true },
+        });
+
+        expect(fuelOrderRepository.findByIdWithStatusHistoryOrThrow).toHaveBeenCalledWith(orderId);
+        expect(fuelOrderRepository.findByIdOrThrow).not.toHaveBeenCalled();
+        expect(response.data?.statusHistory).toEqual([
+            expect.objectContaining({
+                fromStatus: null,
+                toStatus: FuelOrderStatus.PENDING,
+                note: 'Submitted',
+            }),
+        ]);
     });
 
     it('updates status for valid transitions and writes history', async () => {

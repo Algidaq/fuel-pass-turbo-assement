@@ -56,10 +56,7 @@ function createController(overrides?: {
 
 describe('FuelOrdersController', () => {
     it('uses shared auth guards and permission metadata', () => {
-        expect(Reflect.getMetadata(GUARDS_METADATA, FuelOrdersController)).toEqual([
-            JwtIntrospectionAuthGuard,
-            PermissionsGuard,
-        ]);
+        expect(Reflect.getMetadata(GUARDS_METADATA, FuelOrdersController)).toEqual([JwtIntrospectionAuthGuard, PermissionsGuard]);
         expect(Reflect.getMetadata(REQUIRED_PERMISSIONS_METADATA_KEY, FuelOrdersController.prototype.createFuelOrder)).toEqual([
             ORDER_PERMISSIONS.fuelOrderCreate.key,
         ]);
@@ -100,9 +97,10 @@ describe('FuelOrdersController', () => {
         const response = ApiResponse.builder().withSuccess({ status: 200, data: fuelOrder }).build();
         const getFuelOrder = jest.fn().mockResolvedValue(response);
         const controller = createController({ getFuelOrderService: { getFuelOrder } });
+        const query = { include_status_history: true };
 
-        await expect(controller.getFuelOrderById(fuelOrder.id, headers)).resolves.toBe(response);
-        expect(getFuelOrder).toHaveBeenCalledWith({ headers, id: fuelOrder.id });
+        await expect(controller.getFuelOrderById(fuelOrder.id, query, headers)).resolves.toBe(response);
+        expect(getFuelOrder).toHaveBeenCalledWith({ headers, id: fuelOrder.id, query });
     });
 
     it('delegates status updates to the update endpoint service', async () => {

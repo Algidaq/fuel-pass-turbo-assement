@@ -19,7 +19,8 @@ const fuelOrderEndpointServices = [CreateFuelOrderService, ListFuelOrdersService
             inject: [ConfigService],
             useFactory: (configService: ConfigService): CoreAuthModuleOptions => ({
                 internalAuthBaseUrl: configService.get<string>('auth.internalAuthBaseUrl') ?? getAuthRuntimeConfig().internalAuthBaseUrl,
-                internalServiceApiKey: configService.get<string>('auth.internalServiceApiKey') ?? getAuthRuntimeConfig().internalServiceApiKey,
+                internalServiceApiKey:
+                    configService.get<string>('auth.internalServiceApiKey') ?? getAuthRuntimeConfig().internalServiceApiKey,
                 introspectionTimeoutMs:
                     configService.get<number>('auth.introspectionTimeoutMs') ?? getAuthRuntimeConfig().introspectionTimeoutMs,
             }),

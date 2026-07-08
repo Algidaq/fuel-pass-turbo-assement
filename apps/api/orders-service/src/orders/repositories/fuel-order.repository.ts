@@ -74,6 +74,24 @@ export class FuelOrderRepository {
         return order;
     }
 
+    public async findByIdWithStatusHistoryOrThrow(id: string, manager?: EntityManager): Promise<FuelOrderEntity> {
+        const order = await this.getFuelOrderRepository(manager).findOne({
+            where: { id },
+            relations: {
+                statusHistory: true,
+            },
+            order: {
+                statusHistory: {
+                    changedAt: 'ASC',
+                },
+            },
+        });
+        if (!order) {
+            throw new OrderException(HttpStatus.NOT_FOUND, 'FuelOrderNotFound');
+        }
+        return order;
+    }
+
     public findMany(filters: FindFuelOrdersFilters = {}, manager?: EntityManager): Promise<FuelOrderEntity[]> {
         return this.getFuelOrderRepository(manager).find({
             where: {

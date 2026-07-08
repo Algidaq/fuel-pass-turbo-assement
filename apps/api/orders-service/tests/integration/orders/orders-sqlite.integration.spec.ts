@@ -164,6 +164,36 @@ describe('orders persistence with SQLite', () => {
         expect(history.changedAt).toBeInstanceOf(Date);
     });
 
+    it('loads status history ordered by change time', async () => {
+        const fuelOrder = await fuelOrderRepository.createFuelOrder({
+            tailNumber: 'N123FP',
+            airportIcaoCode: 'OMDB',
+            requestedFuelVolume: '1500.00',
+            deliveryWindowStartAt,
+            deliveryWindowEndAt,
+        });
+
+        await fuelOrderRepository.createStatusHistory({
+            fuelOrderId: fuelOrder.id,
+            fromStatus: FuelOrderStatus.PENDING,
+            toStatus: FuelOrderStatus.CONFIRMED,
+            changedAt: new Date('2026-07-06T13:00:00.000Z'),
+        });
+        await fuelOrderRepository.createStatusHistory({
+            fuelOrderId: fuelOrder.id,
+            fromStatus: null,
+            toStatus: FuelOrderStatus.PENDING,
+            changedAt: new Date('2026-07-06T12:00:00.000Z'),
+        });
+
+        const fuelOrderWithHistory = await fuelOrderRepository.findByIdWithStatusHistoryOrThrow(fuelOrder.id);
+
+        expect(fuelOrderWithHistory.statusHistory.map((history) => history.toStatus)).toEqual([
+            FuelOrderStatus.PENDING,
+            FuelOrderStatus.CONFIRMED,
+        ]);
+    });
+
     it('updates status and persists status history in a transaction', async () => {
         const userId = randomUUID();
         const fuelOrder = await fuelOrderRepository.createFuelOrder({
