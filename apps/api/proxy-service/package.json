@@ -1,0 +1,28 @@
+{
+  "name": "@fuel-pass/proxy-service",
+  "version": "1.0.0",
+  "main": "dist/main.js",
+  "types": "dist/main.d.ts",
+  "scripts": {
+    "dev": "env-cmd .env -- nodemon --watch src --watch .env --exec 'tsx src/main.ts'",
+    "build": "tsc --project tsconfig.build.json",
+    "check-types": "tsc --project tsconfig.build.json --noEmit",
+    "lint": "eslint \"src/**/*.ts\"",
+    "lint:fix": "lint -- --fix",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/jest/bin/jest --config jest.config.cjs --runInBand"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^4.22.2",
+    "express-http-proxy": "^2.1.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6"
+  }
+}
