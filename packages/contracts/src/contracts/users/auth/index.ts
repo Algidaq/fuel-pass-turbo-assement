@@ -5,6 +5,8 @@ export * from './create-internal-user-dto/create-internal-user-res.dto.js';
 export * from './current-user-dto/current-user-res.dto.js';
 export * from './introspect-dto/introspect-req.schema.js';
 export * from './introspect-dto/introspect-res.dto.js';
+export * from './internal-user-lookup-dto/internal-user-lookup-req.schema.js';
+export * from './internal-user-lookup-dto/internal-user-lookup-res.dto.js';
 export * from './login-dto/login-req.schema.js';
 export * from './login-dto/login-res.dto.js';
 export * from './logout-dto/logout-req.schema.js';

@@ -6,9 +6,11 @@ import { FuelOrdersController } from './controllers/fuel-orders.controller';
 import { OrdersPersistenceModule } from './orders-persistence.module';
 import { CreateFuelOrderService } from './services/create-fuel-order.service';
 import { GetFuelOrderService } from './services/get-fuel-order.service';
+import { InternalAuthUsersService } from './services/internal-auth-users.service';
 import { ListFuelOrdersService } from './services/list-fuel-orders.service';
 import { UpdateFuelOrderStatusService } from './services/update-fuel-order-status.service';
 
+const fuelOrderServices = [InternalAuthUsersService];
 const fuelOrderEndpointServices = [CreateFuelOrderService, ListFuelOrdersService, GetFuelOrderService, UpdateFuelOrderStatusService];
 
 @Module({
@@ -27,7 +29,7 @@ const fuelOrderEndpointServices = [CreateFuelOrderService, ListFuelOrdersService
         }),
     ],
     controllers: [FuelOrdersController],
-    providers: [...fuelOrderEndpointServices, JwtIntrospectionAuthGuard, PermissionsGuard],
-    exports: [OrdersPersistenceModule, ...fuelOrderEndpointServices],
+    providers: [...fuelOrderServices, ...fuelOrderEndpointServices, JwtIntrospectionAuthGuard, PermissionsGuard],
+    exports: [OrdersPersistenceModule, ...fuelOrderServices, ...fuelOrderEndpointServices],
 })
 export class OrdersModule {}

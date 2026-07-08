@@ -41,6 +41,10 @@ export const listFuelOrdersQueryDtoSchema = z.object({
         .union([z.boolean(), z.string()])
         .optional()
         .transform((value): boolean => normalizeBoolean(value, false)),
+    include_user: z
+        .union([z.boolean(), z.string()])
+        .optional()
+        .transform((value): boolean => normalizeBoolean(value, false)),
     page: z
         .union([z.number(), z.string()])
         .optional()

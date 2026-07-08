@@ -1,5 +1,6 @@
 import type {
   FuelOrderResDto,
+  FuelOrderUserResponseDto,
   FuelOrderStatusCountsResponseDto,
   FuelOrderStatusDto,
   ListFuelOrdersResponseDto,
@@ -11,6 +12,8 @@ import type {
 export type CreateFuelOrderRequest = TCreateFuelOrderRequestDto;
 
 export type FuelOrder = FuelOrderResDto;
+
+export type FuelOrderUser = FuelOrderUserResponseDto;
 
 export type FuelOrdersList = ListFuelOrdersResponseDto;
 

@@ -17,6 +17,7 @@ import {
     useUpdateFuelOrderStatus,
     type FuelOrder,
     type FuelOrderStatus,
+    type FuelOrderUser,
 } from '../../features/fuel-orders';
 import styles from './OrderDetailsPage.module.css';
 
@@ -30,12 +31,18 @@ const getUpdateErrorMessage = (error: unknown): string => {
     return getApiErrorMessage(error, 'Unable to update this order status. Please try again.');
 };
 
-const getActorLabel = (userId: string | null | undefined): string => userId ?? 'Not recorded';
+const getActorLabel = (user: FuelOrderUser | undefined, userId: string | null | undefined): string => {
+    if (user !== undefined) {
+        return user.fullName ? `${user.fullName} (${user.email})` : user.email;
+    }
+
+    return userId ?? 'Not recorded';
+};
 
 const getInitialHistoryActor = (order: FuelOrder): string => {
     const initialEntry = order.statusHistory?.find((entry) => entry.toStatus === 'PENDING');
 
-    return getActorLabel(initialEntry?.changedByUserId);
+    return getActorLabel(initialEntry?.changedByUser, initialEntry?.changedByUserId);
 };
 
 const getNextActionDescription = (status: FuelOrderStatus): string => {
@@ -114,7 +121,7 @@ const StatusHistoryCard = ({ order }: { order: FuelOrder }) => {
                                     <time>{formatDateTime(entry.changedAt)}</time>
                                 </div>
                                 <p>{entry.note ?? getDefaultHistoryNote(entry.fromStatus, entry.toStatus)}</p>
-                                <small>Changed by {getActorLabel(entry.changedByUserId)}</small>
+                                <small>Changed by {getActorLabel(entry.changedByUser, entry.changedByUserId)}</small>
                             </li>
                         ))}
                     </ol>

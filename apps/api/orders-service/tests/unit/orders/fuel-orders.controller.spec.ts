@@ -87,7 +87,7 @@ describe('FuelOrdersController', () => {
             .build();
         const listFuelOrders = jest.fn().mockResolvedValue(response);
         const controller = createController({ listFuelOrdersService: { listFuelOrders } });
-        const query = { airportIcaoCode: 'OMDB', status: 'PENDING' as const, include_status: true, page: 1, pageSize: 20 };
+        const query = { airportIcaoCode: 'OMDB', status: 'PENDING' as const, include_status: true, include_user: true, page: 1, pageSize: 20 };
 
         await expect(controller.listFuelOrders(query, headers)).resolves.toBe(response);
         expect(listFuelOrders).toHaveBeenCalledWith({ headers, query });
@@ -97,7 +97,7 @@ describe('FuelOrdersController', () => {
         const response = ApiResponse.builder().withSuccess({ status: 200, data: fuelOrder }).build();
         const getFuelOrder = jest.fn().mockResolvedValue(response);
         const controller = createController({ getFuelOrderService: { getFuelOrder } });
-        const query = { include_status_history: true };
+        const query = { include_status_history: true, include_user: true };
 
         await expect(controller.getFuelOrderById(fuelOrder.id, query, headers)).resolves.toBe(response);
         expect(getFuelOrder).toHaveBeenCalledWith({ headers, id: fuelOrder.id, query });

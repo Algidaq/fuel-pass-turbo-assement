@@ -4,6 +4,9 @@ import {
     createFuelOrderReqDtoSchema,
     FuelOrderResDto,
     FuelOrderStatusCountsResDto,
+    InternalUserLookupResDto,
+    InternalUserLookupUserResDto,
+    internalUserLookupReqDtoSchema,
     isPermissionKey,
     ListFuelOrdersResDto,
     PaginationResDto,
@@ -99,12 +102,13 @@ describe('contracts', () => {
     });
 
     it('normalizes list query defaults and filters', () => {
-        expect(listFuelOrdersQueryDtoSchema.parse({})).toEqual({ include_status: false, page: 1, pageSize: 20 });
+        expect(listFuelOrdersQueryDtoSchema.parse({})).toEqual({ include_status: false, include_user: false, page: 1, pageSize: 20 });
         expect(
             listFuelOrdersQueryDtoSchema.parse({
                 airportIcaoCode: ' omdb ',
                 status: 'PENDING',
                 include_status: 'true',
+                include_user: 'true',
                 page: '2',
                 pageSize: '10',
             })
@@ -112,16 +116,24 @@ describe('contracts', () => {
             airportIcaoCode: 'OMDB',
             status: 'PENDING',
             include_status: true,
+            include_user: true,
             page: 2,
             pageSize: 10,
         });
         expect(listFuelOrdersQueryDtoSchema.parse({ include_status: 'false' }).include_status).toBe(false);
+        expect(listFuelOrdersQueryDtoSchema.parse({ include_user: 'false' }).include_user).toBe(false);
     });
 
     it('normalizes fuel order detail query defaults and include flags', () => {
-        expect(fuelOrderQueryDtoSchema.parse({})).toEqual({ include_status_history: false });
-        expect(fuelOrderQueryDtoSchema.parse({ include_status_history: 'true' })).toEqual({ include_status_history: true });
-        expect(fuelOrderQueryDtoSchema.parse({ include_status_history: 'false' })).toEqual({ include_status_history: false });
+        expect(fuelOrderQueryDtoSchema.parse({})).toEqual({ include_status_history: false, include_user: false });
+        expect(fuelOrderQueryDtoSchema.parse({ include_status_history: 'true', include_user: 'true' })).toEqual({
+            include_status_history: true,
+            include_user: true,
+        });
+        expect(fuelOrderQueryDtoSchema.parse({ include_status_history: 'false', include_user: 'false' })).toEqual({
+            include_status_history: false,
+            include_user: false,
+        });
     });
 
     it('accepts optional fuel order status history response data', () => {
@@ -136,12 +148,22 @@ describe('contracts', () => {
             status: 'PENDING',
             createdAt: '2026-07-06T12:00:00.000Z',
             updatedAt: '2026-07-06T12:00:00.000Z',
+            submittedByUser: {
+                id: 'f7669197-563d-4394-8710-7f0590c00198',
+                email: 'operator@fuelpass.test',
+                fullName: 'Aircraft Operator',
+            },
             statusHistory: [
                 {
                     id: 'f7669197-563d-4394-8710-7f0590c00198',
                     fromStatus: null,
                     toStatus: 'PENDING',
                     changedByUserId: null,
+                    changedByUser: {
+                        id: 'f7669197-563d-4394-8710-7f0590c00198',
+                        email: 'operator@fuelpass.test',
+                        fullName: 'Aircraft Operator',
+                    },
                     changedAt: '2026-07-06T12:00:00.000Z',
                     note: 'Submitted',
                 },
@@ -149,6 +171,31 @@ describe('contracts', () => {
         });
 
         expect(response.statusHistory?.[0]?.toStatus).toBe('PENDING');
+        expect(response.submittedByUser?.email).toBe('operator@fuelpass.test');
+        expect(response.statusHistory?.[0]?.changedByUser?.fullName).toBe('Aircraft Operator');
+    });
+
+    it('validates internal user lookup contracts', () => {
+        expect(
+            internalUserLookupReqDtoSchema.parse({
+                userIds: ['f7669197-563d-4394-8710-7f0590c00198'],
+            })
+        ).toEqual({
+            userIds: ['f7669197-563d-4394-8710-7f0590c00198'],
+        });
+        expect(() => internalUserLookupReqDtoSchema.parse({ userIds: [] })).toThrow();
+
+        const response = new InternalUserLookupResDto({
+            users: [
+                new InternalUserLookupUserResDto({
+                    id: 'f7669197-563d-4394-8710-7f0590c00198',
+                    email: 'operator@fuelpass.test',
+                    fullName: 'Aircraft Operator',
+                }),
+            ],
+        });
+
+        expect(response.users[0]?.fullName).toBe('Aircraft Operator');
     });
 
     it('accepts optional list fuel order status counts response data', () => {

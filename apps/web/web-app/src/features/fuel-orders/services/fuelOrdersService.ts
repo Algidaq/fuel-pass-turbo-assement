@@ -50,11 +50,15 @@ const buildFuelOrdersListUrl = (params?: FuelOrderFilters): string => {
     return queryString ? `${fuelOrdersUrl}?${queryString}` : fuelOrdersUrl;
 };
 
-const buildFuelOrderDetailUrl = (id: string, params?: { includeStatusHistory?: boolean }): string => {
+const buildFuelOrderDetailUrl = (id: string, params?: { includeStatusHistory?: boolean; includeUser?: boolean }): string => {
     const searchParams = new URLSearchParams();
 
     if (params?.includeStatusHistory === true) {
         searchParams.set('include_status_history', 'true');
+    }
+
+    if (params?.includeUser === true) {
+        searchParams.set('include_user', 'true');
     }
 
     const queryString = searchParams.toString();
@@ -80,7 +84,7 @@ export const fuelOrdersService = {
         return unwrapApiResponse(response, 'Fuel orders could not be loaded.');
     },
 
-    async getFuelOrder(id: string, params?: { includeStatusHistory?: boolean }): Promise<FuelOrder> {
+    async getFuelOrder(id: string, params?: { includeStatusHistory?: boolean; includeUser?: boolean }): Promise<FuelOrder> {
         const response = await httpClient<FuelOrder | ApiResponse<FuelOrder>>(buildFuelOrderDetailUrl(id, params));
 
         return unwrapApiResponse(response, 'Fuel order could not be loaded.');

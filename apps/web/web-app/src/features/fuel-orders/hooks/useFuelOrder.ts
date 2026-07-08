@@ -10,7 +10,7 @@ export const useFuelOrder = (id: string | undefined) => {
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
     return useQuery({
-        queryFn: () => fuelOrdersService.getFuelOrder(id ?? '', { includeStatusHistory: true }),
+        queryFn: () => fuelOrdersService.getFuelOrder(id ?? '', { includeStatusHistory: true, includeUser: true }),
         queryKey: fuelOrderQueryKeys.detail(id ?? ''),
         enabled: isHydrated && isAuthenticated && Boolean(id),
     });

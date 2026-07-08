@@ -4,11 +4,26 @@ export type FuelOrderStatusDto = 'PENDING' | 'CONFIRMED' | 'COMPLETED';
 
 export type FuelOrderVolumeUnitDto = 'LITERS';
 
+export class FuelOrderUserResDto extends BaseResModel<FuelOrderUserResDto> {
+    public readonly id!: string;
+    public readonly email!: string;
+    public readonly fullName!: string;
+
+    public constructor(params?: Partial<ClassParams<FuelOrderUserResDto>>) {
+        super(params);
+    }
+
+    public override copyWith(params: Partial<ClassParams<FuelOrderUserResDto>>): FuelOrderUserResDto {
+        return Object.assign(new FuelOrderUserResDto(), this, params);
+    }
+}
+
 export class FuelOrderStatusHistoryResDto extends BaseResModel<FuelOrderStatusHistoryResDto> {
     public readonly id!: string;
     public readonly fromStatus!: FuelOrderStatusDto | null;
     public readonly toStatus!: FuelOrderStatusDto;
     public readonly changedByUserId!: string | null;
+    public readonly changedByUser?: FuelOrderUserResDto;
     public readonly changedAt!: string;
     public readonly note!: string | null;
 
@@ -32,6 +47,8 @@ export class FuelOrderResDto extends BaseResModel<FuelOrderResDto> {
     public readonly status!: FuelOrderStatusDto;
     public readonly createdAt!: string;
     public readonly updatedAt!: string;
+    public readonly submittedByUser?: FuelOrderUserResDto;
+    public readonly lastStatusChangedByUser?: FuelOrderUserResDto;
     public readonly statusHistory?: FuelOrderStatusHistoryResDto[];
 
     public constructor(params?: Partial<ClassParams<FuelOrderResDto>>) {
@@ -43,4 +60,5 @@ export class FuelOrderResDto extends BaseResModel<FuelOrderResDto> {
     }
 }
 
+export type FuelOrderUserResponseDto = FuelOrderUserResDto;
 export type FuelOrderResponseDto = FuelOrderResDto;
