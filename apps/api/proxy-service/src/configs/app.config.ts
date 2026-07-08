@@ -2,12 +2,15 @@ import { getOsEnv, getOsEnvNumber } from '@fuel-pass/node-commons';
 import z from 'zod';
 
 const defaultAllowedOrigins = ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173'];
+const defaultAllowedMethods = ['GET', 'POST', 'PUT', 'PATCH'];
 
 const proxyServiceConfigSchema = z.object({
     namespace: z.string().min(1),
     targetBaseUrl: z.string().url(),
     allowedOrigins: z.array(z.string()).default(defaultAllowedOrigins),
     healthPath: z.string().startsWith('/').default('/api/health'),
+    exposeHeaders: z.array(z.string()).optional(),
+    allowedMethods: z.union([z.string(), z.array(z.string())]).default(defaultAllowedMethods),
 });
 
 const appConfigSchema = z.object({
@@ -39,12 +42,16 @@ const getDefaultServices = (): ProxyServiceConfig[] => [
         targetBaseUrl: getOsEnv('AUTH_SERVICE_URL', 'http://localhost:3000') ?? 'http://localhost:3000',
         allowedOrigins: parseCsv(getOsEnv('AUTH_SERVICE_ALLOWED_ORIGINS'), defaultAllowedOrigins),
         healthPath: getOsEnv('AUTH_SERVICE_HEALTH_PATH', '/api/health') ?? '/api/health',
+        exposeHeaders: parseCsv(getOsEnv('AUTH_SERVICE_EXPOSE_HEADERS'), []),
+        allowedMethods: parseCsv(getOsEnv('AUTH_SERVICE_ALLOWED_METHODS'), defaultAllowedMethods),
     },
     {
         namespace: 'orders-service',
         targetBaseUrl: getOsEnv('ORDERS_SERVICE_URL', 'http://localhost:3001') ?? 'http://localhost:3001',
         allowedOrigins: parseCsv(getOsEnv('ORDERS_SERVICE_ALLOWED_ORIGINS'), defaultAllowedOrigins),
         healthPath: getOsEnv('ORDERS_SERVICE_HEALTH_PATH', '/api/health') ?? '/api/health',
+        exposeHeaders: parseCsv(getOsEnv('AUTH_SERVICE_EXPOSE_HEADERS'), []),
+        allowedMethods: parseCsv(getOsEnv('ORDERS_SERVICE_ALLOWED_METHODS'), defaultAllowedMethods),
     },
 ];
 
