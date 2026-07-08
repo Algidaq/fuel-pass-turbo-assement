@@ -44,7 +44,7 @@ const mapLoginResponse = (response: BackendLoginResponse): LoginResponse => ({
 
 export const authService = {
   async login(request: LoginRequest): Promise<LoginResponse> {
-    const response = await httpClient<BackendLoginResponse>('/v1/auth/login', {
+    const response = await httpClient<BackendLoginResponse>('/auth-service/api/v1/auth/login', {
       method: 'POST',
       body: request,
     });
@@ -62,7 +62,7 @@ export const authService = {
   },
 
   async getCurrentUser(): Promise<CurrentUserResponse> {
-    const response = await httpClient<BackendCurrentUserResponse>('/v1/auth/me');
+    const response = await httpClient<BackendCurrentUserResponse>('/auth-service/api/v1/auth/me');
 
     return {
       user: mapAuthUser(response.user),
@@ -70,7 +70,7 @@ export const authService = {
   },
 
   async logout(refreshToken?: string): Promise<void> {
-    await httpClient<unknown>('/v1/auth/logout', {
+    await httpClient<unknown>('/auth-service/api/v1/auth/logout', {
       method: 'POST',
       body: { refreshToken },
     });
