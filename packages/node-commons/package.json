@@ -32,7 +32,8 @@
         "nocache": "^4.0.0",
         "p-retry": "^4.6.2",
         "pino-http": "^11.0.0",
-        "tslib": "^2.3.0"
+        "tslib": "^2.3.0",
+        "zod": "^4.4.3"
     },
     "devDependencies": {
         "@stylistic/eslint-plugin": "^5.10.0",

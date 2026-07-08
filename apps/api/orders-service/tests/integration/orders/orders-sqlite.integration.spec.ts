@@ -138,13 +138,47 @@ describe('orders persistence with SQLite', () => {
         });
     });
 
+    it('lists orders filtered by submitting user', async () => {
+        const submittedByUserId = randomUUID();
+        await fuelOrderRepository.createFuelOrder({
+            tailNumber: 'N123FP',
+            airportIcaoCode: 'OMDB',
+            requestedFuelVolume: '1500.00',
+            deliveryWindowStartAt,
+            deliveryWindowEndAt,
+            submittedByUserId,
+        });
+        await fuelOrderRepository.createFuelOrder({
+            tailNumber: 'N456FP',
+            airportIcaoCode: 'OMDB',
+            requestedFuelVolume: '2000.00',
+            deliveryWindowStartAt,
+            deliveryWindowEndAt,
+            submittedByUserId: randomUUID(),
+        });
+
+        const [fuelOrders, totalItems] = await fuelOrderRepository.findManyAndCount({
+            submittedByUserId,
+            page: 1,
+            pageSize: 20,
+        });
+
+        expect(totalItems).toBe(1);
+        expect(fuelOrders[0]).toMatchObject({
+            tailNumber: 'N123FP',
+            submittedByUserId,
+        });
+    });
+
     it('counts orders grouped by status with filters', async () => {
+        const submittedByUserId = randomUUID();
         const pendingFuelOrder = await fuelOrderRepository.createFuelOrder({
             tailNumber: 'N123FP',
             airportIcaoCode: 'OMDB',
             requestedFuelVolume: '1500.00',
             deliveryWindowStartAt,
             deliveryWindowEndAt,
+            submittedByUserId,
         });
         const confirmedFuelOrder = await fuelOrderRepository.createFuelOrder({
             tailNumber: 'N456FP',
@@ -152,6 +186,7 @@ describe('orders persistence with SQLite', () => {
             requestedFuelVolume: '2000.00',
             deliveryWindowStartAt,
             deliveryWindowEndAt,
+            submittedByUserId,
         });
         await fuelOrderRepository.createFuelOrder({
             tailNumber: 'N789FP',
@@ -169,7 +204,7 @@ describe('orders persistence with SQLite', () => {
             status: FuelOrderStatus.COMPLETED,
         });
 
-        const counts = await fuelOrderRepository.countByStatus({ airportIcaoCode: 'OMDB' });
+        const counts = await fuelOrderRepository.countByStatus({ airportIcaoCode: 'OMDB', submittedByUserId });
 
         expect(counts).toEqual({
             [FuelOrderStatus.PENDING]: 0,

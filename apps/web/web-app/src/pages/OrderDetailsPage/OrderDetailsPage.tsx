@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import { PageError } from '../../components/feedback/PageError';
 import { PageLoader } from '../../components/feedback/PageLoader';
+import { useAuthStore } from '../../features/auth/store/auth.store';
 import { getApiErrorMessage } from '../../services/apiErrorMessages';
 import {
     formatDateTime,
@@ -19,6 +20,7 @@ import {
     type FuelOrderStatus,
     type FuelOrderUser,
 } from '../../features/fuel-orders';
+import { canUpdateOrderStatus } from '../../routes/roleRoutes';
 import styles from './OrderDetailsPage.module.css';
 
 const workflowStatuses: FuelOrderStatus[] = ['PENDING', 'CONFIRMED', 'COMPLETED'];
@@ -237,8 +239,10 @@ const WorkflowProgressionCard = ({ order }: { order: FuelOrder }) => {
 
 export const OrderDetailsPage = () => {
     const { orderId } = useParams<{ orderId: string }>();
+    const user = useAuthStore((state) => state.user);
     const fuelOrderQuery = useFuelOrder(orderId);
     const order = fuelOrderQuery.data;
+    const canUpdateStatus = canUpdateOrderStatus(user);
 
     if (!orderId) {
         return <PageError message="Order ID is missing from the route." />;
@@ -288,7 +292,7 @@ export const OrderDetailsPage = () => {
                     <StatusHistoryCard order={order} />
                 </div>
                 <aside className={styles.sideColumn}>
-                    <CurrentStatusCard order={order} />
+                    {canUpdateStatus ? <CurrentStatusCard order={order} /> : null}
                     <WorkflowProgressionCard order={order} />
                 </aside>
             </div>

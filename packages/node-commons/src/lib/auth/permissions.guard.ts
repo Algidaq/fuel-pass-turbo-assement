@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, HttpStatus, Injectable } from '@nestjs/c
 import { Reflector } from '@nestjs/core';
 import { AppHttpError, CS_ERRORS } from '../standard-errors';
 import type { AuthenticatedRequest } from './auth.types';
-import { REQUIRED_PERMISSIONS_METADATA_KEY } from './permissions.decorator';
+import { REQUIRED_ANY_PERMISSIONS_METADATA_KEY, REQUIRED_PERMISSIONS_METADATA_KEY } from './permissions.decorator';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
@@ -13,16 +13,30 @@ export class PermissionsGuard implements CanActivate {
             context.getHandler(),
             context.getClass(),
         ]);
+        const requiredAnyPermissions = this.reflector.getAllAndOverride<string[]>(REQUIRED_ANY_PERMISSIONS_METADATA_KEY, [
+            context.getHandler(),
+            context.getClass(),
+        ]);
 
-        if (requiredPermissions === undefined || requiredPermissions.length === 0) {
+        if (
+            (requiredPermissions === undefined || requiredPermissions.length === 0) &&
+            (requiredAnyPermissions === undefined || requiredAnyPermissions.length === 0)
+        ) {
             return true;
         }
 
         const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
         const permissions = new Set(request.auth.permissions);
-        const hasAllPermissions = requiredPermissions.every((permission): boolean => permissions.has(permission));
+        const hasAllPermissions =
+            requiredPermissions === undefined || requiredPermissions.length === 0
+                ? true
+                : requiredPermissions.every((permission): boolean => permissions.has(permission));
+        const hasAnyPermission =
+            requiredAnyPermissions === undefined || requiredAnyPermissions.length === 0
+                ? true
+                : requiredAnyPermissions.some((permission): boolean => permissions.has(permission));
 
-        if (hasAllPermissions) {
+        if (hasAllPermissions && hasAnyPermission) {
             return true;
         }
 

@@ -16,6 +16,7 @@ import {
     CsHeaders,
     JwtIntrospectionAuthGuard,
     PermissionsGuard,
+    RequireAnyPermission,
     RequirePermissions,
     UuidValidatorPipe,
     ZodValidationPipe,
@@ -49,22 +50,24 @@ export class FuelOrdersController {
     }
 
     @Get()
-    @RequirePermissions(ORDER_PERMISSIONS.fuelOrderReadAll.key)
+    @RequireAnyPermission(ORDER_PERMISSIONS.fuelOrderReadOwn.key, ORDER_PERMISSIONS.fuelOrderReadAll.key)
     public async listFuelOrders(
         @Query(new ZodValidationPipe(listFuelOrdersQueryDtoSchema)) query: TListFuelOrdersQueryDto,
+        @Req() request: AuthenticatedRequest,
         @CsHeaders() headers: BaseApiHeaders
     ): Promise<ApiResponse<ListFuelOrdersResDto>> {
-        return this.listFuelOrdersService.listFuelOrders({ headers, query });
+        return this.listFuelOrdersService.listFuelOrders({ headers, query, principal: request.auth });
     }
 
     @Get(':id')
-    @RequirePermissions(ORDER_PERMISSIONS.fuelOrderReadAll.key)
+    @RequireAnyPermission(ORDER_PERMISSIONS.fuelOrderReadOwn.key, ORDER_PERMISSIONS.fuelOrderReadAll.key)
     public async getFuelOrderById(
         @Param('id', new UuidValidatorPipe()) id: string,
         @Query(new ZodValidationPipe(fuelOrderQueryDtoSchema)) query: TFuelOrderQueryDto,
+        @Req() request: AuthenticatedRequest,
         @CsHeaders() headers: BaseApiHeaders
     ): Promise<ApiResponse<FuelOrderResDto>> {
-        return this.getFuelOrderService.getFuelOrder({ headers, id, query });
+        return this.getFuelOrderService.getFuelOrder({ headers, id, query, principal: request.auth });
     }
 
     @Patch(':id/status')

@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { AppHttpError, CS_ERRORS, PermissionsGuard, REQUIRED_PERMISSIONS_METADATA_KEY } from '../../../src';
+import { AppHttpError, CS_ERRORS, PermissionsGuard, REQUIRED_ANY_PERMISSIONS_METADATA_KEY, REQUIRED_PERMISSIONS_METADATA_KEY } from '../../../src';
 import type { AuthenticatedRequest } from '../../../src';
 import type { ExecutionContext } from '@nestjs/common';
 
@@ -25,7 +25,12 @@ describe('PermissionsGuard', (): void => {
 
     it('allows requests with all required permissions', (): void => {
         const reflector = new Reflector();
-        jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(['fuel-orders:create']);
+        jest.spyOn(reflector, 'getAllAndOverride').mockImplementation((metadataKey: string): string[] | undefined => {
+            if (metadataKey === REQUIRED_PERMISSIONS_METADATA_KEY) {
+                return ['fuel-orders:create'];
+            }
+            return undefined;
+        });
         const guard = new PermissionsGuard(reflector);
 
         expect(
@@ -45,9 +50,41 @@ describe('PermissionsGuard', (): void => {
         expect(reflector.getAllAndOverride).toHaveBeenCalledWith(REQUIRED_PERMISSIONS_METADATA_KEY, expect.any(Array));
     });
 
+    it('allows requests with any one required permission', (): void => {
+        const reflector = new Reflector();
+        jest.spyOn(reflector, 'getAllAndOverride').mockImplementation((metadataKey: string): string[] | undefined => {
+            if (metadataKey === REQUIRED_ANY_PERMISSIONS_METADATA_KEY) {
+                return ['fuel-orders:read-own', 'fuel-orders:read-all'];
+            }
+            return undefined;
+        });
+        const guard = new PermissionsGuard(reflector);
+
+        expect(
+            guard.canActivate(
+                createExecutionContext({
+                    auth: {
+                        userId: 'user-1',
+                        sessionId: 'session-1',
+                        email: 'operator@fuelpass.test',
+                        roles: ['aircraft_operator'],
+                        permissions: ['fuel-orders:read-own'],
+                        jti: 'jti-1',
+                    },
+                })
+            )
+        ).toBe(true);
+        expect(reflector.getAllAndOverride).toHaveBeenCalledWith(REQUIRED_ANY_PERMISSIONS_METADATA_KEY, expect.any(Array));
+    });
+
     it('rejects requests missing required permissions', (): void => {
         const reflector = new Reflector();
-        jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(['fuel-orders:update-status']);
+        jest.spyOn(reflector, 'getAllAndOverride').mockImplementation((metadataKey: string): string[] | undefined => {
+            if (metadataKey === REQUIRED_PERMISSIONS_METADATA_KEY) {
+                return ['fuel-orders:update-status'];
+            }
+            return undefined;
+        });
         const guard = new PermissionsGuard(reflector);
 
         const expectedError = new AppHttpError(HttpStatus.FORBIDDEN, CS_ERRORS.MissingRequiredPermissions);

@@ -5,7 +5,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { PageLoader } from '../components/feedback/PageLoader';
 import { useAuthHydration } from '../features/auth/hooks/useAuthHydration';
 import { useAuthStore } from '../features/auth/store/auth.store';
-import { hasAllPermissions } from '../features/auth/utils/permissionAccess';
+import { hasAnyPermission } from '../features/auth/utils/permissionAccess';
 import { routes } from './roleRoutes';
 
 type PermissionGuardProps = {
@@ -27,7 +27,7 @@ export const PermissionGuard = ({ requiredPermissions, children }: PermissionGua
         return <Navigate replace state={{ from: location }} to={routes.login} />;
     }
 
-    if (!hasAllPermissions(user, requiredPermissions)) {
+    if (!hasAnyPermission(user, requiredPermissions)) {
         return <Navigate replace state={{ from: location }} to={routes.restricted} />;
     }
 

@@ -43,6 +43,14 @@ const buildFuelOrdersListUrl = (params?: FuelOrderFilters): string => {
         searchParams.set('airportIcaoCode', params.airportIcaoCode);
     }
 
+    if (params?.page) {
+        searchParams.set('page', String(params.page));
+    }
+
+    if (params?.pageSize) {
+        searchParams.set('pageSize', String(params.pageSize));
+    }
+
     searchParams.set('include_status', 'true');
 
     const queryString = searchParams.toString();

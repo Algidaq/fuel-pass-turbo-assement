@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import { useAuthHydration } from '../../auth/hooks/useAuthHydration';
 import { useAuthStore } from '../../auth/store/auth.store';
@@ -19,5 +19,6 @@ export const useFuelOrders = (filters: FuelOrderFilters = {}) => {
         queryFn: () => fuelOrdersService.getFuelOrders(filters),
         queryKey: fuelOrderQueryKeys.list(filters),
         enabled: isHydrated && isAuthenticated,
+        placeholderData: keepPreviousData,
     });
 };

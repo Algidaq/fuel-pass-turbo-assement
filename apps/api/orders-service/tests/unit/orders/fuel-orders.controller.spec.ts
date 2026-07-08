@@ -4,6 +4,7 @@ import {
     BaseApiHeaders,
     JwtIntrospectionAuthGuard,
     PermissionsGuard,
+    REQUIRED_ANY_PERMISSIONS_METADATA_KEY,
     REQUIRED_PERMISSIONS_METADATA_KEY,
     type AuthenticatedRequest,
 } from '@fuel-pass/node-commons';
@@ -60,7 +61,12 @@ describe('FuelOrdersController', () => {
         expect(Reflect.getMetadata(REQUIRED_PERMISSIONS_METADATA_KEY, FuelOrdersController.prototype.createFuelOrder)).toEqual([
             ORDER_PERMISSIONS.fuelOrderCreate.key,
         ]);
-        expect(Reflect.getMetadata(REQUIRED_PERMISSIONS_METADATA_KEY, FuelOrdersController.prototype.listFuelOrders)).toEqual([
+        expect(Reflect.getMetadata(REQUIRED_ANY_PERMISSIONS_METADATA_KEY, FuelOrdersController.prototype.listFuelOrders)).toEqual([
+            ORDER_PERMISSIONS.fuelOrderReadOwn.key,
+            ORDER_PERMISSIONS.fuelOrderReadAll.key,
+        ]);
+        expect(Reflect.getMetadata(REQUIRED_ANY_PERMISSIONS_METADATA_KEY, FuelOrdersController.prototype.getFuelOrderById)).toEqual([
+            ORDER_PERMISSIONS.fuelOrderReadOwn.key,
             ORDER_PERMISSIONS.fuelOrderReadAll.key,
         ]);
     });
@@ -89,8 +95,8 @@ describe('FuelOrdersController', () => {
         const controller = createController({ listFuelOrdersService: { listFuelOrders } });
         const query = { airportIcaoCode: 'OMDB', status: 'PENDING' as const, include_status: true, include_user: true, page: 1, pageSize: 20 };
 
-        await expect(controller.listFuelOrders(query, headers)).resolves.toBe(response);
-        expect(listFuelOrders).toHaveBeenCalledWith({ headers, query });
+        await expect(controller.listFuelOrders(query, authRequest, headers)).resolves.toBe(response);
+        expect(listFuelOrders).toHaveBeenCalledWith({ headers, query, principal: authRequest.auth });
     });
 
     it('delegates get requests to the get endpoint service', async () => {
@@ -99,8 +105,8 @@ describe('FuelOrdersController', () => {
         const controller = createController({ getFuelOrderService: { getFuelOrder } });
         const query = { include_status_history: true, include_user: true };
 
-        await expect(controller.getFuelOrderById(fuelOrder.id, query, headers)).resolves.toBe(response);
-        expect(getFuelOrder).toHaveBeenCalledWith({ headers, id: fuelOrder.id, query });
+        await expect(controller.getFuelOrderById(fuelOrder.id, query, authRequest, headers)).resolves.toBe(response);
+        expect(getFuelOrder).toHaveBeenCalledWith({ headers, id: fuelOrder.id, query, principal: authRequest.auth });
     });
 
     it('delegates status updates to the update endpoint service', async () => {

@@ -53,6 +53,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 16px;
     padding: 16px;
     border-top: 1px solid #f1f5f9;
     background: rgb(242 243 255 / 0.3);
@@ -62,4 +63,65 @@
     color: #5d5e60;
     font-size: 13px;
     line-height: 18px;
+}
+
+.paginationControls,
+.pageSizeControl,
+.pageButtons {
+    display: flex;
+    align-items: center;
+}
+
+.paginationControls {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.pageSizeControl {
+    gap: 8px;
+}
+
+.pageSizeControl :global(.MuiInputBase-root) {
+    min-width: 88px;
+}
+
+.pageSizeControl :global(.MuiSelect-select) {
+    min-height: auto;
+    padding: 7px 32px 7px 12px;
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.pageLabel {
+    white-space: nowrap;
+}
+
+.pageButtons {
+    gap: 8px;
+}
+
+@media (max-width: 720px) {
+    .footer {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .paginationControls {
+        align-items: stretch;
+        justify-content: flex-start;
+    }
+
+    .pageSizeControl {
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .pageButtons {
+        width: 100%;
+    }
+
+    .pageButtons button {
+        flex: 1 1 0;
+    }
 }

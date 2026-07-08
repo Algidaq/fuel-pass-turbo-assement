@@ -14,6 +14,7 @@ import { UpdateFuelOrderStatusService } from '../../../src/orders/services/updat
 const headers = new BaseApiHeaders();
 const userId = randomUUID();
 const aircraftOperatorRoleKey = 'aircraft_operator';
+const adminRoleKey = 'admin';
 const orderId = randomUUID();
 const deliveryWindowStartAt = new Date('2026-07-10T08:00:00.000Z');
 const deliveryWindowEndAt = new Date('2026-07-10T10:00:00.000Z');
@@ -22,7 +23,15 @@ const principal: AuthenticatedPrincipal = {
     sessionId: randomUUID(),
     email: 'operator@fuelpass.test',
     roles: [aircraftOperatorRoleKey],
-    permissions: [ORDER_PERMISSIONS.fuelOrderCreate.key],
+    permissions: [ORDER_PERMISSIONS.fuelOrderCreate.key, ORDER_PERMISSIONS.fuelOrderReadOwn.key],
+    jti: randomUUID(),
+};
+const readAllPrincipal: AuthenticatedPrincipal = {
+    userId: randomUUID(),
+    sessionId: randomUUID(),
+    email: 'admin@fuelpass.test',
+    roles: [adminRoleKey],
+    permissions: [ORDER_PERMISSIONS.fuelOrderReadAll.key],
     jti: randomUUID(),
 };
 
@@ -182,6 +191,7 @@ describe('fuel order endpoint services', () => {
 
         const response = await listService.listFuelOrders({
             headers,
+            principal: readAllPrincipal,
             query: {
                 airportIcaoCode: 'OMDB',
                 status: 'PENDING',
@@ -194,6 +204,7 @@ describe('fuel order endpoint services', () => {
 
         expect(fuelOrderRepository.findManyAndCount).toHaveBeenCalledWith({
             airportIcaoCode: 'OMDB',
+            submittedByUserId: undefined,
             status: FuelOrderStatus.PENDING,
             page: 2,
             pageSize: 10,
@@ -208,11 +219,35 @@ describe('fuel order endpoint services', () => {
         });
     });
 
+    it('scopes list responses to the principal for read-own users', async () => {
+        const { listService, fuelOrderRepository } = createHarness();
+
+        await listService.listFuelOrders({
+            headers,
+            principal,
+            query: {
+                include_status: false,
+                include_user: false,
+                page: 1,
+                pageSize: 20,
+            },
+        });
+
+        expect(fuelOrderRepository.findManyAndCount).toHaveBeenCalledWith({
+            airportIcaoCode: undefined,
+            submittedByUserId: userId,
+            status: undefined,
+            page: 1,
+            pageSize: 20,
+        });
+    });
+
     it('includes grouped status counts when requested', async () => {
         const { listService, fuelOrderRepository } = createHarness();
 
         const response = await listService.listFuelOrders({
             headers,
+            principal,
             query: {
                 airportIcaoCode: 'OMDB',
                 include_status: true,
@@ -224,6 +259,7 @@ describe('fuel order endpoint services', () => {
 
         expect(fuelOrderRepository.countByStatus).toHaveBeenCalledWith({
             airportIcaoCode: 'OMDB',
+            submittedByUserId: userId,
             status: undefined,
         });
         expect(response.data?.statusCounts).toMatchObject({
@@ -238,6 +274,7 @@ describe('fuel order endpoint services', () => {
 
         const response = await listService.listFuelOrders({
             headers,
+            principal: readAllPrincipal,
             query: {
                 include_status: false,
                 include_user: true,
@@ -258,7 +295,7 @@ describe('fuel order endpoint services', () => {
         const { getService, fuelOrderRepository } = createHarness({ findById: null });
         fuelOrderRepository.findByIdOrThrow.mockRejectedValue(new OrderException(404, 'FuelOrderNotFound'));
 
-        const response = await getService.getFuelOrder({ headers, id: orderId });
+        const response = await getService.getFuelOrder({ headers, id: orderId, principal });
 
         expect(response.success).toBe(false);
         expect(response.status).toBe(404);
@@ -268,7 +305,7 @@ describe('fuel order endpoint services', () => {
     it('loads a fuel order without status history by default', async () => {
         const { getService, fuelOrderRepository, internalAuthUsersService } = createHarness();
 
-        const response = await getService.getFuelOrder({ headers, id: orderId });
+        const response = await getService.getFuelOrder({ headers, id: orderId, principal });
 
         expect(fuelOrderRepository.findByIdOrThrow).toHaveBeenCalledWith(orderId);
         expect(fuelOrderRepository.findByIdWithStatusHistoryOrThrow).not.toHaveBeenCalled();
@@ -282,6 +319,7 @@ describe('fuel order endpoint services', () => {
         const response = await getService.getFuelOrder({
             headers,
             id: orderId,
+            principal,
             query: { include_status_history: true, include_user: false },
         });
 
@@ -296,12 +334,24 @@ describe('fuel order endpoint services', () => {
         ]);
     });
 
+    it('returns not found when read-own users load another user order', async () => {
+        const { getService, fuelOrderRepository } = createHarness();
+        fuelOrderRepository.findByIdOrThrow.mockResolvedValue(createFuelOrder({ submittedByUserId: randomUUID() }));
+
+        const response = await getService.getFuelOrder({ headers, id: orderId, principal });
+
+        expect(response.success).toBe(false);
+        expect(response.status).toBe(404);
+        expect(response.errors[0]?.code).toEqual('ORDER.FUEL-ORDER-NOT-FOUND');
+    });
+
     it('loads user details with status history when requested', async () => {
         const { getService, internalAuthUsersService } = createHarness();
 
         const response = await getService.getFuelOrder({
             headers,
             id: orderId,
+            principal,
             query: { include_status_history: true, include_user: true },
         });
 

@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, FindOptionsWhere, Repository } from 'typeorm';
 import { FuelOrderStatusHistoryEntity } from '../entities/fuel-order-status-history.entity';
 import { FuelOrderEntity } from '../entities/fuel-order.entity';
 import { FuelOrderStatus, VolumeUnit } from '../entities/order.enums';
@@ -20,6 +20,7 @@ export interface CreateFuelOrderData {
 
 export interface FindFuelOrdersFilters {
     airportIcaoCode?: string;
+    submittedByUserId?: string;
     status?: FuelOrderStatus;
     page?: number;
     pageSize?: number;
@@ -101,10 +102,7 @@ export class FuelOrderRepository {
 
     public findMany(filters: FindFuelOrdersFilters = {}, manager?: EntityManager): Promise<FuelOrderEntity[]> {
         return this.getFuelOrderRepository(manager).find({
-            where: {
-                ...(filters.airportIcaoCode === undefined ? {} : { airportIcaoCode: filters.airportIcaoCode }),
-                ...(filters.status === undefined ? {} : { status: filters.status }),
-            },
+            where: this.toWhere(filters),
             order: {
                 createdAt: 'DESC',
             },
@@ -115,10 +113,7 @@ export class FuelOrderRepository {
 
     public findManyAndCount(filters: FindFuelOrdersFilters = {}, manager?: EntityManager): Promise<[FuelOrderEntity[], number]> {
         return this.getFuelOrderRepository(manager).findAndCount({
-            where: {
-                ...(filters.airportIcaoCode === undefined ? {} : { airportIcaoCode: filters.airportIcaoCode }),
-                ...(filters.status === undefined ? {} : { status: filters.status }),
-            },
+            where: this.toWhere(filters),
             order: {
                 createdAt: 'DESC',
             },
@@ -141,6 +136,10 @@ export class FuelOrderRepository {
 
         if (filters.airportIcaoCode !== undefined) {
             queryBuilder.andWhere('fuelOrder.airportIcaoCode = :airportIcaoCode', { airportIcaoCode: filters.airportIcaoCode });
+        }
+
+        if (filters.submittedByUserId !== undefined) {
+            queryBuilder.andWhere('fuelOrder.submittedByUserId = :submittedByUserId', { submittedByUserId: filters.submittedByUserId });
         }
 
         if (filters.status !== undefined) {
@@ -196,6 +195,14 @@ export class FuelOrderRepository {
 
     private getStatusHistoryRepository(manager?: EntityManager): Repository<FuelOrderStatusHistoryEntity> {
         return manager?.getRepository(FuelOrderStatusHistoryEntity) ?? this.statusHistoryRepository;
+    }
+
+    private toWhere(filters: FindFuelOrdersFilters): FindOptionsWhere<FuelOrderEntity> {
+        return {
+            ...(filters.airportIcaoCode === undefined ? {} : { airportIcaoCode: filters.airportIcaoCode }),
+            ...(filters.submittedByUserId === undefined ? {} : { submittedByUserId: filters.submittedByUserId }),
+            ...(filters.status === undefined ? {} : { status: filters.status }),
+        };
     }
 
     private toSkip(filters: FindFuelOrdersFilters): number | undefined {
