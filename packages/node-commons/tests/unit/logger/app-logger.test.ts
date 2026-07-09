@@ -25,37 +25,34 @@ describe('AppLogger', (): void => {
         const headers = { urc: 'user-request-code', grc: 'global-request-code' };
         const body = { email: 'test@example.com' };
 
-        logger.info('login requested', { headers, body });
+        logger.info('login requested', { headers, data: body });
 
-        expect(logSpy).toHaveBeenCalledWith({
-            message: 'login requested',
+        expect(logSpy).toHaveBeenCalledWith('login requested', {
             headers,
-            body,
+            data: body,
         });
     });
 
     it('should log debug messages', (): void => {
-        logger.debug('token generated', { tokenId: 'token-id' });
+        logger.debug('token generated', { data: { tokenId: 'token-id' } });
 
-        expect(debugSpy).toHaveBeenCalledWith({
-            message: 'token generated',
-            tokenId: 'token-id',
+        expect(debugSpy).toHaveBeenCalledWith('token generated', {
+            data: { tokenId: 'token-id' },
         });
     });
 
     it('should log trace messages through the Nest verbose logger', (): void => {
-        logger.trace('session lookup', { sessionId: 'session-id' });
+        logger.trace('session lookup', { data: { sessionId: 'session-id' } });
 
-        expect(verboseSpy).toHaveBeenCalledWith({
-            message: 'session lookup',
-            sessionId: 'session-id',
+        expect(verboseSpy).toHaveBeenCalledWith('session lookup', {
+            data: { sessionId: 'session-id' },
         });
     });
 
     it('should log plain messages when metadata is omitted', (): void => {
         logger.info('application started');
 
-        expect(logSpy).toHaveBeenCalledWith('application started');
+        expect(logSpy).toHaveBeenCalledWith('application started', undefined);
     });
 
     it('should log error metadata and pass the error stack to Nest Logger', (): void => {
@@ -67,14 +64,10 @@ describe('AppLogger', (): void => {
         });
 
         expect(errorSpy).toHaveBeenCalledWith(
+            'login failed',
             {
-                message: 'login failed',
                 headers: { urc: 'user-request-code' },
-                error: {
-                    name: cause.name,
-                    message: cause.message,
-                    stack: cause.stack,
-                },
+                error: cause,
             },
             cause.stack
         );
@@ -86,8 +79,8 @@ describe('AppLogger', (): void => {
         });
 
         expect(errorSpy).toHaveBeenCalledWith(
+            'login failed',
             {
-                message: 'login failed',
                 error: 'invalid credentials',
             },
             undefined

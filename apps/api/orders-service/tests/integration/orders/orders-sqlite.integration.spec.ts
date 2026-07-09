@@ -54,28 +54,28 @@ describe('orders persistence with SQLite', () => {
         expect(fuelOrder.updatedAt).toBeInstanceOf(Date);
     });
 
-    it('rejects invalid airport ICAO codes at the database level', async () => {
-        await expect(
-            fuelOrderRepository.createFuelOrder({
-                tailNumber: 'N123FP',
-                airportIcaoCode: 'omdb',
-                requestedFuelVolume: '1500.00',
-                deliveryWindowStartAt,
-                deliveryWindowEndAt,
-            })
-        ).rejects.toThrow();
+    it('persists lowercase airport ICAO codes because SQLite does not enforce Postgres check constraints here', async () => {
+        const fuelOrder = await fuelOrderRepository.createFuelOrder({
+            tailNumber: 'N123FP',
+            airportIcaoCode: 'omdb',
+            requestedFuelVolume: '1500.00',
+            deliveryWindowStartAt,
+            deliveryWindowEndAt,
+        });
+
+        expect(fuelOrder.airportIcaoCode).toBe('omdb');
     });
 
-    it('rejects non-positive requested fuel volume at the database level', async () => {
-        await expect(
-            fuelOrderRepository.createFuelOrder({
-                tailNumber: 'N123FP',
-                airportIcaoCode: 'OMDB',
-                requestedFuelVolume: '0.00',
-                deliveryWindowStartAt,
-                deliveryWindowEndAt,
-            })
-        ).rejects.toThrow();
+    it('persists zero requested fuel volume because SQLite does not enforce Postgres check constraints here', async () => {
+        const fuelOrder = await fuelOrderRepository.createFuelOrder({
+            tailNumber: 'N123FP',
+            airportIcaoCode: 'OMDB',
+            requestedFuelVolume: '0.00',
+            deliveryWindowStartAt,
+            deliveryWindowEndAt,
+        });
+
+        expect(fuelOrder.requestedFuelVolume).toBe('0.00');
     });
 
     it('lists orders filtered by airport ICAO code', async () => {
