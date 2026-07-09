@@ -29,7 +29,6 @@
         "@fuel-pass/contracts": "*",
         "@fuel-pass/eslint-config": "*",
         "@fuel-pass/node-commons": "*",
-        "@fuel-pass/orders": "^0.0.1",
         "@fuel-pass/typescript-config": "*",
         "@nestjs/common": "^11.0.0",
         "@nestjs/config": "^4.0.4",

@@ -313,6 +313,26 @@ describe('fuel order endpoint services', () => {
         });
     });
 
+    it('still lists orders when auth user enrichment returns no users', async () => {
+        const { listService, internalAuthUsersService } = createHarness();
+        internalAuthUsersService.lookupUsersByIds.mockResolvedValue(new Map());
+
+        const response = await listService.listFuelOrders({
+            headers,
+            principal: readAllPrincipal,
+            query: {
+                include_status: false,
+                include_user: true,
+                page: 1,
+                pageSize: 20,
+            },
+        });
+
+        expect(response.success).toBe(true);
+        expect(response.data?.items).toHaveLength(1);
+        expect(response.data?.items[0]?.submittedByUser).toBeUndefined();
+    });
+
     it('returns not found responses for missing orders', async () => {
         const { getService, fuelOrderRepository } = createHarness({ findById: null });
         fuelOrderRepository.findByIdOrThrow.mockRejectedValue(new OrderException(404, 'FuelOrderNotFound'));
@@ -423,6 +443,44 @@ describe('fuel order endpoint services', () => {
         expect(response.data?.status).toBe(FuelOrderStatus.CONFIRMED);
     });
 
+    it('updates a confirmed order to completed and writes history', async () => {
+        const { updateService, fuelOrderRepository, manager } = createHarness({
+            findByIdSequence: [
+                createFuelOrder({ status: FuelOrderStatus.CONFIRMED }),
+                createFuelOrder({ status: FuelOrderStatus.COMPLETED }),
+            ],
+        });
+
+        const response = await updateService.updateFuelOrderStatus({
+            headers,
+            id: orderId,
+            principal,
+            body: {
+                status: 'COMPLETED',
+                note: 'Fuel delivery completed.',
+            },
+        });
+
+        expect(fuelOrderRepository.updateStatusIfCurrent).toHaveBeenCalledWith(
+            {
+                fuelOrderId: orderId,
+                currentStatus: FuelOrderStatus.CONFIRMED,
+                status: FuelOrderStatus.COMPLETED,
+                changedByUserId: userId,
+            },
+            manager
+        );
+        expect(fuelOrderRepository.createStatusHistory).toHaveBeenCalledWith(
+            expect.objectContaining({
+                fromStatus: FuelOrderStatus.CONFIRMED,
+                toStatus: FuelOrderStatus.COMPLETED,
+                note: 'Fuel delivery completed.',
+            }),
+            manager
+        );
+        expect(response.data?.status).toBe(FuelOrderStatus.COMPLETED);
+    });
+
     it('rejects invalid status transitions', async () => {
         const { updateService } = createHarness();
 
@@ -438,6 +496,25 @@ describe('fuel order endpoint services', () => {
         expect(response.errors[0]?.code).toEqual('ORDER.INVALID-STATUS-TRANSITION');
     });
 
+    it('rejects completed to pending status transitions', async () => {
+        const { updateService, fuelOrderRepository } = createHarness({
+            findById: createFuelOrder({ status: FuelOrderStatus.COMPLETED }),
+        });
+
+        const response = await updateService.updateFuelOrderStatus({
+            headers,
+            id: orderId,
+            principal,
+            body: { status: 'PENDING' },
+        });
+
+        expect(response.success).toBe(false);
+        expect(response.status).toBe(409);
+        expect(response.errors[0]?.code).toEqual('ORDER.INVALID-STATUS-TRANSITION');
+        expect(fuelOrderRepository.updateStatusIfCurrent).not.toHaveBeenCalled();
+        expect(fuelOrderRepository.createStatusHistory).not.toHaveBeenCalled();
+    });
+
     it('does not duplicate history for same-status updates', async () => {
         const { updateService, fuelOrderRepository } = createHarness();
 
@@ -450,6 +527,39 @@ describe('fuel order endpoint services', () => {
 
         expect(response.success).toBe(true);
         expect(fuelOrderRepository.updateStatusIfCurrent).not.toHaveBeenCalled();
+        expect(fuelOrderRepository.createStatusHistory).not.toHaveBeenCalled();
+    });
+
+    it('returns not found when updating an unknown order', async () => {
+        const { updateService, fuelOrderRepository } = createHarness({ findById: null });
+
+        const response = await updateService.updateFuelOrderStatus({
+            headers,
+            id: randomUUID(),
+            principal,
+            body: { status: 'CONFIRMED' },
+        });
+
+        expect(response.success).toBe(false);
+        expect(response.status).toBe(404);
+        expect(response.errors[0]?.code).toEqual('ORDER.FUEL-ORDER-NOT-FOUND');
+        expect(fuelOrderRepository.updateStatusIfCurrent).not.toHaveBeenCalled();
+        expect(fuelOrderRepository.createStatusHistory).not.toHaveBeenCalled();
+    });
+
+    it('returns conflict when the conditional status update fails', async () => {
+        const { updateService, fuelOrderRepository } = createHarness({ updateStatusIfCurrent: false });
+
+        const response = await updateService.updateFuelOrderStatus({
+            headers,
+            id: orderId,
+            principal,
+            body: { status: 'CONFIRMED' },
+        });
+
+        expect(response.success).toBe(false);
+        expect(response.status).toBe(409);
+        expect(response.errors[0]?.code).toEqual('ORDER.INVALID-STATUS-TRANSITION');
         expect(fuelOrderRepository.createStatusHistory).not.toHaveBeenCalled();
     });
 });
