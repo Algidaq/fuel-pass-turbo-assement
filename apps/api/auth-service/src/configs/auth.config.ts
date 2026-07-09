@@ -30,13 +30,13 @@ export function getAuthRuntimeConfig(): AuthRuntimeConfig {
         audience: getStringEnv('JWT_AUDIENCE', 'fuelpass-api'),
         accessTokenTtlSeconds: getOsEnvNumber('JWT_ACCESS_TOKEN_TTL_SECONDS', 900),
         refreshTokenTtlDays: getOsEnvNumber('REFRESH_TOKEN_TTL_DAYS', 7),
-        jwtPrivateKey: normalizePem(getStringEnv('JWT_PRIVATE_KEY', '')),
-        jwtPublicKey: normalizePem(getStringEnv('JWT_PUBLIC_KEY', '')),
+        jwtPrivateKey: Buffer.from(normalizePem(getStringEnv('JWT_PRIVATE_KEY', '')), 'base64').toString('utf-8'),
+        jwtPublicKey: Buffer.from(normalizePem(getStringEnv('JWT_PUBLIC_KEY', '')), 'base64').toString('utf-8'),
         jwtKeyId: getStringEnv('JWT_KEY_ID', 'fuelpass-auth-dev-1'),
         bcryptRounds: getOsEnvNumber('BCRYPT_ROUNDS', 12),
-        internalServiceApiKey: getStringEnv('INTERNAL_SERVICE_API_KEY', REFRESH_TOKEN_FAMILY_ID),
+        internalServiceApiKey: getStringEnv('INTERNAL_SERVICE_API_KEY', 'auth-internal-key'),
         refreshToken: {
-            familyId: getStringEnv('REFRESH_TOKEN_FAMILY_ID', 'auth-refresh-v1'),
+            familyId: getStringEnv('REFRESH_TOKEN_FAMILY_ID', REFRESH_TOKEN_FAMILY_ID),
             ttlInDays: getOsEnvNumber('REFRESH_TOKEN_TTL_DAYS', 7),
         },
     };
