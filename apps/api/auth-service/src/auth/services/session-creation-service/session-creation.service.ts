@@ -1,13 +1,11 @@
 import { constructLogMsg, type WithAppCtx } from '@fuel-pass/node-commons';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import crypto from 'node:crypto';
-import type { DataSource, InsertResult, QueryDeepPartialEntity, UpdateResult } from 'typeorm';
+import type { DataSource, InsertResult, UpdateResult } from 'typeorm';
 import { AuthAuditEventEntity, RefreshTokenEntity, RefreshTokenStatus, SessionStatus, UserEntity, UserSessionEntity } from '../../entities';
 import type { WithEntityManager } from '../../types/utility.types';
 import { AuthAuditEventType } from '../audit.service';
 import { AbstractSessionCreationService } from './abstract-session-creation.service';
-
 @Injectable()
 export class SessionCreationService extends AbstractSessionCreationService {
     public readonly name = SessionCreationService.name;
@@ -61,7 +59,6 @@ export class SessionCreationService extends AbstractSessionCreationService {
         const repo = manager.getRepository(RefreshTokenEntity);
 
         const entity = RefreshTokenEntity.create({
-            id: crypto.randomUUID(),
             familyId: this.getRefreshTokenFamilyId(),
             userId,
             sessionId,
@@ -87,12 +84,11 @@ export class SessionCreationService extends AbstractSessionCreationService {
         return repo.update({ id: user.id }, { lastLoginAt: new Date() });
     }
 
-    public addAuthAuditEntry(params: WithEntityManager<{ userId: string; sessionId: string }>): Promise<InsertResult> {
+    public addAuthAuditEntry(params: WithEntityManager<{ userId: string; sessionId: string }>): Promise<AuthAuditEventEntity> {
         const { headers, manager, userId, sessionId } = params;
         const repo = manager.getRepository(AuthAuditEventEntity);
 
         const entity = AuthAuditEventEntity.create({
-            id: crypto.randomUUID(),
             eventType: AuthAuditEventType.LOGIN_SUCCESS,
             failureReason: null,
             userId,
@@ -104,6 +100,6 @@ export class SessionCreationService extends AbstractSessionCreationService {
             createdAt: new Date(),
         });
 
-        return repo.insert(entity as QueryDeepPartialEntity<AuthAuditEventEntity>);
+        return repo.save(entity);
     }
 }

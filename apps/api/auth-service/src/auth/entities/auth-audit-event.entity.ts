@@ -8,7 +8,7 @@ import type { UserEntity } from './user.entity';
 @Index('idx_auth_audit_events_user_id_created_at', ['userId', 'createdAt'])
 @Index('idx_auth_audit_events_event_type_created_at', ['eventType', 'createdAt'])
 export class AuthAuditEventEntity extends BaseModel<AuthAuditEventEntity> {
-    public static create(params: Omit<ClassParams<AuthAuditEventEntity>, 'user' | 'session'>): AuthAuditEventEntity {
+    public static create(params: Omit<ClassParams<AuthAuditEventEntity>, 'user' | 'session' | 'id'>): AuthAuditEventEntity {
         return Object.assign(new AuthAuditEventEntity(), params);
     }
 

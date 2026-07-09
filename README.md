@@ -54,7 +54,21 @@ npm run db:setup -w @fuel-pass/auth-service
 npm run db:setup -w @fuel-pass/orders
 ```
 
-For a SQLite-only local run, set `DB_TYPE=sqlite`, `SQLITE_DATABASE=./auth.sqlite` or `./orders.sqlite`, and `SQLITE_SYNCHRONIZE=true` in the relevant service `.env`. This is useful for quick review, but Postgres plus migrations is the closer production-like path.
+For a SQLite-only local run, add the relevant block to the service `.env` and comment out the Postgres `DB_*` values:
+
+```dotenv
+# apps/api/auth-service/.env
+# DB_TYPE=sqlite
+# SQLITE_DATABASE=./auth.sqlite
+# SQLITE_SYNCHRONIZE=true
+
+# apps/api/orders-service/.env
+# DB_TYPE=sqlite
+# SQLITE_DATABASE=./orders.sqlite
+# SQLITE_SYNCHRONIZE=true
+```
+
+Uncomment the block for the service you are running. This is useful for quick review, but Postgres plus migrations is the closer production-like path.
 
 ## Run
 

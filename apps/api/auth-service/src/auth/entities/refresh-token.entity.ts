@@ -12,7 +12,7 @@ import type { UserEntity } from './user.entity';
 @Index('idx_refresh_tokens_status', ['status'])
 @Index('uq_refresh_tokens_token_hash', ['tokenHash'], { unique: true })
 export class RefreshTokenEntity extends BaseModel<RefreshTokenEntity> {
-    public static create(params: Omit<ClassParams<RefreshTokenEntity>, 'user' | 'session' | 'rotatedToToken'>): RefreshTokenEntity {
+    public static create(params: Omit<ClassParams<RefreshTokenEntity>, 'user' | 'session' | 'rotatedToToken' | 'id'>): RefreshTokenEntity {
         const entity = Object.assign(new RefreshTokenEntity(), params);
         return entity;
     }
