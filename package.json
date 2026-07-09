@@ -4,6 +4,11 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "docker:up": "env-cmd -f docker.env -- docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f postgres",
+    "docker:ps": "docker compose ps",
+    "db:setup": "npm run db:setup -w @fuel-pass/auth-service && npm run db:setup -w @fuel-pass/orders",
     "setup:envs": "node scripts/setup-envs.js",
     "watch:packages": "turbo run dev --filter=@fuel-pass/node-commons --filter=@fuel-pass/contracts --filter=@fuel-pass/ui",
     "lint": "turbo run lint",

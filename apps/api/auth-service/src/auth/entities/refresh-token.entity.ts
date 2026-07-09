@@ -20,16 +20,16 @@ export class RefreshTokenEntity extends BaseModel<RefreshTokenEntity> {
     @PrimaryGeneratedColumn('uuid')
     public id!: string;
 
-    @Column({ name: 'user_id', type: 'varchar', length: 36 })
+    @Column({ name: 'user_id', type: 'uuid' })
     public userId!: string;
 
-    @Column({ name: 'session_id', type: 'varchar', length: 36 })
+    @Column({ name: 'session_id', type: 'uuid' })
     public sessionId!: string;
 
     @Column({ name: 'token_hash', type: 'text' })
     public tokenHash!: string;
 
-    @Column({ name: 'family_id', type: 'varchar', length: 36 })
+    @Column({ name: 'family_id', type: 'uuid' })
     public familyId!: string;
 
     @Column({
@@ -49,7 +49,7 @@ export class RefreshTokenEntity extends BaseModel<RefreshTokenEntity> {
     @Column({ name: 'used_at', type: Date, nullable: true })
     public usedAt!: Date | null;
 
-    @Column({ name: 'rotated_to_token_id', type: 'varchar', length: 36, nullable: true })
+    @Column({ name: 'rotated_to_token_id', type: 'uuid', nullable: true })
     public rotatedToTokenId!: string | null;
 
     @Column({ name: 'revoked_at', type: Date, nullable: true })

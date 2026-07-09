@@ -15,10 +15,10 @@ export class AuthAuditEventEntity extends BaseModel<AuthAuditEventEntity> {
     @PrimaryGeneratedColumn('uuid')
     public id!: string;
 
-    @Column({ name: 'user_id', type: 'varchar', length: 36, nullable: true })
+    @Column({ name: 'user_id', type: 'uuid', nullable: true })
     public userId!: string | null;
 
-    @Column({ name: 'session_id', type: 'varchar', length: 36, nullable: true })
+    @Column({ name: 'session_id', type: 'uuid', nullable: true })
     public sessionId!: string | null;
 
     @Column({ name: 'event_type', type: 'varchar', length: 100 })

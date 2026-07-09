@@ -41,10 +41,10 @@ export class FuelOrderEntity {
     })
     public status!: FuelOrderStatus;
 
-    @Column({ name: 'submitted_by_user_id', type: 'varchar', length: 36, nullable: true })
+    @Column({ name: 'submitted_by_user_id', type: 'uuid', nullable: true })
     public submittedByUserId!: string | null;
 
-    @Column({ name: 'last_status_changed_by_user_id', type: 'varchar', length: 36, nullable: true })
+    @Column({ name: 'last_status_changed_by_user_id', type: 'uuid', nullable: true })
     public lastStatusChangedByUserId!: string | null;
 
     @CreateDateColumn({ name: 'created_at' })

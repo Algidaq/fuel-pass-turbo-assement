@@ -4,10 +4,10 @@ import type { RoleEntity } from './role.entity';
 
 @Entity({ name: 'role_permissions' })
 export class RolePermissionEntity {
-    @PrimaryColumn({ name: 'role_id', type: 'varchar', length: 36 })
+    @PrimaryColumn({ name: 'role_id', type: 'uuid' })
     public roleId!: string;
 
-    @PrimaryColumn({ name: 'permission_id', type: 'varchar', length: 36 })
+    @PrimaryColumn({ name: 'permission_id', type: 'uuid' })
     public permissionId!: string;
 
     @CreateDateColumn({ name: 'assigned_at' })

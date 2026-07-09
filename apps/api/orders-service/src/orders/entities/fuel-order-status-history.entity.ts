@@ -8,7 +8,7 @@ export class FuelOrderStatusHistoryEntity {
     @PrimaryGeneratedColumn('uuid')
     public id!: string;
 
-    @Column({ name: 'fuel_order_id', type: 'varchar', length: 36 })
+    @Column({ name: 'fuel_order_id', type: 'uuid' })
     public fuelOrderId!: string;
 
     @Column({
@@ -26,7 +26,7 @@ export class FuelOrderStatusHistoryEntity {
     })
     public toStatus!: FuelOrderStatus;
 
-    @Column({ name: 'changed_by_user_id', type: 'varchar', length: 36, nullable: true })
+    @Column({ name: 'changed_by_user_id', type: 'uuid', nullable: true })
     public changedByUserId!: string | null;
 
     @Column({ name: 'changed_at', type: Date, default: (): string => 'CURRENT_TIMESTAMP' })

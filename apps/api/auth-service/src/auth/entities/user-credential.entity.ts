@@ -12,7 +12,7 @@ export class UserCredentialEntity {
     @PrimaryGeneratedColumn('uuid')
     public id!: string;
 
-    @Column({ name: 'user_id', type: 'varchar', length: 36 })
+    @Column({ name: 'user_id', type: 'uuid' })
     public userId!: string;
 
     @Column({
