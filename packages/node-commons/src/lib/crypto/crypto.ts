@@ -5,7 +5,7 @@ export function getCipherAlgorithm(key: Buffer): string {
         case 16:
             return 'aes-128-cbc';
         case 32:
-            return 'aes-128-cbc';
+            return 'aes-256-cbc';
         default:
             throw new Error('Invalid Key Length ' + key.length);
     }
@@ -23,7 +23,7 @@ export function decrypt(content: string, keyBase64: string, ivBase64: string): s
     const key = Buffer.from(keyBase64, 'base64');
     const iv = Buffer.from(ivBase64, 'base64');
     const encipher = crypto.createDecipheriv(getCipherAlgorithm(key), key, iv);
-    let decryptedData = encipher.update(content.replace(/\//g, '-+_'), 'utf8', 'base64');
+    let decryptedData = encipher.update(content.replace(/-\+_/g, '/'), 'base64', 'utf8');
     decryptedData += encipher.final('utf8');
 
     return decryptedData;

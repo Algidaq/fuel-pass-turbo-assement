@@ -43,6 +43,75 @@ function getEnvValue(key: string): string | number {
 }
 
 describe('TokenService', () => {
+    it('generates opaque refresh tokens and UUID token IDs', () => {
+        const configService = {
+            get: jest.fn((key: string): string | number => getEnvValue(key)),
+        };
+        const service = new TokenService(configService as unknown as ConfigService);
+
+        expect(service.generateRefreshToken()).toMatch(/^[\w-]+$/u);
+        expect(service.generateRefreshToken()).toHaveLength(64);
+        expect(service.generateTokenId()).toMatch(/^[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[\dA-Fa-f]{4}-[\da-f]{12}$/u);
+    });
+
+    it('hashes refresh tokens with stable SHA-256 output', () => {
+        const configService = {
+            get: jest.fn((key: string): string | number => getEnvValue(key)),
+        };
+        const service = new TokenService(configService as unknown as ConfigService);
+
+        expect(service.hashRefreshToken('refresh-token')).toBe('0eb17643d4e9261163783a420859c92c7d212fa9624106a12b510afbec266120');
+        expect(service.hashRefreshToken('refresh-token')).toBe(service.hashRefreshToken('refresh-token'));
+    });
+
+    it('rejects invalid access token payloads', () => {
+        const configService = {
+            get: jest.fn((key: string): string | number => getEnvValue(key)),
+        };
+        const service = new TokenService(configService as unknown as ConfigService);
+        const claimsMapper = service as unknown as {
+            toAccessTokenClaims: (payload: Record<string, unknown>) => unknown;
+        };
+
+        expect(() =>
+            claimsMapper.toAccessTokenClaims({
+                sub: 'user-1',
+                sid: 'session-1',
+                jti: 'token-1',
+                email: 'user@fuelpass.test',
+                roles: 'admin',
+                permissions: [],
+            })
+        ).toThrow('Access token payload is invalid.');
+    });
+
+    it('filters non-string role and permission claim values', () => {
+        const configService = {
+            get: jest.fn((key: string): string | number => getEnvValue(key)),
+        };
+        const service = new TokenService(configService as unknown as ConfigService);
+        const claimsMapper = service as unknown as {
+            toAccessTokenClaims: (payload: Record<string, unknown>) => {
+                roles: string[];
+                permissions: string[];
+            };
+        };
+
+        expect(
+            claimsMapper.toAccessTokenClaims({
+                sub: 'user-1',
+                sid: 'session-1',
+                jti: 'token-1',
+                email: 'user@fuelpass.test',
+                roles: ['admin', 123],
+                permissions: ['fuel-orders:read-all', null],
+            })
+        ).toMatchObject({
+            roles: ['admin'],
+            permissions: ['fuel-orders:read-all'],
+        });
+    });
+
     it('exports only public JWKS material', async () => {
         const configService = {
             get: jest.fn((key: string): string | number => getEnvValue(key)),
