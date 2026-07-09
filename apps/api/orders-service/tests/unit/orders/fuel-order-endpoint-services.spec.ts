@@ -66,6 +66,16 @@ function createStatusHistory(overrides: Partial<FuelOrderStatusHistoryEntity> = 
     });
 }
 
+function createLoggerMock(): { child: jest.Mock; info: jest.Mock; error: jest.Mock } {
+    const logger = {
+        child: jest.fn(),
+        info: jest.fn(),
+        error: jest.fn(),
+    };
+    logger.child.mockReturnValue(logger);
+    return logger;
+}
+
 function createHarness(overrides?: {
     findById?: FuelOrderEntity | null;
     findByIdSequence?: Array<FuelOrderEntity | null>;
@@ -135,10 +145,22 @@ function createHarness(overrides?: {
     };
 
     return {
-        createService: new CreateFuelOrderService(fuelOrderRepository as never, dataSource as unknown as DataSource),
-        listService: new ListFuelOrdersService(fuelOrderRepository as never, internalAuthUsersService as never),
-        getService: new GetFuelOrderService(fuelOrderRepository as never, internalAuthUsersService as never),
-        updateService: new UpdateFuelOrderStatusService(fuelOrderRepository as never, dataSource as unknown as DataSource),
+        createService: new CreateFuelOrderService(
+            fuelOrderRepository as never,
+            dataSource as unknown as DataSource,
+            createLoggerMock() as never
+        ),
+        listService: new ListFuelOrdersService(
+            fuelOrderRepository as never,
+            internalAuthUsersService as never,
+            createLoggerMock() as never
+        ),
+        getService: new GetFuelOrderService(fuelOrderRepository as never, internalAuthUsersService as never, createLoggerMock() as never),
+        updateService: new UpdateFuelOrderStatusService(
+            fuelOrderRepository as never,
+            dataSource as unknown as DataSource,
+            createLoggerMock() as never
+        ),
         internalAuthUsersService,
         fuelOrderRepository,
         manager,

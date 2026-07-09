@@ -4,10 +4,10 @@ import type { UserEntity } from './user.entity';
 
 @Entity({ name: 'user_roles' })
 export class UserRoleEntity {
-    @PrimaryColumn({ name: 'user_id', type: 'varchar', length: 36 })
+    @PrimaryColumn({ name: 'user_id', type: 'uuid' })
     public userId!: string;
 
-    @PrimaryColumn({ name: 'role_id', type: 'varchar', length: 36 })
+    @PrimaryColumn({ name: 'role_id', type: 'uuid' })
     public roleId!: string;
 
     @CreateDateColumn({ name: 'assigned_at' })

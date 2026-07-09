@@ -11,6 +11,16 @@ import { InternalUserLookupService } from '../src/auth/services/internal-user-lo
 const headers = new BaseApiHeaders();
 const adminRoleKey = 'admin';
 
+function createLoggerMock(): { child: jest.Mock; info: jest.Mock; error: jest.Mock } {
+    const logger = {
+        child: jest.fn(),
+        info: jest.fn(),
+        error: jest.fn(),
+    };
+    logger.child.mockReturnValue(logger);
+    return logger;
+}
+
 describe('InternalUserCreationService.createUser', () => {
     function createService(overrides?: { existingUser?: UserEntity | null; roles?: RoleEntity[] }): {
         service: InternalUserCreationService;
@@ -53,7 +63,8 @@ describe('InternalUserCreationService.createUser', () => {
             } as never,
             passwordService as never,
             currentUserService as never,
-            dataSource as unknown as DataSource
+            dataSource as unknown as DataSource,
+            createLoggerMock() as never
         );
 
         return { service, manager, passwordService, currentUserService };
@@ -149,7 +160,7 @@ describe('InternalUserLookupService.lookupUsers', () => {
         const userRepository = {
             findByIds: jest.fn().mockResolvedValue([foundUser]),
         };
-        const service = new InternalUserLookupService(userRepository as never);
+        const service = new InternalUserLookupService(userRepository as never, createLoggerMock() as never);
 
         const response = await service.lookupUsers({
             headers,

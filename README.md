@@ -1,159 +1,154 @@
-# Turborepo starter
+# Fuel Pass
 
-This Turborepo starter is maintained by the Turborepo core team.
+Fuel Pass is a TypeScript monorepo for an aviation fuel ordering workflow. The current backend is split into three API workspaces:
 
-## Using this example
+- `@fuel-pass/auth-service`: users, credentials, sessions, JWTs, roles, permissions, and internal auth introspection.
+- `@fuel-pass/orders`: fuel order creation, listing, lookup, status transitions, and permission-aware access rules.
+- `@fuel-pass/proxy-service`: a lightweight HTTP gateway that forwards `/auth-service` and `/orders-service` traffic to the service ports.
 
-Run the following command:
+Shared code lives in `packages/`, especially `@fuel-pass/contracts` for DTOs, permissions, and error catalogs, and `@fuel-pass/node-commons` for common backend utilities.
 
-```sh
-npx create-turbo@latest
-```
+## Tooling Note
 
-## What's inside?
+The project uses an npm workspaces Turborepo layout. The NestJS services were bootstrapped with the Nest CLI/schematics and then adapted for the Fuel Pass domain. The generated structure is intentionally conventional; most project-specific work is in the auth, permission, order, persistence, and proxy-routing logic.
 
-This Turborepo includes the following packages/apps:
+## Requirements
 
-### Apps and Packages
+- Node.js `>=18`
+- npm `10.x` recommended
+- PostgreSQL if you want to run the services against Postgres
+- SQLite is supported by the services for lightweight local and integration-test workflows
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+## Setup
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+Install dependencies from the repository root:
 
 ```sh
-cd my-turborepo
-turbo build
+npm install
 ```
 
-Without global `turbo`, use your package manager:
+Generate service `.env` files from the root `.env.example`:
 
 ```sh
-cd my-turborepo
-npx turbo build
-npm dlx turbo build
-npm exec turbo build
+npm run setup:envs
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+The generated envs configure:
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+- auth service on `http://localhost:3000/api`
+- orders service on `http://localhost:3001/api`
+- proxy service on `http://localhost:3100`
+- web app API base URL as `http://localhost:3100`
+
+For Postgres, create the configured databases before running migrations:
 
 ```sh
-turbo build --filter=docs
+createdb fuel_pass_auth
+createdb fuel_pass_orders
 ```
 
-Without global `turbo`:
+Then run service migrations and seed data:
 
 ```sh
-npx turbo build --filter=docs
-npm exec turbo build --filter=docs
-npm exec turbo build --filter=docs
+npm run db:setup -w @fuel-pass/auth-service
+npm run db:setup -w @fuel-pass/orders
 ```
 
-### Develop
+For a SQLite-only local run, add the relevant block to the service `.env` and comment out the Postgres `DB_*` values:
 
-To develop all apps and packages, run the following command:
+```dotenv
+# apps/api/auth-service/.env
+# DB_TYPE=sqlite
+# SQLITE_DATABASE=./auth.sqlite
+# SQLITE_SYNCHRONIZE=true
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+# apps/api/orders-service/.env
+# DB_TYPE=sqlite
+# SQLITE_DATABASE=./orders.sqlite
+# SQLITE_SYNCHRONIZE=true
+```
+
+Uncomment the block for the service you are running. This is useful for quick review, but Postgres plus migrations is the closer production-like path.
+
+## Run
+
+Start all persistent development tasks through Turbo:
 
 ```sh
-cd my-turborepo
-turbo dev
+npm run dev
 ```
 
-Without global `turbo`, use your package manager:
+Or run individual services:
 
 ```sh
-cd my-turborepo
-npx turbo dev
-npm exec turbo dev
-npm exec turbo dev
+npm run start:dev -w @fuel-pass/auth-service
+npm run start:dev -w @fuel-pass/orders
+npm run dev -w @fuel-pass/proxy-service
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+Useful health checks:
 
 ```sh
-turbo dev --filter=web
+curl http://localhost:3000/api/health
+curl http://localhost:3001/api/health
+curl http://localhost:3100/health
+curl http://localhost:3100/health/deep
 ```
 
-Without global `turbo`:
+Traffic through the proxy is namespaced, for example:
 
 ```sh
-npx turbo dev --filter=web
-npm exec turbo dev --filter=web
-npm exec turbo dev --filter=web
+curl http://localhost:3100/auth-service/api/health
+curl http://localhost:3100/orders-service/api/health
 ```
 
-### Remote Caching
+## Test And Validate
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+Run the full workspace test task:
 
 ```sh
-cd my-turborepo
-turbo login
+npm run test
 ```
 
-Without global `turbo`, use your package manager:
+Run focused tests:
 
 ```sh
-cd my-turborepo
-npx turbo login
-npm exec turbo login
-npm exec turbo login
+npm run test -w @fuel-pass/auth-service
+npm run test -w @fuel-pass/orders
+npm run test -w @fuel-pass/proxy-service
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+Other validation commands:
 
 ```sh
-turbo link
+npm run build
+npm run lint
+npm run check-types
+npm run format
 ```
 
-Without global `turbo`:
+Coverage is available for the service workspaces:
 
 ```sh
-npx turbo link
-npm exec turbo link
-npm exec turbo link
+npm run test:cov -w @fuel-pass/auth-service
+npm run test:cov -w @fuel-pass/orders
+npm run test:cov -w @fuel-pass/proxy-service
 ```
 
-## Useful Links
+## Assumptions
 
-Learn more about the power of Turborepo:
+- Auth is the source of truth for users, roles, permissions, sessions, and token issuance.
+- Orders stores order data and asks auth for user/permission context through the internal auth API.
+- The proxy keeps public routing simple while each service remains independently runnable.
+- Permission keys and error codes belong in `@fuel-pass/contracts` so services and clients can share the same vocabulary.
+- Local dev secrets and RSA keys in examples are development-only material and must not be reused for production.
+- Database migrations are the preferred Postgres setup path. SQLite synchronization is only for local review and tests.
 
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+## Rationale
+
+- Turborepo and npm workspaces keep independent services and shared packages in one repository while preserving targeted commands per workspace.
+- NestJS was chosen for auth and orders because modules, controllers, providers, guards, and TypeORM integration fit the service boundaries cleanly.
+- Shared contracts reduce drift between services for DTOs, permissions, and domain error codes.
+- Auth and orders are separate services because authentication/authorization state changes at a different rate than fuel order workflow state.
+- The proxy service is intentionally small Express middleware so gateway behavior stays transparent and easy to test.
+- TypeORM is used with Postgres for realistic persistence and SQLite support for fast isolated integration tests.

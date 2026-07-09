@@ -13,8 +13,10 @@ import { AppController } from './app.controller';
         ConfigModule.forRoot({
             isGlobal: true,
             envFilePath: [
-                'apps/api/auth/.env',
-                process.env['NODE_ENV'] === 'production' ? 'apps/api/auth/auth-service-prod.env' : 'apps/api/auth/auth-service-dev.env',
+                'apps/api/auth-service/.env',
+                process.env['NODE_ENV'] === 'production'
+                    ? 'apps/api/auth-service/auth-service-prod.env'
+                    : 'apps/api/auth-service/auth-service-dev.env',
                 '.env',
             ],
             load: [(): { auth: ReturnType<typeof configs.auth> } => ({ auth: configs.auth() })],

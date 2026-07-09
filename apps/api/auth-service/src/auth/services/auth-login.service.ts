@@ -1,12 +1,5 @@
 import { AuthUserContextDto, LoginResDto, TLoginRequestDto } from '@fuel-pass/contracts/backend';
-import {
-    ApiResponse,
-    AppHttpError,
-    constructErrorMsg,
-    constructLogMsg,
-    type PinoAppLogger,
-    type WithAppCtx,
-} from '@fuel-pass/node-commons';
+import { ApiResponse, AppHttpError, constructErrorMsg, constructLogMsg, PinoAppLogger, type WithAppCtx } from '@fuel-pass/node-commons';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { envs } from '../../configs/config';
 import { AuthException } from '../auth.errors';
@@ -37,6 +30,7 @@ export class AuthLoginService {
 
         try {
             const msg = constructLogMsg(AuthLoginService.name, 'login', headers);
+            this.log.info(`${msg}::login::started`);
 
             const user = await this.findActiveUserOrThrow({ headers, email: body.email });
 
@@ -55,7 +49,7 @@ export class AuthLoginService {
 
             const accessToken = await this.generateAccessToken({ headers, currentUser, sessionId: session.id });
 
-            this.log.info(`${msg}::login::user::password validated`);
+            this.log.info(`${msg}::login::access-token generated`);
 
             return ApiResponse.builder<LoginResDto>()
                 .withSuccess({

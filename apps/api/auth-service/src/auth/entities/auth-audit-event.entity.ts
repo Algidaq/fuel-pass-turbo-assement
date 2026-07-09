@@ -8,17 +8,17 @@ import type { UserEntity } from './user.entity';
 @Index('idx_auth_audit_events_user_id_created_at', ['userId', 'createdAt'])
 @Index('idx_auth_audit_events_event_type_created_at', ['eventType', 'createdAt'])
 export class AuthAuditEventEntity extends BaseModel<AuthAuditEventEntity> {
-    public static create(params: Omit<ClassParams<AuthAuditEventEntity>, 'user' | 'session'>): AuthAuditEventEntity {
+    public static create(params: Omit<ClassParams<AuthAuditEventEntity>, 'user' | 'session' | 'id'>): AuthAuditEventEntity {
         return Object.assign(new AuthAuditEventEntity(), params);
     }
 
     @PrimaryGeneratedColumn('uuid')
     public id!: string;
 
-    @Column({ name: 'user_id', type: 'varchar', length: 36, nullable: true })
+    @Column({ name: 'user_id', type: 'uuid', nullable: true })
     public userId!: string | null;
 
-    @Column({ name: 'session_id', type: 'varchar', length: 36, nullable: true })
+    @Column({ name: 'session_id', type: 'uuid', nullable: true })
     public sessionId!: string | null;
 
     @Column({ name: 'event_type', type: 'varchar', length: 100 })

@@ -64,6 +64,16 @@ class TestTokenService {
     }
 }
 
+function createLoggerMock(): { child: jest.Mock; info: jest.Mock; error: jest.Mock } {
+    const logger = {
+        child: jest.fn(),
+        info: jest.fn(),
+        error: jest.fn(),
+    };
+    logger.child.mockReturnValue(logger);
+    return logger;
+}
+
 describe('auth persistence with SQLite', () => {
     let dataSource: DataSource;
     let loginService: AuthLoginService;
@@ -111,16 +121,18 @@ describe('auth persistence with SQLite', () => {
             credentialRepository,
             new TestPasswordService() as never,
             currentUserService,
-            tokenService as never
+            tokenService as never,
+            createLoggerMock() as never
         );
         refreshService = new AuthRefreshService(
             refreshTokenService,
             currentUserService,
             tokenService as never,
             sessionService,
-            auditService
+            auditService,
+            createLoggerMock() as never
         );
-        logoutService = new AuthLogoutService(sessionService, refreshTokenService, auditService);
+        logoutService = new AuthLogoutService(sessionService, refreshTokenService, auditService, createLoggerMock() as never);
 
         seededUser = await userRepository.createUser({
             email: 'manager@fuelpass.test',
