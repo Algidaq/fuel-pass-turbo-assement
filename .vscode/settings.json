@@ -1,4 +1,5 @@
 {
+    "terminal.integrated.inheritEnv": true,
     "js/ts.tsdk.path": "node_modules/typescript/lib",
     "js/ts.preferences.preferTypeOnlyAutoImports": true,
     "[typescript]": {

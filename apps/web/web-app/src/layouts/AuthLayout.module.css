@@ -1,0 +1,71 @@
+.layout {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 48px;
+  background: #faf8ff;
+}
+
+.shell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(100%, 440px);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.brandIcon {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background: #0f766e;
+  color: #ffffff;
+}
+
+.brandIcon svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.brandName {
+  color: #131b2e;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 32px;
+  letter-spacing: -0.02em;
+}
+
+.footer {
+  width: 100%;
+  margin-top: 48px;
+  color: #bdc9c6;
+  font-size: 13px;
+  line-height: 18px;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .layout {
+    padding: 16px;
+  }
+}
+
+@media (min-width: 721px) and (max-width: 1024px) {
+  .layout {
+    padding: 32px;
+  }
+}

@@ -17,6 +17,7 @@ const configs = [
          * @type {Partial<import('../../eslint-typegen').RuleOptions>}
          */
         rules: {
+            '@typescript-eslint/no-unsafe-argument': 'off',
             'unused-imports/no-unused-imports': 'error',
             '@typescript-eslint/no-unused-vars': 'off',
             'no-unused-vars': 'off',
@@ -147,6 +148,7 @@ const configs = [
                 },
             ],
             'no-console': 'error',
+            '@typescript-eslint/only-throw-error': 'warn',
         },
         languageOptions: {
             parserOptions: {

@@ -1,0 +1,127 @@
+.card {
+    overflow: hidden;
+}
+
+.header {
+    padding: 32px;
+}
+
+.header h2 {
+    margin: 0;
+    color: #131b2e;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 28px;
+    letter-spacing: -0.01em;
+}
+
+.header p {
+    margin: 4px 0 0;
+    color: #5d5e60;
+    font-size: 14px;
+    line-height: 22px;
+}
+
+.body {
+    padding: 0;
+}
+
+.scroll {
+    overflow-x: auto;
+}
+
+.scroll table {
+    min-width: 920px;
+}
+
+.actionsHead,
+.actionsCell {
+    text-align: right;
+}
+
+.orderLink {
+    color: #0f766e;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.orderLink:hover {
+    text-decoration: underline;
+}
+
+.footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px;
+    border-top: 1px solid #f1f5f9;
+    background: rgb(242 243 255 / 0.3);
+}
+
+.footer span {
+    color: #5d5e60;
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.paginationControls,
+.pageSizeControl,
+.pageButtons {
+    display: flex;
+    align-items: center;
+}
+
+.paginationControls {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.pageSizeControl {
+    gap: 8px;
+}
+
+.pageSizeControl :global(.MuiInputBase-root) {
+    min-width: 88px;
+}
+
+.pageSizeControl :global(.MuiSelect-select) {
+    padding: 7px 32px 7px 12px;
+    font-size: 13px;
+    line-height: 18px;
+    max-height: 48px;
+}
+
+.pageLabel {
+    white-space: nowrap;
+}
+
+.pageButtons {
+    gap: 8px;
+}
+
+@media (max-width: 720px) {
+    .footer {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .paginationControls {
+        align-items: stretch;
+        justify-content: flex-start;
+    }
+
+    .pageSizeControl {
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .pageButtons {
+        width: 100%;
+    }
+
+    .pageButtons button {
+        flex: 1 1 0;
+    }
+}

@@ -11,3 +11,9 @@ export abstract class BaseModel<T> {
 
     public abstract copyWith(params: Partial<ClassParams<T>>): T;
 }
+
+export abstract class BaseResModel<T> extends BaseModel<T> {
+    public toJSON(): Record<string, any> {
+        return this;
+    }
+}

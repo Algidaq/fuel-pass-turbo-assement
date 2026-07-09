@@ -32,6 +32,7 @@ export class ApiResponse<T = unknown> {
                 status: e.httpCode,
                 errors: e.errors,
             })
+            .withData({ errors: e.errors })
             .build();
     }
 

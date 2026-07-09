@@ -4,6 +4,13 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "docker:up": "env-cmd -f docker.env -- docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f postgres",
+    "docker:ps": "docker compose ps",
+    "db:setup": "npm run db:setup -w @fuel-pass/auth-service && npm run db:setup -w @fuel-pass/orders",
+    "setup:envs": "node scripts/setup-envs.js",
+    "watch:packages": "turbo run dev --filter=@fuel-pass/node-commons --filter=@fuel-pass/contracts --filter=@fuel-pass/ui",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
@@ -11,10 +18,14 @@
   },
   "workspaces": [
     "apps/*",
+    "apps/web/*",
     "apps/api/*",
     "packages/*"
   ],
   "devDependencies": {
+    "@nestjs/cli": "^11.0.10",
+    "@nestjs/schematics": "^11.0.8",
+    "@nestjs/testing": "^11.1.6",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@swc-node/register": "1.11.1",
     "@swc/core": "1.15.8",
@@ -24,6 +35,7 @@
     "@types/lodash": "^4.17.24",
     "@types/node": "^24.0.0",
     "@typescript-eslint/eslint-plugin": "^8.62.1",
+    "env-cmd": "^11.0.0",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^10.0.0",
     "eslint-plugin-import": "^2.32.0",
@@ -33,27 +45,30 @@
     "eslint-plugin-prettier": "^5.5.6",
     "eslint-plugin-unused-imports": "^4.4.1",
     "eslint-typegen": "^2.3.1",
+    "globals": "^16.5.0",
     "jest": "~30.3.0",
     "jest-environment-node": "~30.3.0",
     "jest-util": "~30.3.0",
     "prettier": "^3.7.4",
     "ts-jest": "^29.4.0",
-    "ts-node": "10.9.1",
+    "ts-node": "^10.9.1",
     "tslib": "^2.3.0",
+    "tsx": "^4.23.0",
     "turbo": "^2.10.3",
     "typescript": "5.9.2",
     "typescript-eslint": "^8.40.0"
   },
   "engines": {
-    "node": ">=18"
+    "node": "^20.19.0 || ^22.13.0 || >=24"
   },
   "devEngines": {
     "packageManager": {
       "name": "npm",
-      "version": "10.9.0"
+      "version": "^10.9.0"
     }
   },
   "dependencies": {
+    "@fuel-pass/proxy-service": "^1.0.0",
     "@nestjs/common": "^11.0.0",
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
@@ -61,10 +76,14 @@
     "axios": "^1.6.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
+    "dotenv": "^17.4.2",
+    "express": "^4.22.2",
     "express-timeout-handler": "^2.2.2",
     "http-status-codes": "^2.3.0",
     "lodash": "^4.18.1",
+    "p-retry": "^4.6.2",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.0"
+    "rxjs": "^7.8.0",
+    "zod": "^4.4.3"
   }
 }

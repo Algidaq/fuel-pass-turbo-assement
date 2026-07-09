@@ -1,0 +1,43 @@
+import type {
+  FuelOrderResDto,
+  FuelOrderUserResponseDto,
+  FuelOrderStatusCountsResponseDto,
+  FuelOrderStatusDto,
+  ListFuelOrdersResponseDto,
+  TCreateFuelOrderRequestDto,
+  TListFuelOrdersQueryDto,
+  TUpdateFuelOrderStatusRequestDto,
+} from '@fuel-pass/contracts/backend';
+
+export type CreateFuelOrderRequest = TCreateFuelOrderRequestDto;
+
+export type FuelOrder = FuelOrderResDto;
+
+export type FuelOrderUser = FuelOrderUserResponseDto;
+
+export type FuelOrdersList = ListFuelOrdersResponseDto;
+
+export type FuelOrderStatus = FuelOrderStatusDto;
+
+export type FuelOrderStatusCounts = FuelOrderStatusCountsResponseDto;
+
+export const fuelOrderPageSizeOptions = [10, 20, 50, 100] as const;
+
+export type FuelOrderFilters = Partial<Pick<TListFuelOrdersQueryDto, 'airportIcaoCode' | 'page' | 'pageSize'>>;
+
+export type UpdateFuelOrderStatusRequest = TUpdateFuelOrderStatusRequestDto;
+
+export type CreateFuelOrderFormValues = {
+  tailNumber: string;
+  airportIcaoCode: string;
+  requestedFuelVolume: number | null;
+  deliveryWindowStartAt: string;
+  deliveryWindowEndAt: string;
+};
+
+export type CreateFuelOrderFormErrors = Partial<Record<keyof CreateFuelOrderFormValues, string>>;
+
+export type CreateFuelOrderValidationResult = {
+  errors: CreateFuelOrderFormErrors;
+  isValid: boolean;
+};

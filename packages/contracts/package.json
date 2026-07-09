@@ -2,20 +2,37 @@
     "name": "@fuel-pass/contracts",
     "version": "0.0.1",
     "private": true,
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "types": "./dist/index.d.ts",
+    "main": "./dist/cjs/index.js",
+    "module": "./dist/esm/index.js",
+    "types": "./dist/esm/index.d.ts",
     "exports": {
         "./package.json": "./package.json",
         ".": {
-            "types": "./dist/index.d.ts",
-            "import": "./dist/index.js",
-            "default": "./dist/index.js"
+            "import": {
+                "types": "./dist/esm/index.d.ts",
+                "default": "./dist/esm/index.js"
+            },
+            "require": {
+                "types": "./dist/cjs/index.d.ts",
+                "default": "./dist/cjs/index.js"
+            },
+            "default": "./dist/esm/index.js"
+        },
+        "./backend": {
+            "import": {
+                "types": "./dist/esm/backend.d.ts",
+                "default": "./dist/esm/backend.js"
+            },
+            "require": {
+                "types": "./dist/cjs/backend.d.ts",
+                "default": "./dist/cjs/backend.js"
+            },
+            "default": "./dist/esm/backend.js"
         }
     },
     "scripts": {
-        "build": "tsc -p tsconfig.build.json",
-        "dev": "tsc -p tsconfig.json --watch",
+        "build": "npm run clean && tsc -p tsconfig.build.esm.json && tsc -p tsconfig.build.cjs.json && node ./scripts/write-package-types.cjs",
+        "dev": "tsc -p tsconfig.build.json --watch",
         "clean": "rm -rf dist",
         "lint": "eslint .",
         "lint:fix": "eslint --fix",
@@ -23,8 +40,13 @@
         "test:coverage": "jest --coverage"
     },
     "dependencies": {
-        "@fuel-pass/typescript-config": "*",
         "@fuel-pass/eslint-config": "*",
-        "tslib": "^2.3.0"
+        "@fuel-pass/node-commons": "*",
+        "@fuel-pass/typescript-config": "*",
+        "class-transformer": "^0.5.1",
+        "class-validator": "^0.15.1",
+        "reflect-metadata": "^0.2.2",
+        "tslib": "^2.3.0",
+        "zod": "^4.4.3"
     }
 }
