@@ -1,13 +1,13 @@
 import {
     CurrentUserResDto,
-    LogoutResDto,
-    RefreshResDto,
     loginReqDtoSchema,
     logoutReqDtoSchema,
+    LogoutResDto,
     refreshReqDtoSchema,
+    RefreshResDto,
     type LoginResDto,
-    type TLogoutRequestDto,
     type TLoginRequestDto,
+    type TLogoutRequestDto,
     type TRefreshRequestDto,
 } from '@fuel-pass/contracts/backend';
 import { ApiResponse, constructErrorMsg, CsHeaders, ZodValidationPipe, type BaseApiHeaders } from '@fuel-pass/node-commons';

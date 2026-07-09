@@ -1,24 +1,16 @@
+import { PinoAppLogger } from '@fuel-pass/node-commons';
 import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
-    public constructor(private readonly appService: AppService) {}
+    public constructor(private readonly log: PinoAppLogger) {}
 
     @Get('health')
     public getHealth(): { status: string; service: string } {
+        this.log.info('health');
         return {
             status: 'ok',
             service: 'auth-service',
         };
-    }
-
-    @Get()
-    public getData(): Promise<{ message: string }> {
-        return new Promise((reslove, _reject): void => {
-            setTimeout((): void => {
-                reslove(this.appService.getData());
-            }, 1);
-        });
     }
 }

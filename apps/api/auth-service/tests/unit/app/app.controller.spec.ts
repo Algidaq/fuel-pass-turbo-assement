@@ -1,28 +1,33 @@
+import { PinoAppLogger } from '@fuel-pass/node-commons';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from '../../../src/app/app.controller';
-import { AppService } from '../../../src/app/app.service';
 
 describe('AppController', () => {
     let app: TestingModule;
+    const loggerMock = {
+        info: jest.fn(),
+    };
 
-    beforeAll(async () => {
+    beforeEach(async () => {
+        loggerMock.info.mockClear();
+
         app = await Test.createTestingModule({
             controllers: [AppController],
-            providers: [AppService],
+            providers: [
+                {
+                    provide: PinoAppLogger,
+                    useValue: loggerMock,
+                },
+            ],
         }).compile();
-    });
-
-    describe('getData', () => {
-        it('should return "Hello API"', async () => {
-            const appController = app.get<AppController>(AppController);
-            await expect(appController.getData()).resolves.toEqual({ message: 'Hello API' });
-        });
     });
 
     describe('getHealth', () => {
         it('should return health status', () => {
             const appController = app.get<AppController>(AppController);
+
             expect(appController.getHealth()).toEqual({ status: 'ok', service: 'auth-service' });
+            expect(loggerMock.info).toHaveBeenCalledWith('health');
         });
     });
 });

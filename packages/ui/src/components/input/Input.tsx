@@ -13,7 +13,6 @@ const getInputSx = (error: boolean): SxProps<Theme> => ({
         borderRadius: 'var(--fp-radius-md)',
         color: 'var(--fp-foreground)',
         font: 'inherit',
-        minHeight: '2.5rem',
         padding: '0.5rem 0.75rem',
         transition: 'border-color 120ms ease, box-shadow 120ms ease',
         width: '100%',

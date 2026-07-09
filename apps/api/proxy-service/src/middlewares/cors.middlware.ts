@@ -5,7 +5,7 @@ import { getNamespace, resolveProxyService } from '../utils/service-registry';
 const corsDelegate: cors.CorsOptionsDelegate<Request> = (req, callback): void => {
     const service = resolveProxyService(getNamespace(req.path));
     if (service === undefined) {
-        return callback(new Error('CORS configuration error: service not found'), {});
+        return callback(null, { origin: [], allowedHeaders: [], methods: [] });
     }
 
     return callback(null, {

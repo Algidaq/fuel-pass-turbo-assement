@@ -15,7 +15,7 @@ const statusChipBaseSx = {
     padding: '0.25rem 0.55rem',
     textTransform: 'uppercase',
     '& .MuiChip-label': {
-        padding: '1.25rem',
+        padding: '0.2rem',
     },
 } satisfies SxProps<Theme>;
 

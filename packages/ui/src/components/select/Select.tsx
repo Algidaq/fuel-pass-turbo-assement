@@ -5,6 +5,7 @@ import { cn } from '../../utils/index.js';
 import type { SelectProps } from './Select.types.js';
 
 const getSelectTriggerSx = (error: boolean): SxProps<Theme> => ({
+    height: '2rem',
     alignItems: 'center',
     background: 'var(--fp-surface)',
     border: '1px solid',
@@ -16,7 +17,6 @@ const getSelectTriggerSx = (error: boolean): SxProps<Theme> => ({
     font: 'inherit',
     gap: 'var(--fp-space-2)',
     justifyContent: 'space-between',
-    minHeight: '2.5rem',
     padding: '0.5rem 0.75rem',
     textAlign: 'left',
     transition: 'border-color 120ms ease, box-shadow 120ms ease',
