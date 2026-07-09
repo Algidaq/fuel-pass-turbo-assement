@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+import crypto from 'node:crypto';
 import { type Options } from 'pino-http';
 
 export const DEFAULT_PINO_HTTP_OPTIONS: Options = {
