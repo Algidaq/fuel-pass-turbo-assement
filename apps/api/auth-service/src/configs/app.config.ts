@@ -7,6 +7,11 @@ export type AppRuntimeConfig = {
     };
     globalPrefix: string;
     port: number | string;
+    namespace: string;
+    log: {
+        level: string;
+        pretty: boolean;
+    };
 };
 
 const defaultCorsOrigins = ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:5173'];
@@ -29,6 +34,7 @@ function getCorsOrigin(): string[] | true {
 }
 
 export function getAppRuntimeConfig(): AppRuntimeConfig {
+    const nodeEnv = getOsEnv('NODE_ENV');
     return {
         cors: {
             credentials: true,
@@ -36,5 +42,10 @@ export function getAppRuntimeConfig(): AppRuntimeConfig {
         },
         globalPrefix: getOsEnv('GLOBAL_PREFIX', 'api') ?? 'api',
         port: getOsEnv('PORT', '3000') ?? '3000',
+        namespace: getOsEnv('NAMESPACE') ?? 'auth-service',
+        log: {
+            level: getOsEnv('LOG_LEVEL', nodeEnv === 'test' ? 'silent' : 'info') ?? 'info',
+            pretty: nodeEnv === 'development',
+        },
     };
 }

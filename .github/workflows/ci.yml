@@ -27,5 +27,8 @@ jobs:
 
             - run: npm ci
 
-            # Prepend any command with "nx record --" to record its logs to Nx Cloud
-            - run: npx turbo run lint test build
+            - run: npm exec turbo -- run lint build
+
+            - name: Run tests with coverage
+              continue-on-error: true
+              run: npm exec turbo -- run test

@@ -1,15 +1,11 @@
 import { Inject, Injectable, NestMiddleware } from '@nestjs/common';
 import { RequestHandler } from '@nestjs/common/interfaces';
-import pinoHttp from 'pino-http';
 import type { Options as PinoHttpOptions } from 'pino-http';
+import pinoHttp from 'pino-http';
 import { CORE_MIDDLEWARE_MODULE_OPTIONS, CoreMiddlewareModuleOptions } from './core-middleware.module.options';
+import { DEFAULT_PINO_HTTP_OPTIONS } from './pino-http.options';
 
 export type TPinoHttpMiddlewareOptions = PinoHttpOptions;
-
-export const DEFAULT_PINO_HTTP_OPTIONS: TPinoHttpMiddlewareOptions = {
-    autoLogging: true,
-    useLevel: 'info',
-};
 
 @Injectable()
 export class PinoHttpMiddleware implements NestMiddleware {
@@ -25,3 +21,7 @@ export class PinoHttpMiddleware implements NestMiddleware {
         return this.middleware(req, res, next);
     }
 }
+
+export const createPinoHttpMiddleware = (options: PinoHttpOptions): RequestHandler => {
+    return pinoHttp({ ...DEFAULT_PINO_HTTP_OPTIONS, ...options }) as RequestHandler;
+};

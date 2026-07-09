@@ -1,6 +1,5 @@
 import type { ListFuelOrdersResponseDto } from '@fuel-pass/contracts/backend';
 
-import { env } from '../../../config/env';
 import { httpClient } from '../../../services/httpClient';
 import type {
     CreateFuelOrderRequest,
@@ -11,7 +10,7 @@ import type {
     UpdateFuelOrderStatusRequest,
 } from '../types/fuelOrder.types';
 
-const fuelOrdersUrl = `${env.ordersApiBaseUrl.replace(/\/+$/, '')}/v1/fuel-orders`;
+const fuelOrdersUrl = '/orders-service/api/v1/fuel-orders';
 
 type ApiResponse<TData> = {
     data?: TData;

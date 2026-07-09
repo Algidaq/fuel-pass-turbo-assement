@@ -4,7 +4,7 @@
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
   "scripts": {
-    "dev": "env-cmd .env -- nodemon --watch src --watch .env --exec 'tsx src/main.ts'",
+    "dev": "nodemon --watch \"src/**/*.ts\" --watch .env --exec 'tsx src/main.ts'",
     "build": "tsc --project tsconfig.build.json",
     "check-types": "tsc --project tsconfig.build.json --noEmit",
     "lint": "eslint \"src/**/*.ts\"",
@@ -22,9 +22,12 @@
     "cors": "^2.8.6",
     "express": "^4.22.2",
     "http-proxy-middleware": "^3.0.7",
+    "pino": "^10.3.1",
+    "pino-http": "^11.0.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/http-proxy-middleware": "^0.19.3"
   }

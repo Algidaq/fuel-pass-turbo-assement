@@ -1,5 +1,12 @@
 import { AuthUserContextDto, LoginResDto, TLoginRequestDto } from '@fuel-pass/contracts/backend';
-import { ApiResponse, AppHttpError, constructLogMsg, type WithAppCtx } from '@fuel-pass/node-commons';
+import {
+    ApiResponse,
+    AppHttpError,
+    constructErrorMsg,
+    constructLogMsg,
+    type PinoAppLogger,
+    type WithAppCtx,
+} from '@fuel-pass/node-commons';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { envs } from '../../configs/config';
 import { AuthException } from '../auth.errors';
@@ -19,18 +26,25 @@ export class AuthLoginService {
         private credentialRepo: CredentialRepository,
         private passwordService: PasswordService,
         private currentUserService: CurrentUserService,
-        private tokenService: TokenService
-    ) {}
+        private tokenService: TokenService,
+        private log: PinoAppLogger
+    ) {
+        this.log = this.log.child(__filename);
+    }
 
     public async login(params: WithAppCtx<{ body: TLoginRequestDto }>): Promise<ApiResponse<LoginResDto>> {
         const { headers, body } = params;
 
         try {
-            const _msg = constructLogMsg(AuthLoginService.name, 'login', headers);
+            const msg = constructLogMsg(AuthLoginService.name, 'login', headers);
 
             const user = await this.findActiveUserOrThrow({ headers, email: body.email });
 
+            this.log.info(`${msg}::login::user found`);
+
             await this.validatePasswordOrThrow({ headers, userId: user.id, password: body.password });
+
+            this.log.info(`${msg}::login::user::password validated`);
 
             const currentUser = await this.currentUserService.buildCurrentUser(user.id);
 
@@ -40,6 +54,8 @@ export class AuthLoginService {
             const session = await this.sessionCreationService.createSession({ headers, tokenHash: hashedRefreshToken, user });
 
             const accessToken = await this.generateAccessToken({ headers, currentUser, sessionId: session.id });
+
+            this.log.info(`${msg}::login::user::password validated`);
 
             return ApiResponse.builder<LoginResDto>()
                 .withSuccess({
@@ -54,6 +70,7 @@ export class AuthLoginService {
                 })
                 .build();
         } catch (e: unknown) {
+            this.log.error(constructErrorMsg(AuthLoginService.name, 'login', headers), { error: e });
             if (e instanceof AppHttpError) {
                 return ApiResponse.fromAppError(e) as ApiResponse<LoginResDto>;
             }
@@ -63,15 +80,17 @@ export class AuthLoginService {
 
     public async findActiveUserOrThrow(params: WithAppCtx<{ email: string }>): Promise<UserEntity> {
         const { headers, email } = params;
-        const _msg = constructLogMsg(AuthLoginService.name, 'findActiveUserOrThrow', headers);
+        const msg = constructLogMsg(AuthLoginService.name, 'findActiveUserOrThrow', headers);
 
         const user = await this.userRepo.findByEmail(email);
 
         if (user === null) {
+            this.log.info(`${msg}::user with give email::not-found`);
             throw new AuthException(HttpStatus.BAD_REQUEST, 'InvalidCredentials');
         }
 
         if (user.status !== UserStatus.ACTIVE) {
+            this.log.info(`${msg}::user status::is-inactive`);
             throw new AuthException(HttpStatus.BAD_REQUEST, 'InactiveUser');
         }
 

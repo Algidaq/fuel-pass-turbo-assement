@@ -4,12 +4,13 @@ import {
     CoreMiddlewareModule,
     DEFAULT_CORE_MIDDLEWARE_MODULE_OPTIONS,
     getOsEnv,
+    PinoAppLoggerModule,
 } from '@fuel-pass/node-commons';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { configs } from '../configs/config';
+import { configs, envs } from '../configs/config';
 import { getTypeOrmModuleOptions } from '../configs/typeorm.config';
 import { OrdersModule } from '../orders/orders.module';
 import { AppController } from './app.controller';
@@ -38,6 +39,11 @@ import { AppService } from './app.service';
         }),
         OrdersModule,
         CoreMiddlewareModule.forRoot({ ...DEFAULT_CORE_MIDDLEWARE_MODULE_OPTIONS, security: false }),
+        PinoAppLoggerModule.forRoot({
+            service: envs.app.namespace,
+            level: envs.app.log.level,
+            pretty: envs.app.log.pretty,
+        }),
     ],
     controllers: [AppController],
     providers: [

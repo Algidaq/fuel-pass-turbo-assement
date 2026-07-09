@@ -1,5 +1,5 @@
 import { Alert, Button, FormField, Input } from '@fuel-pass/ui';
-import { useState, type FormEvent } from 'react';
+import { useState, type ChangeEvent, type FormEvent } from 'react';
 
 import { loginReqDtoSchema, type TLoginRequestDto } from '@fuel-pass/contracts';
 import { getApiErrorMessage } from '../../../services/apiErrorMessages';
@@ -79,7 +79,9 @@ export const LoginForm = ({ error, isSubmitting, onSubmit }: LoginFormProps) => 
                     disabled={isSubmitting}
                     error={Boolean(errors.email)}
                     name="email"
-                    onChange={(event) => setValues((currentValues) => ({ ...currentValues, email: event.target.value }))}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                        setValues((currentValues) => ({ ...currentValues, email: event.target.value }))
+                    }
                     placeholder="name@company.com"
                     type="email"
                     value={values.email}
@@ -107,7 +109,9 @@ export const LoginForm = ({ error, isSubmitting, onSubmit }: LoginFormProps) => 
                     disabled={isSubmitting}
                     error={Boolean(errors.password)}
                     name="password"
-                    onChange={(event) => setValues((currentValues) => ({ ...currentValues, password: event.target.value }))}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                        setValues((currentValues) => ({ ...currentValues, password: event.target.value }))
+                    }
                     placeholder="Enter your password"
                     type={isPasswordVisible ? 'text' : 'password'}
                     value={values.password}

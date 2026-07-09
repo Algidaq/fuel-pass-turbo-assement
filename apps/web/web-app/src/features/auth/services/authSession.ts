@@ -87,7 +87,7 @@ const executeRefresh = async (): Promise<RefreshResponse | null> => {
   let response: Response;
 
   try {
-    response = await fetch(buildUrl('/v1/auth/refresh'), {
+    response = await fetch(buildUrl('/auth-service/api/v1/auth/refresh'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
