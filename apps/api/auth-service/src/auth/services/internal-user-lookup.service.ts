@@ -1,5 +1,5 @@
 import { InternalUserLookupResDto, InternalUserLookupUserResDto, type TInternalUserLookupRequestDto } from '@fuel-pass/contracts/backend';
-import { ApiResponse, constructErrorMsg, constructLogMsg, type PinoAppLogger, type WithAppCtx } from '@fuel-pass/node-commons';
+import { ApiResponse, constructErrorMsg, constructLogMsg, PinoAppLogger, type WithAppCtx } from '@fuel-pass/node-commons';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { UserRepository } from '../repositories/user.repository';
 

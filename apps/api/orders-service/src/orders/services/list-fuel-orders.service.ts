@@ -10,8 +10,8 @@ import {
     AppHttpError,
     constructErrorMsg,
     constructLogMsg,
+    PinoAppLogger,
     type AuthenticatedPrincipal,
-    type PinoAppLogger,
     type WithAppCtx,
 } from '@fuel-pass/node-commons';
 import { HttpStatus, Injectable } from '@nestjs/common';

@@ -1,12 +1,5 @@
 import { LogoutResDto, TLogoutRequestDto } from '@fuel-pass/contracts/backend';
-import {
-    ApiResponse,
-    AppHttpError,
-    constructErrorMsg,
-    constructLogMsg,
-    type PinoAppLogger,
-    type WithAppCtx,
-} from '@fuel-pass/node-commons';
+import { ApiResponse, AppHttpError, constructErrorMsg, constructLogMsg, PinoAppLogger, type WithAppCtx } from '@fuel-pass/node-commons';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import type { AuthenticatedPrincipal, RequestMetadata } from '../types/auth-request.types';
 import { AuditService, AuthAuditEventType } from './audit.service';

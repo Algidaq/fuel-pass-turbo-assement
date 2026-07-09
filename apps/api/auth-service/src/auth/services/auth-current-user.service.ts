@@ -1,12 +1,5 @@
 import { CurrentUserResDto } from '@fuel-pass/contracts/backend';
-import {
-    ApiResponse,
-    AppHttpError,
-    constructErrorMsg,
-    constructLogMsg,
-    type PinoAppLogger,
-    type WithAppCtx,
-} from '@fuel-pass/node-commons';
+import { ApiResponse, AppHttpError, constructErrorMsg, constructLogMsg, PinoAppLogger, type WithAppCtx } from '@fuel-pass/node-commons';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import type { AuthenticatedPrincipal } from '../types/auth-request.types';
 import { CurrentUserService } from './current-user.service';

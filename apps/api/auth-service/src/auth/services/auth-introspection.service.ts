@@ -1,5 +1,5 @@
 import { IntrospectResDto, TIntrospectRequestDto } from '@fuel-pass/contracts/backend';
-import { ApiResponse, constructLogMsg, type PinoAppLogger, type WithAppCtx } from '@fuel-pass/node-commons';
+import { ApiResponse, constructLogMsg, PinoAppLogger, type WithAppCtx } from '@fuel-pass/node-commons';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { CurrentUserService } from './current-user.service';
 import { TokenService } from './token.service';

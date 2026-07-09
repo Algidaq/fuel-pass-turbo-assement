@@ -1,12 +1,5 @@
 import { RefreshResDto, TRefreshRequestDto } from '@fuel-pass/contracts/backend';
-import {
-    ApiResponse,
-    AppHttpError,
-    constructErrorMsg,
-    constructLogMsg,
-    type PinoAppLogger,
-    type WithAppCtx,
-} from '@fuel-pass/node-commons';
+import { ApiResponse, AppHttpError, constructErrorMsg, constructLogMsg, PinoAppLogger, type WithAppCtx } from '@fuel-pass/node-commons';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { AuthException, AuthFailure } from '../auth.errors';
 import type { RequestMetadata } from '../types/auth-request.types';
