@@ -29,6 +29,16 @@ const currentUser = {
     permissions: [ORDER_PERMISSIONS.fuelOrderReadAll.key],
 };
 
+function createLoggerMock(): { child: jest.Mock; info: jest.Mock; error: jest.Mock } {
+    const logger = {
+        child: jest.fn(),
+        info: jest.fn(),
+        error: jest.fn(),
+    };
+    logger.child.mockReturnValue(logger);
+    return logger;
+}
+
 describe('AuthLoginService', () => {
     function createHarness(): {
         service: AuthLoginService;
@@ -63,7 +73,8 @@ describe('AuthLoginService', () => {
                 credentialRepository as never,
                 passwordService as never,
                 currentUserService as never,
-                tokenService as never
+                tokenService as never,
+                createLoggerMock() as never
             ),
             sessionCreationService,
             userRepository,
@@ -149,7 +160,8 @@ describe('AuthRefreshService', () => {
                 currentUserService as never,
                 tokenService as never,
                 sessionService as never,
-                auditService as never
+                auditService as never,
+                createLoggerMock() as never
             ),
             refreshTokenService,
             currentUserService,
@@ -197,7 +209,12 @@ describe('AuthLogoutService', () => {
             revokeRefreshToken: jest.fn().mockResolvedValue(undefined),
         };
         const auditService = { write: jest.fn().mockResolvedValue(undefined) };
-        const service = new AuthLogoutService(sessionService as never, refreshTokenService as never, auditService as never);
+        const service = new AuthLogoutService(
+            sessionService as never,
+            refreshTokenService as never,
+            auditService as never,
+            createLoggerMock() as never
+        );
         const principal: AuthenticatedPrincipal = {
             userId: activeUser.id,
             sessionId: 'session-1',
@@ -220,7 +237,7 @@ describe('AuthIntrospectionService', () => {
     it('returns inactive introspection for invalid tokens', async () => {
         const tokenService = { verifyAccessToken: jest.fn().mockRejectedValue(new Error('invalid')) };
         const currentUserService = { buildIntrospection: jest.fn() };
-        const service = new AuthIntrospectionService(tokenService as never, currentUserService as never);
+        const service = new AuthIntrospectionService(tokenService as never, currentUserService as never, createLoggerMock() as never);
 
         await expect(service.introspect({ headers, body: { token: 'bad-token' } })).resolves.toMatchObject({
             data: { active: false },
