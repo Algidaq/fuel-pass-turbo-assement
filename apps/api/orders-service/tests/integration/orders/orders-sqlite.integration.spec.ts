@@ -54,7 +54,7 @@ describe('orders persistence with SQLite', () => {
         expect(fuelOrder.updatedAt).toBeInstanceOf(Date);
     });
 
-    it('persists lowercase airport ICAO codes because SQLite does not enforce Postgres check constraints here', async () => {
+    it('persists lowercase airport ICAO codes because SQLite synchronize does not apply migration check constraints', async () => {
         const fuelOrder = await fuelOrderRepository.createFuelOrder({
             tailNumber: 'N123FP',
             airportIcaoCode: 'omdb',
@@ -66,7 +66,7 @@ describe('orders persistence with SQLite', () => {
         expect(fuelOrder.airportIcaoCode).toBe('omdb');
     });
 
-    it('persists zero requested fuel volume because SQLite does not enforce Postgres check constraints here', async () => {
+    it('persists zero requested fuel volume because SQLite synchronize does not apply migration check constraints', async () => {
         const fuelOrder = await fuelOrderRepository.createFuelOrder({
             tailNumber: 'N123FP',
             airportIcaoCode: 'OMDB',
